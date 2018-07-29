@@ -1,0 +1,192 @@
+.noteBar {
+	height: $note-bar-height;
+	position: relative;
+	z-index: 10;
+
+	i.faded {
+		opacity: 0.4;
+	}
+
+	.properties-dialog, .table-dialog, .headings-dialog {
+		padding: 0.3em;
+		border-radius: 0.3em;
+		cursor: default;
+	}
+
+	.headings-dialog {
+		a {
+			display: block;
+			cursor: pointer;
+		}
+
+		a.h {
+			padding-top: 0.2em;
+			padding-bottom: 0.2em;
+			padding-left: 1.4em;
+			max-width: 27em;
+			margin: 0.2em 0.2em 0.2em 0;
+			border-bottom: 1px solid #eaeaea;
+		}
+
+		a.h:last-child {
+			border-bottom: none;
+		}
+
+		a.hlvl2 {
+			padding-left: 0.7em;
+		}
+
+		a.hlvl1 {
+			padding-left: 0;
+		}
+	}
+
+	.properties-dialog, .table-dialog {
+		table {
+			width: 100%;
+			min-width: 14em;
+
+			td.right {
+				text-align: right;
+			}
+		}
+
+		table.select-table-size {
+			opacity: 0.6;
+			width: auto;
+			min-width: 0;
+
+			td {
+				width: 0.5em;
+				height: 0.5em;
+			}
+
+			td:hover {
+				cursor: pointer;
+			}
+		}
+	}
+
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		margin: 0 auto;
+		height: $note-bar-height;
+		width: 100%;
+		min-width: 16em;
+		max-width: 75em;
+		font-size: 100%;
+
+		ul {
+			width: 100%;
+			font-size: 110%;
+
+			li {
+				float: left;
+
+				i {
+					vertical-align: middle;
+				}
+
+				> a, > div {
+					padding: 0.3em 0.5em 0.3em;
+				}
+
+				ul {
+					padding: 0.4em 0;
+					width: auto;
+					min-width: 4.4em;
+					border-radius: 0.3em;
+
+					li > a, li > div {
+						border: none !important;
+					}
+				}
+			}
+
+			li.right-align {
+				margin-left: auto;
+			}
+
+			li.right-align + li.right-align {
+				margin-left: 0;
+			}
+
+			li.entry-hidden {
+				display: none;
+			}
+
+			li.entry-hidden + li.right-align:not(.entry-hidden) {
+				margin-left: auto;
+			}
+
+			li > div span {
+				display: block;
+			}
+		}
+
+		ul.transparent {
+			background: transparent;
+		}
+
+		ul:after {
+			clear: both;
+			content: "";
+			display: block;
+		}
+	}
+
+	.my-dropdown-dd {
+		margin-top: -1.5em;
+
+		ul li {
+			float: none;
+			display: block;
+		}
+	}
+}
+
+.noteBar.footer {
+	nav {
+		height: 100%;
+		ul {
+			font-size: 95%;
+			padding: 0;
+
+			li > div {
+				cursor: default;
+			}
+		}
+	}
+}
+
+@media only screen and (max-width: 1270px) {
+	.noteBar:not(.footer) nav ul {
+		font-size: 90%;
+	}
+}
+
+@media only screen and (max-width: 1220px) {
+	.outer_wrapper .main-cell-container:not(.notebar-disabled) {
+		.noteBar:not(.footer) {
+			height: $note-bar-height-md;
+			nav {
+				height: $note-bar-height-md;
+
+				li {
+					a > i, .link > i {
+						display: block;
+						text-align: center;
+						font-size: 120%;
+						margin-bottom: 0.1em;
+					}
+				}
+			}
+		}
+		.main-note-container {
+			height: calc( 100vh - #{ $outside-note-height-md } );
+		}
+	}
+}

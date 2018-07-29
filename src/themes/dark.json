@@ -1,0 +1,74 @@
+{
+	"app-border": "#22252c",
+
+	"resize-panel-handler": "#383838",
+	"folder-badge-background": "#383838",
+
+	"main-background-color": "#1e1e1e",
+
+	"title-bar-background": "#1e1e1e",
+
+	"title-bar-color": "#90949b",
+	"title-bar-color-hover": "#b0b9c6",
+	"title-bar-close-button": "#cc575d",
+
+	"search-bar-background": "#232323",
+	"search-bar-border": "#808080",
+
+	"sidebar-background": "#252526",
+	"fixed-sidebar-background": "#333333",
+
+	"action-bar-color": "#7e8383",
+	"submenu-background": "#383c4a",
+
+	"sidebar-color": "#949ba6",
+	"sidebar-color-hover": "#ffffff",
+
+	"tabs-background": "#f5f6f7",
+	"tab-selected-background": "#fff",
+	
+	"sidebar-background-hover": "#3f3f46",
+	"sidebar-background-selected": "#007acc",
+
+	"folder-selected-color": "#ffffff",
+	
+	"folder-badge-color": "#adacac",
+	"folder-separator": "#4b535d",
+
+	"note-list-background": "#dedede",
+	"note-list-background-hover": "#fff",
+	"note-list-text-color": "#333",
+	"note-list-text-color-hover": "#333",
+	"note-list-text-color-selected": "#ffffff",
+	"note-list-body-color": "#858585",
+	"note-list-body-color-hover": "#858585",
+	"note-list-body-color-selected": "#d2d2d2",
+	"note-separator-line": "#36393e",
+
+	"note-background-color": "#ffffff",
+
+	"note-container-background-color": "#aaaaaa",
+	"note-bar-color": "#555555",
+	"note-bar-color-hover": "#333333",
+
+	"note-hr-color": "#888",
+	"note-hr-background": "#f3f3f3",
+
+	"note-border-color": "#ababab",
+	"note-text-color": "#333",
+	"note-header1-color": "#3f51b5",
+	"note-bold-color": "#000",
+	"note-bar-text-color": "#7a7a7b",
+	"note-checkbox-selected": "#BBBBBB",
+
+	"ui-text-color": "#adadad",
+	"ui-text-color-hover": "#b9bbbe",
+	"ui-text-color-dim": "#848487",
+	"ui-text-background-hover": "#36393f",
+	"ui-text-color-selected": "#ffffff",
+	"ui-text-background-selected": "#42464d",
+	
+	"scrollbar-track-background": "rgba(255, 255, 255, 0.1)",
+	"scrollbar-thumb": "#333",
+	"scrollbar-thumb-border": "#444"
+}

@@ -1,0 +1,27 @@
+<main id="main-editor">
+	<title-bar v-if="title"
+		:reduce-to-tray="reduceToTray"
+		:show-menu-bar="menuBar"
+		:window-title="title">
+	</title-bar>
+	<div class="my-main" :class="{ 'no_menu' : !menuBar }">
+		<div class="outer_wrapper">
+			<div class="popup-simple" v-if="type == 'simple'" v-html="message">
+			</div>
+			<div class="popup-simple" v-if="type == 'input-text'">
+				<input-text
+					:placeholder="inputPlaceholder"
+					:required="inputRequired"
+					:buttons="inputButtons"
+					:alphanumeric-only="alphanumericOnly"
+					:default-data="inputDefault">
+				</input-text>
+			</div>
+			<div class="popup-simple" v-if="type == 'about'">
+				<about
+					:library-path="libraryPath"
+				></about>
+			</div>
+		</div>
+	</div>
+</main>

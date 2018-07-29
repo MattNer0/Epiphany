@@ -1,0 +1,150 @@
+#main-editor {
+	width: 100%;
+	height: 100%;
+}
+
+#main-editor.blur:after {
+	content: "";
+	cursor: default;
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #000;
+	z-index: 100;
+	opacity: 0.5;
+}
+
+.my-main {
+	width: 100%;
+	height: calc( 100vh - 2px - #{ $title-bar-height } );
+	display: flex;
+	flex-flow: row nowrap;
+}
+
+.outer_wrapper {
+	height: 100%;
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+
+	.popup-simple {
+		display: flex;
+		height: 100%;
+		width: 100%;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 1em;
+		font-size: 120%;
+
+		a {
+			outline: none;
+		}
+	}
+
+	.cell-container {
+		height: calc( 100vh - #{ $title-bar-height } );
+		vertical-align: top;
+	}
+
+	.cell-container > .my-shelf-folders > .my-shelf {
+		height: calc( 100vh - #{ $title-bar-height } - 3.7em );
+	}
+
+	/*.my-scrollbar {
+		max-height: calc( 100vh - #{ $title-bar-height } );
+		background-color: transparent;
+	}*/
+
+	.cell-container.main-cell-container {
+		margin-left: 0;
+		padding-left: 1em;
+		padding-right: 1em;
+		transition: margin 400ms;
+		border-radius: 0.6em 0 0 0;
+	}
+
+	.cell-container.main-cell-container.browser-open {
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	.main-note-container {
+		position: relative;
+		height: calc( 100vh - #{ $outside-note-height } );
+	}
+
+	.full-note .main-note-container {
+		height: calc( 100vh - #{ $outside-note-height } );
+	}
+
+	.tabs-open .main-note-container {
+		height: calc( 100vh - #{ $title-bar-height * 2 } - 0.5em );
+	}
+
+	.full-note.tabs-open .main-note-container {
+		height: calc( 100vh - #{ $title-bar-height * 2 } );
+	}
+
+	.my-shelf-folders-outer {
+		height: calc( 100% - #{ $action-bar-height } - 1em );
+	}
+
+	.sidebar, .fixed-sidebar {
+		position: absolute;
+		top: 0;
+		z-index: 10;
+
+		.cell-container {
+			float: left;
+			overflow: hidden;
+		}
+	}
+
+	.sidebar {
+		left: 0;
+		margin-left: 4.2em;
+		transition: left 400ms;
+	}
+
+	.fixed-sidebar {
+		left: 0;
+		width: 4.2em;
+		z-index: 11;
+
+		.cell-container {
+			width: 100%;
+		}
+	}
+
+	.sidebar:after {
+		content: "";
+		display: block;
+		clear: both;
+	}
+
+	.resize-handler {
+		float: left;
+		height: calc( 100vh - #{ $title-bar-height } );
+		width: 4px;
+		cursor: col-resize;
+	}
+
+	.my-editor {
+		width: auto;
+		margin: 0 auto;
+		height: 100%;
+		position: relative;
+	}
+
+	.browser-open {
+		overflow: hidden;
+	}
+
+	.search-container {
+		width: 220px;
+	}
+}

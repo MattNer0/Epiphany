@@ -1,0 +1,29 @@
+::-webkit-scrollbar {
+	overflow: visible;
+	width: 0.5em;
+	height: 0.5em;
+}
+
+::-webkit-scrollbar-thumb {
+	background-clip: padding-box;
+	min-height: 1.4em;
+	padding: 0;
+	border-radius: 3px;
+}
+
+::-webkit-scrollbar-button {
+	height: 0;
+	width: 0;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+.CodeMirror-scroll::-webkit-scrollbar-track, .hljs::-webkit-scrollbar-track{
+	background: transparent;
+}

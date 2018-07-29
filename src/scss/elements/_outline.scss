@@ -1,0 +1,241 @@
+.my-editor-outline {
+
+	ul {
+		display: block;
+		padding-left: 1.5em;
+		margin: 0;
+	}
+
+	> div > ul {
+		margin-top: 0.9em;
+	}
+
+	li {
+		display: block;
+		position: relative;
+		padding: 0.2em;
+		margin: 0.1em 0;
+	}
+
+	li > .node-circle,
+	li > .node-close,
+	li > .node-open {
+		position: absolute;
+		cursor: pointer;
+		user-select: none;
+		text-align: center;
+	}
+
+	li > .node-circle {
+		top: 0.35em;
+		left: -1.2em;
+		background: #FFF;
+		border-radius: 1em;
+		line-height: 0.75em;
+		width: 1.05em;
+		height: 1.05em;
+		opacity: 0.6;
+		transition: opacity 0.3s;
+	}
+
+	li.with-children > .node-circle {
+		background: #CCC;
+	}
+
+	li > .node-circle:hover,
+	li.with-children > .node-circle:hover {
+		opacity: 1.0;
+		background: #AAA;
+	}
+
+	li > .node-close, li > .node-open {
+		top: 0.45em;
+		left: -2.2em;
+		background: #FFF;
+		border-radius: 1em;
+		line-height: 0.7em;
+		font-weight: bold;
+		font-size: 110%;
+		width: 1em;
+		height: 1em;
+		opacity: 0;
+		transition: opacity 0.4s;
+	}
+
+	li > .node-circle:hover + input + textarea + .node-close,
+	li > .node-circle:hover + input + textarea + .node-open,
+	li > input:hover + textarea + .node-close,
+	li > input:hover + textarea + .node-open,
+	li > textarea:hover + .node-close,
+	li > textarea:hover + .node-open,
+	li > .node-close:hover, li > .node-open:hover {
+		opacity: 1.0;
+	}
+
+	li > .node-circle:before {
+		content: "\e925";
+		font-family: 'iconcoon' !important;
+		speak: none;
+		font-style: normal;
+		font-weight: bold;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+		-webkit-font-smoothing: antialiased;
+		color: #444;
+		font-size: 50%;
+		display: inline-block;
+	}
+
+	li > textarea.node-content, li > ul {
+		display: none;
+	}
+
+	li.with-content > textarea.node-content {
+		display: block;
+	}
+
+	li.with-nested > ul {
+		display: block;
+	}
+
+	li.node.add-node {
+		margin: 0;
+
+		span {
+			opacity: 0.1;
+			cursor: pointer;
+
+			transition: opacity 0.3s;
+		}
+
+		span:hover {
+			opacity: 0.7;
+		}
+	}
+
+	input, textarea, *[contenteditable="true"] {
+		outline: none;
+		border: none;
+		display: block;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		font-size: inherit;
+	}
+
+	textarea {
+		resize: none;
+		height: 1.4em;
+		font-size: 85%;
+		color: #666;
+	}
+
+	input.h1 {
+		margin-bottom: 0.2em;
+	}
+
+	input.h2 {
+		font-size: 180%;
+		font-weight: bold;
+		margin-bottom: 0.2em;
+	}
+
+	.focus-outline {
+
+		> ul {
+			margin: 0;
+			padding: 0;
+		}
+
+		li, li.with-content, li.with-nested, li.add-node {
+			padding: 0;
+			margin: 0;
+
+			input, textarea, ul, span {
+				display: none;
+			}
+		}
+
+		li > .node-circle,
+		li > .node-close,
+		li > .node-open {
+			display: none;
+		}
+
+		li.zoom-parent > ul {
+			display: block;
+			padding: 0;
+		}
+
+		li.zoom-node {
+			li {
+				padding: 0.2em;
+				margin: 0.1em 0;
+
+				input {
+					display: block;
+				}
+			}
+
+			li.add-node {
+				margin: 0;
+
+				span {
+					display: block;
+				}
+			}
+		}
+
+		li.zoom-node.with-nested > ul, li.zoom-node li.with-nested > ul {
+			display: block;
+		}
+
+		li.zoom-node.with-content > textarea.node-content, li.zoom-node li.with-content > textarea.node-content {
+			display: block;
+		}
+
+		li.zoom-node li .node-circle,
+		li.zoom-node li .node-close,
+		li.zoom-node li .node-open {
+			display: block;
+		}
+	}
+
+	.breadcrumbs + input.h1 {
+		margin: 0;
+	}
+
+	.breadcrumbs + input.h1 + input.h1 {
+		margin: 0;
+	}
+
+	.breadcrumbs {
+		margin-bottom: 0.6em;
+
+		.crumb {
+			display: inline-block;
+			margin: 0 0.3em;
+		}
+
+		.crumb:before {
+			content: ">";
+			display: inline-block;
+			margin-right: 0.3em;
+		}
+
+		.crumb:first-child {
+			margin-left: 0;
+		}
+
+		.crumb:first-child:before {
+			content: "";
+			display: none;
+		}
+
+		.crumb:hover {
+			text-decoration: underline;
+			cursor: pointer;
+		}
+	}
+}

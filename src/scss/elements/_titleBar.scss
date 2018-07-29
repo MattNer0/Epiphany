@@ -1,0 +1,159 @@
+.title-bar {
+	width: 100%;
+	height: #{ $title-bar-height };
+
+	display: block;
+	position: relative;
+	padding: 0 0.1em;
+	margin: 0;
+	font-size: 14px;
+	font-weight: 500;
+	text-align: center;
+
+	-webkit-app-region: drag;
+
+	nav {
+		display: inline-block;
+		-webkit-app-region: no-drag;
+
+		ul {
+			-webkit-font-smoothing: antialiased;
+			list-style: none;
+
+			li {
+				padding: 0.1em 0.4em;
+				cursor: default;
+				-webkit-user-select: none;
+			}
+
+			/*li > a, li > div, li > span {
+				font-size: inherit;
+			}
+
+			li > a span {
+				display: block;
+			}*/
+		}
+
+		> ul {
+			height: #{ $title-bar-height };
+
+			/*> li > a, > li > div, > li > span {
+				padding-top: 0.8em;
+				padding-bottom: 0.6em;
+			}*/
+		}
+	}
+
+	.address-bar {
+		padding: 0.1em;
+		text-align: center;
+		-webkit-user-select: none;
+
+		span {
+			font-weight: bold;
+		}
+
+		.coon-chevron-right {
+			margin-top: 0.2em;
+			display: inline-block;
+		}
+
+		span:first-child > i {
+			margin-right: 0.2em;
+			margin-top: -0.1em;
+			display: inline-block;
+			vertical-align: middle;
+			font-size: 120%;
+		}
+	}
+
+	.menu-bar {
+		text-align: left;
+		display: block;
+	}
+
+	.system-icons {
+		display: inline-block;
+		position: absolute;
+		z-index: 10;
+		top: 0;
+		right: 0;
+
+		-webkit-app-region: no-drag;
+
+		.system-icon {
+			display: inline-block;
+			padding: 0.4em 0.2em 0em;
+			height: $title-bar-height;
+
+			transition: .3s cubic-bezier(.25,.8,.25,1);
+			vertical-align: middle;
+
+			-webkit-user-select: none;
+			cursor: pointer;
+
+			i {
+				padding: 0.2em 0.25em;
+				border-radius: 1em;
+				line-height: 1em;
+				text-align: center;
+			}
+		}
+
+		.system-icon.minimize i {
+			padding-top: 0.8em;
+		}
+
+		.system-icon.close-icon {
+			margin-right: 0;
+		}
+	}
+
+	.system-icons.darwin {
+		order: -1;
+		display: flex;
+
+		.system-icon {
+			border-radius: 100%;
+			width: 1.1em;
+			height: 1.1em;
+			margin-right: 0.4em;
+			margin-left: 0.4em;
+			background-color: #44CA45;
+		}
+		i {
+			opacity: 0;
+			background-color: transparent !important;
+			color: #444 !important;
+		}
+		.system-icon:hover i {
+			opacity: 1.0;
+		}
+		.system-icon.close-icon {
+			order: -1;
+			padding-top: 0.3em;
+			background-color: #F55D5C;
+		}
+		.system-icon.minimize {
+			background-color: #F8BC3A;
+		}
+	}
+
+	.menu-icon {
+		border-radius: 0.2em;
+		padding: 0 0.5em;
+		cursor: pointer;
+
+		i {
+			color: inherit;
+			font-size: 260%;
+			vertical-align: middle;
+		}
+	}
+
+	.my-dropdown-dd {
+		-webkit-app-region: no-drag;
+		z-index: 100;
+	}
+}

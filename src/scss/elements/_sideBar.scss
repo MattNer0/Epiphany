@@ -1,0 +1,108 @@
+.sidebar {
+	.sidebar-menu {
+		border-radius: $note-list-border-radius;
+		background: transparent;
+		position: static;
+		padding: 0.4em;
+		margin: 0.25em;
+
+		> span, > span span {
+			display: block;
+			position: static;
+		}
+
+		.link {
+			cursor: pointer;
+			-webkit-user-select: none;
+
+			i {
+				display: inline-block;
+				vertical-align: middle;
+				margin-top: -0.2em;
+				font-size: 100%;
+			}
+		}
+
+		i {
+			-webkit-user-select: none;
+		}
+
+		h5 {
+			padding-top: 0.2em;
+
+			i {
+				vertical-align: middle;
+				margin-top: 0.1em;
+				font-size: 120%;
+			}
+		}
+	}
+
+	.sidebar-menu.icon {
+		padding: 0 0.3em;
+		height: 100%;
+		cursor: pointer;
+
+		span {
+			display: inline-block;
+		}
+
+		i {
+			opacity: 0.4;
+			font-size: 140%;
+			margin-top: 0.3em;
+		}
+	}
+
+	.sidebar-menu.icon.active {
+		i {
+			opacity: 1.0;
+		}
+	}
+
+	.my-dropdown-dd {
+		z-index: 10;
+		min-width: 12em;
+	}
+
+	.dialog ul {
+		list-style: none;
+		margin: 0.2em;
+		padding: 0;
+
+		li > a, li > div {
+			box-sizing: border-box;
+			display: block;
+			padding: 0.34em 1.0em 0.2em 0.5em;
+			line-height: 1.8em;
+			height: 100%;
+			text-align: left;
+			outline: none;
+			text-decoration: none;
+			transition: all .25s ease;
+			-webkit-user-select: none;
+
+			i {
+				vertical-align: middle;
+				font-size: 120%;
+			}
+		}
+
+		li {
+			hr {
+				margin: 1.5em 0.5em 1.5em;
+			}
+
+			hr + span {
+				display: block;
+				margin: -2.3em 1em 0;
+				text-align: center;
+			}
+		}
+
+		li:hover > a,
+		li:hover > div {
+			cursor: pointer;
+		}
+	}
+}

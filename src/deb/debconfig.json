@@ -1,0 +1,21 @@
+{
+	"dest": "releases/linux/installer/",
+	"productName": "Epiphany",
+	"name": "Epiphany",
+	"genericName": "Text Editor",
+	"description": "Epiphany is a Journal to save and organize your ideas.",
+	"productDescription": "Epiphany is Journal to save and organize your ideas. Markdown Editor, Outliner, Local File Syncing.",
+	"bin": "Epiphany",
+	"icon": {
+		"16x16": "icons/epiphany.iconset/icon_16x16@1x.png",
+		"32x32": "icons/epiphany.iconset/icon_32x32@1x.png",
+		"64x64": "icons/epiphany.iconset/icon_32x32@2x.png",
+		"128x128": "icons/epiphany.iconset/icon_128x128@1x.png",
+		"256x256": "icons/epiphany.iconset/icon_256x256@1x.png",
+		"scalable": "dist/icon.png"
+	},
+	"categories": [ "Utility", "Office" ],
+	"mimeType": [ "text/markdown" ],
+	"desktopTemplate": "src/deb/desktop.ejs",
+	"lintianOverrides": [ "changelog-file-missing-in-native-package" ]
+}

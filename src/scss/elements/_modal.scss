@@ -1,0 +1,134 @@
+.modal-mask {
+	position: fixed;
+	z-index: 9998;
+	top: $title-bar-height;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	display: table;
+	transition: opacity .3s ease;
+
+	.modal-background {
+		display: block;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, .5);
+		z-index: -1;
+	}
+
+	.modal-wrapper {
+		display: table-cell;
+		vertical-align: middle;
+		width: 100%;
+	}
+
+	.modal-container {
+		width: 90%;
+		max-width: 45em;
+		margin: 0 auto;
+		padding: 1em;
+		border-radius: 2px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+		transition: all .2s ease;
+	}
+
+	.modal-container.modal-image {
+		background-color: transparent;
+		max-width: initial;
+		height: 88vh;
+		padding: 0;
+		box-shadow: none;
+
+		> div {
+			width: 100%;
+			height: 100%;
+			background-color: transparent;
+			background-position: center;
+			background-size: contain;
+			background-repeat: no-repeat;
+		}
+	}
+
+	.modal-field {
+		margin: 4px 0 4px 0;
+		font-weight: 600;
+	}
+	
+	.modal-container h3 {
+		font-size: 16px;
+		margin: 8px 0 0 0;
+	}
+
+	.modal-field-label {
+		display: block;
+	}
+
+	.modal-field-label + input {
+		width: 100%;
+		border-radius: 0.4em;
+		outline: none;
+		padding: 0.5em;
+	}
+
+	.modal-container p {
+		margin: 1em 0;
+	}
+
+	.modal-prompts {
+		margin: 0;
+	}
+
+	.modal-field {
+		margin: 4px 0 4px 0;
+		font-weight: 600;
+	}
+
+	.modal-field {
+		margin: 4px 0 4px 0;
+		font-weight: 600;
+	}
+
+	.modal-buttons {
+		display: block;
+		width: 100%;
+		overflow: auto;
+	}
+
+	.modal-button {
+		float: right;
+		margin: 0.1em;
+		height: 2em;
+		min-width: 6em;
+
+		border: none;
+		outline: none;
+
+		border-radius: 0.3em;
+		font-size: 100%;
+		font-weight: bold;
+		padding: 0.3em;
+		cursor: pointer;
+	}
+
+	.modal-enter, .modal-leave-active {
+		opacity: 0;
+	}
+
+	.modal-enter .modal-container,
+	.modal-leave-active .modal-container {
+		transform: scale(1.1);
+	}
+}
+
+.VuePassword {
+	height: 4.6em;
+
+	input {
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		padding-left: 0.5em;
+	}
+}

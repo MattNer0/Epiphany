@@ -1,0 +1,89 @@
+.main-note-container {
+	font-size: 100%;
+	margin: 0 auto;
+	width: auto;
+	min-width: 15em;
+	max-width: 75em;
+	font-family: $main-font-family;
+	line-height: 1.6em;
+	font-style: normal;
+	padding: 0;
+}
+
+.outer_wrapper .cell-container.main-cell-container.full-note {
+
+	.main-note-container {
+		max-width: 100%;
+		margin: 0 auto;
+	}
+
+	.noteBar nav, .tabs-bar > div {
+		max-width: 100%;
+	}
+}
+
+.my-editor-preview {
+	padding: 0.9em 4em 2.4em;
+	height: 100%;
+	overflow-y: scroll;
+
+	p, span {
+		font-size: inherit;
+	}
+}
+
+.my-editor > .codemirror-div {
+	height: 100%;
+}
+
+.CodeMirror {
+	.CodeMirror-sizer > div {
+		padding: 2em 4em;
+	}
+}
+
+.CodeMirror span.cm-piled-header-1,
+.my-editor-preview h1,
+.my-editor-outline input.h1 {
+	font-size: 180%;
+	font-weight: 700;
+	margin-top: 0.4em;
+	line-height: 1.4em;
+}
+
+.CodeMirror span.cm-piled-header-2,
+.my-editor-preview h2 {
+	font-size: 160%;
+	font-weight: 600;
+	line-height: 1.4em;
+}
+
+.CodeMirror span.cm-piled-header-3,
+.my-editor-preview h3 {
+	font-size: 130%;
+	line-height: 1.4em;
+	font-weight: 600;
+}
+
+.CodeMirror span.cm-piled-strong,
+.my-editor-preview strong {
+	font-weight: 800;
+}
+
+form.new-metadata-form {
+	input, select {
+		width: 100%;
+		max-width: 8em;
+		min-width: 5em;
+		height: 1.4em;
+		background-color: #FFF;
+		display: inline-block;
+		vertical-align: middle;
+		border: 1px solid #cacaca;
+	}
+}
+
+@import 'codeMirror';
+@import 'codePreview';
+@import 'outline';
+@import 'codeFontSize';

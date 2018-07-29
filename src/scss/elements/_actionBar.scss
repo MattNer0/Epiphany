@@ -1,0 +1,203 @@
+#action-bar {
+	height: $action-bar-height;
+	width: 100%;
+	-webkit-app-region: no-drag;
+	padding: 0;
+	margin: 0;
+	border: none;
+	overflow: visible;
+	position: relative;
+	z-index: 100;
+
+	nav {
+		height: 100%;
+	}
+}
+
+nav ul {
+	-webkit-font-smoothing: antialiased;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	transition: background-color .25s ease;
+}
+
+nav > ul:after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+nav > ul {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: center;
+
+	li {
+		display: block;
+		margin: 0;
+		padding: 0;
+
+		a i, div i{
+			user-select: none;
+			vertical-align: top;
+		}
+	}
+
+	li > a, li > div, li > span {
+		box-sizing: border-box;
+		display: block;
+		padding: 0.5em 0.5em 0.3em 0.45em;
+		text-align: left;
+		line-height: 1em;
+		outline: none;
+		text-decoration: none;
+		transition: all .25s ease;
+	}
+
+	li.center > a, li.center > div {
+		padding: 0.5em 0.5em 0.2em 0.5em;
+	}
+
+	li > a {
+		user-select: none;
+	}
+
+	li > a,
+	li > div,
+	li.has-sub {
+		cursor: pointer;
+	}
+
+	li hr {
+		margin: 0.2em 0.5em;
+	}
+
+	li.has-sub {
+		user-select: none;
+		width: 100%;
+
+		> span {
+			padding-left: 0;
+			padding-right: 0;
+			text-align: center;
+		}
+
+		.link > i {
+			margin-right: 0.2em;
+		}
+
+		> span, > span > span {
+			display: block;
+			height: 100%;
+		}
+
+		span.sub-text {
+			display: inline-block;
+		}
+	}
+
+	li ul {
+		width: 15em;
+		margin: 0.2em;
+
+		li {
+			margin: 0.4em 0;
+		}
+	}
+}
+
+.right-align nav > ul {
+	justify-content: flex-end;
+}
+
+.my-search {
+	padding: 0 0.5em;
+	text-align: center;
+	position: relative;
+
+	i {
+		font-size: 150%;
+		vertical-align: middle;
+	}
+
+	i:last-child {
+		position: absolute;
+		cursor: pointer;
+		right: 0.7em;
+		top: 0.37em;
+		z-index: 4;
+	}
+
+	input[type=text] {
+		display: inline-block;
+		vertical-align: middle;
+		text-align: left;
+		font-size: 15px;
+		line-height: 1.2em;
+		outline: none;
+
+		width: 100%;
+		transition: width 200ms, margin 200ms;
+
+		border-radius: $address-bar-border-radius;
+		padding: 0.4em 2.2em 0.4em 0.4em;
+		margin: 0.2em 0 0.3em;
+	}
+}
+
+.popup-simple {
+	form {
+		width: 100%;
+		padding-left: 2em;
+		padding-right: 2em;
+	}
+
+	.my-search {
+		padding-left: 0;
+		padding-right: 0;
+
+		input[type=text] {
+			width: 100%;
+			border: 1px solid transparent;
+		}
+
+		input.error[type=text] {
+			border: 1px solid #e65c5c;
+		}
+
+		i {
+			font-size: 120%;
+			vertical-align: middle;
+		}
+	
+		i:last-child {
+			position: absolute;
+			cursor: pointer;
+			right: 0.4em;
+			top: 0.4em;
+			z-index: 4;
+		}
+	}
+}
+
+.my-buttons {
+	margin-top: 1em;
+	text-align: right;
+
+	.my-button {
+		display: inline-block;
+		margin: 0 0.5em;
+
+		button {
+			border: none;
+			border-radius: 0.3em;
+			cursor: pointer;
+			padding: 0.5em 2em;
+			min-width: 7em;
+		}
+	}
+}

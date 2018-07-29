@@ -1,0 +1,92 @@
+.tabs-bar {
+	height: $title-bar-height;
+
+	> div {
+		min-width: 15em;
+		max-width: 75em;
+		height: 100%;
+		margin: 0 auto;
+		font-size: 100%;
+	}
+
+	.tab {
+		position: relative;
+		z-index: 6;
+		opacity: 0.9;
+		display: inline-block;
+		text-align: left;
+		min-width: 5em;
+		max-width: 15em;
+		padding: 0.3em 3em 0.3em 1.4em;
+		margin: 0;
+		margin-left: -1.3em;
+		cursor: pointer;
+
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+
+		-webkit-user-select: none;
+	}
+
+	.tab:after {
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: -0.6em;
+		z-index: -1;
+		border-bottom-left-radius: 8px;
+		border-bottom-right-radius: 8px;
+		border: 2px solid;
+		border-top: 0;
+		content: "";
+		-webkit-transition: all .2s ease;
+		-o-transition: all .2s ease;
+		transition: all .2s ease;
+		-webkit-transform: perspective(5px) rotateX(-2deg);
+		-webkit-transform-origin: top;
+		-moz-transform: perspective(5px) rotateX(-2deg);
+		-moz-transform-origin: top;
+		transform: perspective(5px) rotateX(-2deg);
+		transform-origin: top;
+	}
+
+	i {
+		font-size: inherit;
+		vertical-align: middle;
+		display: inline-block;
+		margin-top: -0.3em;
+		font-size: 120%;
+		opacity: 0.8;
+	}
+
+	i.close {
+		position: absolute;
+		top: 0.2em;
+		right: 0.8em;
+		padding: 0.4em 0.3em 0.4em;
+		border-radius: 1em;
+		opacity: 0.3;
+
+		transition: opacity 200ms;
+	}
+
+	i.close:hover {
+		opacity: 1.0;
+	}
+
+	.tab.selected {
+		opacity: 1.0;
+		z-index: 7;
+	}
+}
+
+.tabs-open {
+	.my-editor-preview {
+		height: calc( 100vh - #{ $title-bar-height * 3 } - 0.5em );
+	}
+	.main-note-container {
+		margin-top: 0;
+	}
+}

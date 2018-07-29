@@ -1,0 +1,193 @@
+<main id="main-editor">
+	<title-bar
+		:reduce-to-tray="reduceToTray"
+		:is-full-screen="isFullScreen"
+		:show-menu-bar="true"
+		:notes-display-order="notesDisplayOrder"
+		:is-toolbar-enabled="isToolbarEnabled"
+		:is-full-width-note="isFullWidthNote"
+		:current-theme="currentThemeAsString"
+		:show-hidden="showHidden"
+		:library-path="libraryPath">
+	</title-bar>
+	<div class="my-main">
+		<div class="outer_wrapper">
+			<div class="fixed-sidebar">
+				<div v-show="loadedRack" class="cell-container" ref="sidebarBuckets" @contextmenu="bucketsMenu()">
+					<div class="my-shelf">
+						<buckets-special
+							:buckets="racks"
+							:selected-bucket="selectedRack"
+							:is-full-screen="isFullScreen"
+							:toggle-full-screen="toggleFullScreen"
+							:show-history="showHistory"
+							:show-search="showSearch">
+						</buckets-special>
+						<buckets
+							:buckets="racks"
+							:selected-bucket="selectedRack"
+							:dragging-bucket="draggingRack"
+							:dragging-folder="draggingFolder"
+							:dragging-note="draggingNote"
+							:change-bucket="changeRack"
+							:editing-folder="editingFolder"
+							:is-full-screen="isFullScreen"
+							:original-name-bucket="originalNameRack"
+							:search="search"
+							:show-hidden="showHidden"
+							ref="refBuckets">
+						</buckets>
+						<!--buckets-menu
+							:show-settings="showSettings"
+							:is-full-screen="isFullScreen">
+						</buckets-menu-->
+					</div>
+				</div>
+			</div>
+			<div class="sidebar">
+				<div v-show="showSearch" class="cell-container search-container" ref="sidebarSearch">
+					<div class="my-shelf">
+						<div class="my-shelf-rack">
+							<search-bar
+								:search="search">
+							</search-bar>
+							<folders
+								v-if="searchRack"
+								:parent-folder="searchRack"
+								:selected-note="selectedNote"
+								:selected-folder="selectedFolder"
+								:dragging-folder="draggingFolder"
+								:dragging-note="draggingNote"
+								:change-bucket="changeRack"
+								:change-folder="changeFolder"
+								:editing-folder="editingFolder"
+								:search="search">
+							</folders>
+						</div>
+					</div>
+				</div>
+				<div v-show="selectedRack && selectedRack != quick_notes_bucket" class="cell-container" ref="sidebarFolders" @contextmenu="foldersMenu()">
+					<div class="my-shelf-banner">Folders</div>
+					<div class="my-shelf-folders-outer">
+						<folders-special
+							v-if="selectedRack"
+							:bucket="selectedRack"
+							:show-all="showAll"
+							:show-favorites="showFavorites"
+							:dragging-folder="draggingFolder"
+							:search="search">
+						</folders-special>
+						<folders
+							v-if="selectedRack"
+							:parent-folder="selectedRack"
+							:selected-note="selectedNote"
+							:selected-folder="selectedFolder"
+							:dragging-folder="draggingFolder"
+							:dragging-note="draggingNote"
+							:change-bucket="changeRack"
+							:change-folder="changeFolder"
+							:editing-folder="editingFolder"
+							:search="search">
+						</folders>
+					</div>
+				</div>
+				<handler-stack
+					v-show="selectedRack"
+					:sidebar-drag="sidebarDrag"
+					:sidebar-drag-end="sidebarDragEnd"
+					ref="refHandleStack">
+				</handler-stack>
+				<div v-show="selectedFolder || showAll || showFavorites || showHistory" class="cell-container" ref="sidebarNotes">
+					<div class="my-shelf-banner" v-show="selectedFolder && !showSearch">Notes
+						<add-note
+							:selected-folder="selectedFolder"
+							:selected-rack="selectedRack">
+						</add-note>
+					</div>
+					<div class="my-shelf-notes" :class="{ 'expand-notes': showAll || showFavorites || showHistory || showSearch }" ref="refNotes">
+						<notes
+							v-show="selectedRack || showHistory || showSearch"
+							:notes="filteredNotes"
+							:toggle-full-screen="toggleFullScreen"
+							:original-notes="notes"
+							:show-history="showHistory"
+							:show-search="showSearch"
+							:selected-note="selectedNote"
+							:selected-rack="selectedRack"
+							:selected-folder="selectedFolder"
+							:dragging-note="draggingNote"
+							:change-note="changeNote"
+							:set-dragging-note="setDraggingNote"
+							:notes-display-order="notesDisplayOrder">
+						</notes>
+					</div>
+				</div>
+				<handler-notes
+					v-show="selectedFolder || showAll || showFavorites || showHistory"
+					:sidebar-drag="sidebarDrag"
+					:sidebar-drag-end="sidebarDragEnd"
+					ref="refHandleNote">
+				</handler-notes>
+			</div>
+			<div class="cell-container main-cell-container" :class="mainCellClass">
+				<tabs-bar
+					:current-note="selectedNote"
+					:tabs-array="noteTabs"
+				></tabs-bar>
+				<note-menu
+					v-if="isNoteSelected || isOutlineSelected"
+					:note="selectedNote"
+					:is-full-screen="isFullScreen"
+					:is-toolbar-enabled="isToolbarEnabled"
+					:is-note-selected="isNoteSelected"
+					:is-outline-selected="isOutlineSelected"
+					:is-preview="isPreview"
+					:use-monospace="useMonospace"
+					:fontsize="fontsize"
+					:toggle-preview="togglePreview"
+					:send-flash-message="sendFlashMessage">
+				</note-menu>
+				<theme-menu
+					v-else-if="isThemeSelected"
+					:theme="editTheme"
+					:is-toolbar-enabled="isToolbarEnabled">
+				</theme-menu>
+				<div v-if="showNoteContainer" class="main-note-container">
+					<div class="my-editor" ref="myEditor">
+						<outline
+							v-if="isOutlineSelected"
+							:outline-note="selectedNote">
+						</outline>
+						<theme-editor
+							v-else-if="isThemeSelected"
+							:theme="editTheme">
+						</theme-editor>
+						<template v-else>
+							<codemirror
+								v-show="!isPreview && isNoteSelected"
+								:note="selectedNote"
+								:is-full-screen="isFullScreen"
+								:is-preview="isPreview"
+								:toggle-preview="togglePreview"
+								:search="search"
+								:use-monospace="useMonospace"
+								ref="refCodeMirror">
+							</codemirror>
+							<div v-show="isPreview && isNoteSelected" class="my-editor-preview" @contextmenu.prevent.stop="previewMenu()">
+								<div v-html="preview">
+								</div>
+							</div>
+						</template>
+					</div>
+				</div>
+				<note-footer
+					v-if="isNoteSelected && !isOutlineSelected"
+					v-show="!isPreview && isToolbarEnabled"
+					ref="refNoteFooter">
+				</note-footer>
+				<flashmessage :messages="messages"></flashmessage>
+			</div>
+		</div>
+	</div>
+	<modal ref="dialog"></modal>
+</main>

@@ -1,0 +1,43 @@
+.flashmessage-list {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-end;
+
+	position: absolute;
+	bottom: 0.5em;
+	right: 0.5em;
+	z-index: 100;
+	background: transparent;
+}
+
+.flashmessage-message {
+	padding: 0.5em;
+	margin: 0.5em;
+	transition: all 0.3s ease;
+	vertical-align: middle;
+	overflow-y: hidden;
+	cursor: default;
+	opacity: 0.8;
+
+	a {
+		color: inherit;
+		background-color: transparent;
+		text-decoration: none;
+	}
+}
+
+.flashmessage-message-enter, .flashmessage-message-leave-active {
+	color: transparent;
+	padding: 0 0.5em;
+	height: 0;
+}
+
+.flashmessage-info {
+	background-color: rgb(74, 122, 136) !important;
+	color: #FFF !important;
+}
+
+.flashmessage-error {
+	background-color: rgb(200, 100, 100) !important;
+	color: #FFF !important;
+}

@@ -1,0 +1,100 @@
+$main-font-size: 14px;
+$main-font-family: "Roboto";
+$monospace-font-family: "RobotoMono";
+
+$title-bar-height: 2em;
+
+$address-bar-border-radius: 0.2em;
+
+$action-bar-height: 2em;
+$note-bar-height: 2em;
+$note-bar-height-md: 3em;
+
+$tab-selected-margin: 0.3em;
+
+$folder-list-border-radius: 0.2em;
+
+$splash-border-radius: 0.2em;
+
+$note-list-border-radius: 0.2em;
+
+$outside-note-height: #{ $title-bar-height + $note-bar-height*2 };
+$outside-note-height-md: #{ $title-bar-height + $note-bar-height + $note-bar-height-md };
+
+/* roboto */
+
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 700;
+	src: local('Roboto Bold'), local('Roboto-Bold'), url(../fonts/Roboto/Roboto-Bold.woff2) format('woff2');
+}
+
+@font-face {
+	font-family: 'Roboto';
+	font-style: italic, oblique;
+	src: local('Roboto Italic'), local('Roboto-Italic'), url(../fonts/Roboto/Roboto-Italic.woff2) format('woff2');
+}
+
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Roboto'), local('Roboto-Regular'), url(../fonts/Roboto/Roboto-Regular.woff2) format('woff2');
+}
+
+/* roboto mono */
+
+@font-face {
+	font-family: 'RobotoMono';
+	font-style: normal;
+	font-weight: 700;
+	src: local('RobotoMono Bold'), local('RobotoMono-Bold'), url(../fonts/RobotoMono/RobotoMono-Bold.woff2) format('woff2');
+}
+
+@font-face {
+	font-family: 'RobotoMono';
+	font-style: italic, oblique;
+	src: local('RobotoMono Italic'), local('RobotoMono-Italic'), url(../fonts/RobotoMono/RobotoMono-Italic.woff2) format('woff2');
+}
+
+@font-face {
+	font-family: 'RobotoMono';
+	font-style: normal;
+	font-weight: 400;
+	src: local('RobotoMono'), local('RobotoMono-Regular'), url(../fonts/RobotoMono/RobotoMono-Regular.woff2) format('woff2');
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: $main-font-family;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+}
+
+html, body, h1, h2, h3, h4, h5, p, span, input, textarea {
+	font-size: $main-font-size;
+	font-family: $main-font-family;
+}
+
+//@import 'materialIcons';
+@import 'highlight';
+@import 'elements/tooltip';
+@import 'elements/body';
+@import 'elements/tabsBar';
+@import 'elements/scrollbar';
+@import 'elements/titleBar';
+@import 'elements/actionBar';
+@import 'elements/noteBar';
+@import 'elements/openNote';
+@import 'elements/themeEditor';
+@import 'elements/notesList';
+@import 'elements/foldersList';
+@import 'elements/sideBar';
+@import 'elements/flashMessage';
+@import 'elements/modal';
+
+div, input, svg {
+	box-sizing: border-box;
+}
