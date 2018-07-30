@@ -953,6 +953,9 @@ var appVue = new Vue({
 				self.changeFolder(folder);
 			}
 
+			this.showHistory = false;
+			this.showSearch = false;
+
 			if (!this.quick_notes_bucket) {
 				this.quick_notes_bucket = new models.Rack({
 					name: "_quick_notes",
