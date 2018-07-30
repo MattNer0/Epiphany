@@ -4,6 +4,7 @@
 			:class="classBucket(bucket)"
 			:draggable="editingFolder === null && !bucket.trash_bin ? 'true' : 'false'"
 			v-tooltip="{ 'content': bucket.name, 'placement': 'left' }"
+			v-show="bucket.allnotes.length > 0 || !bucket.quick_notes"
 			@dragstart.stop="rackDragStart($event, bucket)"
 			@dragend.stop="rackDragEnd()"
 			@dragover="rackDragOver($event, bucket)"
@@ -249,6 +250,7 @@
 						this.newBucket();
 					}
 				}));
+
 				if (!bucket.trash_bin && !bucket.quick_notes) {
 					/*menu.append(new MenuItem({
 						label: 'Set Bucket Thumbnail',
