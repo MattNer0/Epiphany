@@ -5,7 +5,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var isProduction = process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'production';
 
-const { VueLoaderPlugin } = require('vue-loader')
+const { VueLoaderPlugin } = require('vue-loader');
 
 var webpackPlugins = [
 	new webpack.DefinePlugin({

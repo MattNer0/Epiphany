@@ -16,6 +16,7 @@ var appIcon = null;
 var DARWIN_ALL_CLOSED_MENU;
 
 var DEBUG = false;
+if (process.env.NODE_ENV == "development") DEBUG = true;
 
 // support for portable mode
 app.setPath(
