@@ -59,7 +59,7 @@ gulp.task('electron-windows', function(done) {
 	var c = _.defaults(_.clone(BASE_OPTION), {
 		out: './releases/windows/',
 		platform: 'win32',
-		icon: './icons/pilemd.ico'
+		icon: './icons/epiphany.ico'
 	});
 	// c['arch'] = 'ia32';
 	packager(c).then((appPaths) => {
