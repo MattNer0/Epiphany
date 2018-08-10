@@ -1,6 +1,6 @@
 # Epiphany
 
-*Epiphany is a Digital Journal to save and organize your ideas.*
+*Epiphany is a Digital Journal to write down and organize your ideas.*
 *Markdown Editor, Outliner, Local File Syncing.*
 
 ---

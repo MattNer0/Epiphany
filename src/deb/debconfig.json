@@ -3,8 +3,8 @@
 	"name": "epiphany-journal",
 	"productName": "Epiphany",
 	"genericName": "Text Editor",
-	"description": "Epiphany is a Journal to save and organize your ideas.",
-	"productDescription": "Epiphany is Journal to save and organize your ideas. Markdown Editor, Outliner, Local File Syncing.",
+	"description": "Epiphany is a Digital Journal to write down and organize your ideas.",
+	"productDescription": "Epiphany is a Digital Journal to write down and organize your ideas.",
 	"homepage": "https://github.com/MattNer0/epiphany",
 	"bin": "Epiphany",
 	"icon": {
