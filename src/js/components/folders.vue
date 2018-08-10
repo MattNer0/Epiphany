@@ -93,7 +93,8 @@
 		methods: {
 			classFolder(folder) {
 				return {
-					'isShelfSelected': (this.selectedFolder == folder && !this.isDraggingNote) || folder.dragHover,
+					'isShelfSelected': (this.selectedFolder == folder && !this.isDraggingNote && !this.editingFolder) || folder.dragHover,
+					'isShelfEditing' : !this.isDraggingNote && this.editingFolder == folder.uid,
 					'gotSubfolders'  : folder.folders && folder.folders.length > 0,
 					'openFolder'     : folder.openFolder,
 					'noteDragging'   : this.isDraggingNote,

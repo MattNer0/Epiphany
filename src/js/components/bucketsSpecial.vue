@@ -2,12 +2,12 @@
 	.my-shelf-buckets(v-if="buckets.length > 0", @contextmenu.prevent.stop="")
 		.my-shelf-rack(
 			:class="{ 'isShelfSelected' : showSearch && !isFullScreen }"
-			v-tooltip="{ 'content': 'Search', 'placement': 'left' }")
+			v-tooltip="{ 'content': 'Search', 'placement': 'left', 'boundariesElement': 'body' }")
 			.rack-object.bucket-special(@click="openSearch()")
 				a: i.rack-icon.coon-search
 		.my-shelf-rack(
 			:class="{ 'isShelfSelected' : showHistory && !isFullScreen }"
-			v-tooltip="{ 'content': 'History', 'placement': 'left' }")
+			v-tooltip="{ 'content': 'History', 'placement': 'left', 'boundariesElement': 'body' }")
 			.rack-object.bucket-special(@click="openHistory()")
 				a: i.rack-icon.coon-clock
 </template>

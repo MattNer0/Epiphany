@@ -84,6 +84,9 @@
 	top: 0;
 	z-index: 10;
 
+	user-select: none;
+	cursor: default;
+
 	.link {
 		float: right;
 		cursor: pointer;
@@ -108,16 +111,6 @@
 	white-space: nowrap;
 
 	-webkit-user-select: none;
-
-	input {
-		width: 80%;
-		font-size: inherit;
-		padding: 0;
-		margin: 0;
-		background: transparent;
-		outline: none;
-		border: 0;
-	}
 }
 
 .folder-object {
@@ -136,6 +129,16 @@
 		outline: none;
 		transition: all .4s;
 		opacity: 0.5;
+	}
+
+	input {
+		width: 100%;
+		font-size: inherit;
+		padding: 0;
+		margin: 0;
+		background: transparent;
+		outline: none;
+		border: 0;
 	}
 }
 
