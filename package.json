@@ -1,8 +1,8 @@
 {
 	"name": "epiphany",
 	"productName": "Epiphany",
-	"version": "0.1.2",
-	"description": "",
+	"version": "0.1.3",
+	"description": "Epiphany is a Digital Journal to write down and organize your ideas.",
 	"main": "./dist/main.js",
 	"dependencies": {
 		"autosize": "4.0.2",

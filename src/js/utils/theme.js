@@ -241,9 +241,11 @@ function style_object(obj) {
 					color: obj["folder-selected-color"]
 				}
 			},
-			".my-shelf-rack.isShelfSelected > .rack-object" : {
+			".my-shelf-folder.isShelfEditing > .folder-object" : {
+				backgroundColor: obj["sidebar-background-hover"],
+				color: obj["folder-selected-color"],
 				"& input" : {
-					backgroundColor: obj["sidebar-background-selected"],
+					color: obj["folder-selected-color"]
 				}
 			},
 			".my-shelf-rack .rack-object:hover a, .my-shelf-rack.isShelfSelected > .rack-object a" : {
