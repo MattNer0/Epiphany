@@ -99,6 +99,11 @@
 						.properties-dialog(@click="close_properties")
 							table
 								tr
+									td: strong Path: 
+									td.right: span(style="white-space: pre;") {{ note.relativePathNoFileName }}
+							hr
+							table
+								tr
 									td: strong Line Count: 
 									td.right: span {{ note.properties.lineCount }}
 								tr

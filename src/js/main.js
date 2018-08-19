@@ -151,7 +151,9 @@ var appVue = new Vue({
 		 */
 		filteredNotes() {
 			if (this.selectedFolder) {
-				return searcher.searchNotes(this.search, this.selectedFolder.notes);
+				var notes = searcher.searchNotes(this.search, this.selectedFolder.notes);
+				if (this.showSearch && notes.length == 0) this.changeFolder(null);
+				return notes;
 			} else if (this.selectedRack && this.showAll) {
 				return searcher.searchNotes(this.search, this.selectedRack.allnotes);
 			} else if (this.selectedRack && this.showFavorites) {
@@ -632,7 +634,7 @@ var appVue = new Vue({
 		},
 		changeFolder(folder, weak) {
 			if (weak && folder && (this.showAll || this.showFavorites) && this.selectedRack == folder.rack) return;
-			if (this.selectedFolder === null && folder) this.update_editor_size();
+			if ((this.selectedFolder === null && folder) || (this.selectedFolder && folder === null)) this.update_editor_size();
 			this.editingFolder = null;
 			this.originalNameRack = "";
 
@@ -1546,9 +1548,6 @@ var appVue = new Vue({
 			if (!this.showHidden && this.selectedRack !== null && this.selectedRack.hidden) {
 				this.changeRack(null);
 			}
-		},
-		showSearch() {
-			this.search = "";
 		},
 		keepHistory() {
 			settings.set('keepHistory', this.keepHistory);

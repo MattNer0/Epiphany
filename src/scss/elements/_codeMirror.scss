@@ -131,6 +131,10 @@
 		font-weight: 800;
 		font-family: monospace;
 	}
+
+	.cm-searching {
+		border: 1px solid rgba(195, 195, 92, 0.5);
+	}
 }
 
 .CodeMirror-focused .CodeMirror-selected { background: #add5ff; }
@@ -144,7 +148,7 @@
 .CodeMirror-dialog.CodeMirror-dialog-bottom {
 	position: absolute;
 	left: 0;
-	top: 0;
+	bottom: 0;
 	width: 100%;
 	padding: 0.4em;
 	line-height: 1.5em;

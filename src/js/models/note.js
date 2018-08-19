@@ -171,14 +171,18 @@ class Note extends Model {
 	}
 
 	get relativePath() {
-		return this.path.replace(Library.baseLibraryPath+'/', '');
+		return this.path.replace(Library.baseLibraryPath+"/", "");
+	}
+
+	get relativePathNoFileName() {
+		return this.relativePath.replace("/"+path.basename(this._path), " ").replace(/\//g,"/\n");
 	}
 
 	get document_filename() {
 		if (this._trashed) {
 			return util_file.cleanFileName(this._name);
 		}
-		return this.title ? util_file.cleanFileName(this.title) : '';
+		return this.title ? util_file.cleanFileName(this.title) : "";
 	}
 
 	get body() {

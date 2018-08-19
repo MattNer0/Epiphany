@@ -21,10 +21,12 @@
 	const IMAGE_TAG_TEMP = _.template('![<%- filename %>](<%- fileurl %>)\n');
 
 	require('codemirror/lib/codemirror.css');
+	require('codemirror/addon/search/matchesonscrollbar.css');
 
 	import CodeMirror from "codemirror";
 
 	require('codemirror/addon/search/searchcursor');
+	require('codemirror/addon/search/matchesonscrollbar');
 	require('../codemirror/piledsearch');
 	require('codemirror/addon/edit/closebrackets');
 	require('codemirror/addon/mode/overlay');
@@ -199,7 +201,6 @@
 							menu.append(new MenuItem({
 								label: 'Open Link In Browser',
 								click: () => {
-									console.log(s);
 									shell.openExternal(s)
 								}
 							}));
@@ -246,6 +247,7 @@
 				}
 
 				this.initFooter();
+				this.runSearch();
 			},
 			initFooter() {
 				if (this.$root.$refs.refNoteFooter) {
@@ -308,7 +310,7 @@
 			runSearch() {
 				if (this.note && this.search && this.search.length > 1) {
 					this.$nextTick(() => {
-						CodeMirror.commands.setSearch(this.cm, this.search);
+						CodeMirror.commands.setSearch(this.cm, this.search.toLowerCase());
 					});
 				} else {
 					CodeMirror.commands.undoSearch(this.cm);
@@ -351,14 +353,10 @@
 			note(value) {
 				if (!value || !value.title || !this.cm) return;
 
+				this.cm.scrollTo(0,0);
 				this.cm.getDoc().setValue(value.body);
 				this.initFooter();
-
-				Vue.nextTick(() => {
-					if (this.search && this.search.length > 1) {
-						this.runSearch();
-					}
-				});
+				this.runSearch();
 			},
 			search() {
 				this.runSearch();

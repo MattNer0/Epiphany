@@ -13,7 +13,8 @@
 			};
 		},
 		props: {
-			'search' : String
+			'search'    : String,
+			'showSearch': Boolean
 		},
 		mounted() {
 			this.mysearch = this.search;
@@ -30,6 +31,13 @@
 		watch: {
 			mysearch() {
 				this.$root.search = this.mysearch;
+			},
+			showSearch(value) {
+				if (!value) {
+					this.$root.search = "";
+				} else if (this.mysearch) {
+					this.$root.search = this.mysearch;
+				}
 			}
 		}
 	}
