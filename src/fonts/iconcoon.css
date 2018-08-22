@@ -2,8 +2,8 @@
   font-family: 'iconcoon';
   src:
     url('coon/iconcoon.ttf?kywj38') format('truetype'),
-    url('coon/iconcoon.woff?kywj38') format('woff'),
-    url('coon/iconcoon.svg?kywj38#iconcoon') format('svg');
+    url('coon/iconcoon.woff?kywj38') format('woff');
+    /*url('coon/iconcoon.svg?kywj38#iconcoon') format('svg');*/
   font-weight: normal;
   font-style: normal;
 }
@@ -23,6 +23,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.coon-file-star:before {
+  content: "\e95c";
+}
 .coon-lens:before {
   content: "\e925";
 }
@@ -58,6 +61,9 @@
 }
 .coon-archive:before {
   content: "\e92b";
+}
+.coon-at-sign:before {
+  content: "\e95d";
 }
 .coon-award:before {
   content: "\e92c";
@@ -140,6 +146,9 @@
 .coon-film:before {
   content: "\e937";
 }
+.coon-filter:before {
+  content: "\e95e";
+}
 .coon-flag:before {
   content: "\e938";
 }
@@ -179,6 +188,9 @@
 .coon-info:before {
   content: "\e90c";
 }
+.coon-link:before {
+  content: "\e95f";
+}
 .coon-list:before {
   content: "\e90d";
 }
@@ -194,11 +206,17 @@
 .coon-map-pin:before {
   content: "\e940";
 }
+.coon-maximize-2:before {
+  content: "\e960";
+}
 .coon-menu:before {
   content: "\e90f";
 }
 .coon-message-circle:before {
   content: "\e941";
+}
+.coon-minimize-2:before {
+  content: "\e961";
 }
 .coon-minus:before {
   content: "\e927";
@@ -298,4 +316,10 @@
 }
 .coon-zap:before {
   content: "\e953";
+}
+.coon-zoom-in:before {
+  content: "\e962";
+}
+.coon-zoom-out:before {
+  content: "\e963";
 }

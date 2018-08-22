@@ -16,6 +16,7 @@
 				h5.my-notes-note-title(v-if="note.title")
 					i.coon-lock(v-if="note.isEncryptedNote && note.isEncrypted")
 					i.coon-unlock(v-else-if="note.isEncryptedNote && !note.isEncrypted")
+					i.coon-file-star(v-else-if="note.starred")
 					i.coon-file-outline(v-else-if="note.isOutline")
 					i.coon-file-text(v-else)
 					| {{ note.title }}
