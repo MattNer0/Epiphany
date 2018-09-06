@@ -376,7 +376,7 @@ var appVue = new Vue({
 
 			if (this.keepHistory && this.notes.length > 1) {
 				this.notesHistory = arr.sortBy(this.notes.filter(function(obj) {
-					return !obj.isEncrypted;
+					return !obj.isEncrypted && !obj.rack.trash_bin;
 				}), 'updatedAt').slice(0,10);
 			}
 
