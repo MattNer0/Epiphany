@@ -300,7 +300,7 @@ class Note extends Model {
 		this.body = this.body.replace(/coonpad:\/\//mg,"epiphany://");
 		this.body = this.body.replace(/pilemd:\/\//mg,"epiphany://");
 		this.body = this.body.replace(
-			/!\[(.*?)]\((https?:\/\/.*?)\)/img,
+			/!\[([^\]]*?)]\((https?:\/\/.*?)\)/img,
 			(match, p1, p2) => {
 				var file_data = util_file.getFileDataFromUrl(p2);
 				if (file_data.extname && imageFormats.indexOf(file_data.extname) >= 0) {
