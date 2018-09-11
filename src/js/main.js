@@ -225,8 +225,8 @@ var appVue = new Vue({
 			this.modalShow = true;
 		});
 
-		// hey, this is the first time.
 		if (!models.getBaseLibraryPath()) {
+			// hey, this is the first time.
 			models.setLibraryToInitial();
 
 			settings_baseLibraryPath = models.getBaseLibraryPath();
@@ -375,7 +375,7 @@ var appVue = new Vue({
 			elosenv.console.log("Loaded all notes in the library.");
 
 			if (this.keepHistory && this.notes.length > 1) {
-				this.notesHistory = arr.sortBy(this.notes.filter(function(obj) {
+				this.notesHistory = arr.sortBy(this.notes.filter((obj) => {
 					return !obj.isEncrypted && !obj.rack.trash_bin;
 				}), 'updatedAt').slice(0,10);
 			}
@@ -587,7 +587,7 @@ var appVue = new Vue({
 			}
 
 			if (rack !== null && this.quick_notes_bucket == rack) {
-				var newNoteFolder = this.quick_notes_bucket.folders.filter(function(obj) {
+				var newNoteFolder = this.quick_notes_bucket.folders.filter((obj) => {
 					return obj.name == "New Notes";
 				});
 				this.selectedRack = rack;

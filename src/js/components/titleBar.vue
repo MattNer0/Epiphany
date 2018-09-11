@@ -140,7 +140,7 @@
 					label: 'Dark',
 					checked: this.currentTheme == 'dark',
 					click: () => {
-						this.$root.currentTheme = "dark";
+						this.$root.setCustomTheme("dark");
 					}
 				}));
 				themes_submenu.append(new MenuItem({
@@ -148,7 +148,7 @@
 					label: 'Arc Dark',
 					checked: this.currentTheme == 'arc-dark',
 					click: () => {
-						this.$root.currentTheme = "arc-dark";
+						this.$root.setCustomTheme("arc-dark");
 					}
 				}));
 				themes_submenu.append(new MenuItem({type: 'separator'}));
