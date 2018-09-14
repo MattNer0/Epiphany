@@ -1,5 +1,5 @@
 import path from "path";
-import libini from "./utils/libini";
+import jsonDataFile from "./utils/jsonDataFile";
 
 import Library from "./models/library";
 var baseLibrary = new Library();
@@ -39,7 +39,7 @@ export default {
 		return baseLibrary.baseLibraryPath && baseLibrary.doesLibraryExists();
 	},
 	resetHistory() {
-		libini.removeKey(baseLibrary.baseLibraryPath, 'history');
+		jsonDataFile.removeKey(path.join(baseLibrary.baseLibraryPath, ".library.json"), "history");
 	},
 	setLibraryToInitial() {
 		baseLibrary.baseLibraryPath = baseLibrary.initialLibrary();

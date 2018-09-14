@@ -1,8 +1,7 @@
 import fs from "fs";
 import path from "path";
-import moment from "moment";
 import searcher from "../searcher";
-import arr from "../utils/arr";
+import jsonDataFile from "../utils/jsonDataFile";
 import util_file from "../utils/file";
 import Model from "./baseModel";
 
@@ -13,15 +12,7 @@ class Folder extends Model {
 		super(data);
 
 		this.name = data.name.replace(/^\d+\. /, "") || '';
-		this.ordering = false;
-
-		if (data.load_ordering && fs.existsSync(path.join(data.path, '.folder'))) {
-			this.ordering = parseInt(fs.readFileSync(path.join(data.path, '.folder')).toString());
-		}
-
-		if (this.ordering === false || isNaN(this.ordering)) {
-			this.ordering = data.ordering || 0;
-		}
+		this.ordering = data.ordering || 0;
 
 		this.rack = data.rack;
 		this.parentFolder = data.parentFolder;
@@ -181,8 +172,11 @@ class Folder extends Model {
 	}
 
 	saveOrdering() {
-		var folderConfigPath = path.join( this._path, '.folder');
-		fs.writeFileSync(folderConfigPath, this.ordering);
+		jsonDataFile.writeKey(
+			path.join(this._path, '.folder.json'),
+			'ordering',
+			this.ordering
+		);
 	}
 
 	saveModel() {
@@ -215,7 +209,8 @@ class Folder extends Model {
 			return;
 		}
 		if (fs.existsSync(model.data.path)) {
-			if (fs.existsSync(path.join(model.data.path, '.folder'))) fs.unlinkSync( path.join(model.data.path, '.folder'));
+			var folder_json = path.join(model.data.path, '.folder.json');
+			if (fs.existsSync(folder_json)) fs.unlinkSync(folder_json);
 			fs.rmdirSync(model.data.path);
 			model.uid = null;
 		}
@@ -223,6 +218,6 @@ class Folder extends Model {
 }
 
 export default function(library) {
-    Library = library;
+	Library = library;
 	return { Folder : Folder };
 };

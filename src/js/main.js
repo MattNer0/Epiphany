@@ -7,7 +7,6 @@ import settings from "./utils/settings";
 settings.init();
 settings.loadWindowSize();
 
-//import libini from "./utils/libini";
 import traymenu from "./utils/trayMenu";
 import titleMenu from "./utils/titleMenu";
 

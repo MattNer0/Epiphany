@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 
+import ini from "ini";
+
 import { ipcRenderer } from "electron";
-import libini from "../utils/libini";
 import Datauri from "datauri";
 
 /**
@@ -70,10 +71,40 @@ function isValidImagePath(imagePath) {
 	return false;
 }
 
+function readIni(ini_path) {
+	if (fs.existsSync(ini_path)) {
+		return ini.parse(fs.readFileSync(ini_path, "utf-8"));
+	}
+	return {};
+}
 
+function readBucketData(bucket_path) {
+	var bucket_json = path.join(bucket_path, '.bucket.json');
+	var rack_old = path.join(bucket_path, '.rack.ini');
+	if (fs.existsSync(rack_old)) {
+		var data = readIni(rack_old);
+		fs.unlinkSync(rack_old);
+		fs.writeFileSync(bucket_json, JSON.stringify(data));
+		return data;
+	}
 
-function readRackData(rack_path) {
-	return libini.readIniFile(rack_path, '.rack.ini');
+	return JSON.parse(fs.readFileSync(bucket_json, "utf-8"));
+}
+
+function readFolderData(folder_path) {
+	var folder_json = path.join(folder_path, '.folder.json');
+	var folder_old = path.join(folder_path, '.folder');
+
+	if (fs.existsSync(folder_old)) {
+		var data = {
+			"ordering" : parseInt(fs.readFileSync(folder_old, "utf-8"))
+		};
+		fs.unlinkSync(folder_old);
+		fs.writeFileSync(folder_json, JSON.stringify(data));
+		return data;
+	}
+
+	return JSON.parse(fs.readFileSync(folder_json, "utf-8"));
 }
 
 export default {
@@ -91,7 +122,7 @@ export default {
 					if (rackStat.isDirectory()) {
 						var rack_data = {};
 						try {
-							rack_data = readRackData(rackPath);
+							rack_data = readBucketData(rackPath);
 						} catch(err) {
 							rack_data = {};
 						}
@@ -123,12 +154,17 @@ export default {
 				var folderPath = path.join(parent_folder, folders[fi]);
 				var folderStat = fs.statSync(folderPath);
 				if (folderStat.isDirectory()) {
+					var folder_data = {};
+					try {
+						folder_data = readFolderData(folderPath);
+					} catch(err) {
+						folder_data = {};
+					}
 					valid_folders.push({
-						name: folders[fi],
-						ordering: valid_folders.length,
-						load_ordering: true,
-						path: folderPath,
-						folders: this.readFoldersByParent(folderPath)
+						name    : folders[fi],
+						ordering: folder_data.ordering ? parseInt(folder_data.ordering) : fi+1,
+						path    : folderPath,
+						folders : this.readFoldersByParent(folderPath)
 					});
 				}
 			}

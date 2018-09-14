@@ -4,7 +4,7 @@ import path from "path";
 import _ from "lodash";
 import searcher from "../searcher";
 
-import libini from "../utils/libini";
+import jsonDataFile from "../utils/jsonDataFile";
 import util_file from "../utils/file";
 
 import Model from "./baseModel";
@@ -181,19 +181,28 @@ class Rack extends Model {
 
 	removeFromStorage() {
 		if (fs.existsSync(this._path)) {
-			if( fs.existsSync(path.join(this._path, '.rack.ini')) ) fs.unlinkSync( path.join(this._path, '.rack.ini') );
+			var bucket_json = path.join(this._path, '.bucket.json');
+			if (fs.existsSync(bucket_json)) fs.unlinkSync(bucket_json);
 			fs.rmdirSync(this._path);
 			this.uid = null;
 		}
 	}
 
 	saveOrdering() {
-		libini.writeKeyByIni(this._path, '.rack.ini', 'ordering', this.ordering);
+		jsonDataFile.writeKey(
+			path.join(this._path, '.bucket.json'),
+			'ordering',
+			this.ordering
+		);
 	}
 
-	saveIni() {
+	saveBucketData() {
 		if (this._icon == "delete") this._icon = undefined;
-		libini.writeMultipleKeysByIni(this._path, '.rack.ini', ['ordering', 'hidelabel','icon'], [this.ordering, this.hideLabel, this._icon]);
+		jsonDataFile.writeMultipleKeys(
+			path.join(this._path, '.bucket.json'),
+			['ordering', 'hidelabel','icon'],
+			[this.ordering, this.hideLabel, this._icon]
+		);
 	}
 
 	saveModel() {
@@ -214,12 +223,12 @@ class Rack extends Model {
 				return console.error(e);
 			}
 		}
-		this.saveIni();
+		this.saveBucketData();
 		this.previousName = this.name;
 	}
 }
 
 export default function(library) {
-    Library = library;
+	Library = library;
 	return { Rack : Rack };
 };
