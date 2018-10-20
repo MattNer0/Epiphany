@@ -414,6 +414,9 @@ var appVue = new Vue({
 				case 'note-from-url':
 					if (data.markdown) {
 						var new_note = this.addNote();
+						if (data.url) {
+							new_note.setMetadata("Web", data.url);
+						}
 						new_note.body = data.markdown;
 						this.sendFlashMessage(1000, 'info', 'New Note From Url');
 					} else {

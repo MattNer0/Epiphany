@@ -401,7 +401,7 @@ class Note extends Model {
 			if (!m) return m;
 			var newM = [];
 			for (var i = 1; i < m.length; i++) {
-				if(m[i]) {
+				if (m[i]) {
 					newM.push(m[i]);
 				}
 			}
@@ -767,7 +767,6 @@ class Outline extends Note {
 	}
 
 	parseOutlineBody() {
-		console.log('parse!');
 		opml.parseFile(this._body, this);
 	}
 
