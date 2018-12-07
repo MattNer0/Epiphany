@@ -22,7 +22,7 @@ turndownService.addRule('div', {
 	}
 });
 turndownService.addRule('script', {
-	filter: ['script', 'noscript', 'form', 'nav', 'iframe', 'input'],
+	filter: ['script', 'style', 'noscript', 'form', 'nav', 'iframe', 'input', 'header', 'footer'],
 	replacement: function(content) {
 		return '';
 	}
@@ -39,6 +39,7 @@ export default {
 			"document.querySelector('*[role=\"main\"]') ? document.querySelector('*[role=\"main\"]').innerHTML",
 			"document.querySelector('.post-container') ? document.querySelector('.post-container').innerHTML",
 			"document.querySelector('.content-body') ? document.querySelector('.content-body').innerHTML",
+			"document.querySelector('div[itemtype=\"http://schema.org/Question\"]') ? document.querySelector('div[itemtype=\"http://schema.org/Question\"]').innerHTML",
 			"document.querySelector('p + p + p + p') ? document.querySelector('p + p + p + p').parentNode.innerHTML",
 			"document.querySelector('body').innerHTML"
 		];
