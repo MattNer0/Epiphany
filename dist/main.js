@@ -27,21 +27,25 @@ app.setPath(
 	)) == true ? path.join(path.dirname(process.execPath), 'userdata') : app.getPath("userData")
 );
 
-var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-	// someone tried to run a second instance, we should focus our window.
-	if (mainWindow) {
-		if (!mainWindow.isVisible()) {
-			mainWindow.show();
-		}
-		if (mainWindow.isMinimized()) mainWindow.restore();
-		mainWindow.focus();
-	} else {
-		if (!backgroundWindow) makeBackgroundWindow();
-		makeMainWindow();
-	}
-});
+var gotTheLock = app.requestSingleInstanceLock();
 
-if (shouldQuit) app.exit();
+if (!gotTheLock) {
+	app.exit();
+} else {
+	app.on('second-instance', function(event, commandLine, workingDirectory) {
+		// someone tried to run a second instance, we should focus our window.
+		if (mainWindow) {
+			if (!mainWindow.isVisible()) {
+				mainWindow.show();
+			}
+			if (mainWindow.isMinimized()) mainWindow.restore();
+			mainWindow.focus();
+		} else {
+			if (!backgroundWindow) makeBackgroundWindow();
+			makeMainWindow();
+		}
+	});
+}
 
 if (process.platform == 'linux') {
 	app.disableHardwareAcceleration();

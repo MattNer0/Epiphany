@@ -283,11 +283,12 @@ var appVue = new Vue({
 					self.trash_bucket = r;
 				} else if (r.quick_notes) {
 					self.quick_notes_bucket = r;
-				}
-				if (r.ordering != i+1) {
-					r.ordering = i+1;
-					r.saveOrdering();
-				}
+				} /*else {
+					if (r.ordering != i+1) {
+						r.ordering = i+1;
+						r.saveOrdering();
+					}
+				}*/
 			});
 
 			this.loadedRack = true;
@@ -362,7 +363,7 @@ var appVue = new Vue({
 			var rack;
 			data.forEach((r) => {
 				if (!rack || rack.path != r.rack) {
-					rack = this.findRackByPath(r.rack);
+					rack = self.findRackByPath(r.rack);
 				}
 				loadByParent(r, rack);
 			});
@@ -373,54 +374,62 @@ var appVue = new Vue({
 
 			elosenv.console.log("Loaded all notes in the library.");
 
-			if (this.keepHistory && this.notes.length > 1) {
-				this.notesHistory = arr.sortBy(this.notes.filter((obj) => {
+			if (self.keepHistory && self.notes.length > 1) {
+				self.notesHistory = arr.sortBy(self.notes.filter((obj) => {
 					return !obj.isEncrypted && !obj.rack.trash_bin;
 				}), 'updatedAt').slice(0,10);
 			}
 
-			if (this.notes.length == 1) {
-				this.changeNote(this.notes[0]);
+			var loading_note = false;
+
+			traymenu.init();
+			titleMenu.init();
+
+			self.loadedEverything = true;
+
+			if (self.notes.length == 1) {
+				self.changeNote(self.notes[0]);
+				loading_note = true;
 
 			} else if (remote.getGlobal('argv')) {
 				var argv = remote.getGlobal('argv');
 				if (argv.length > 1 && path.extname(argv[1]) == '.md' && fs.existsSync(argv[1])) {
-					var openedNote = this.findNoteByPath(argv[1]);
+					var openedNote = self.findNoteByPath(argv[1]);
 					if (openedNote) {
 						this.changeNote(openedNote);
 					} else {
 						elosenv.console.error("Path not valid");
 					}
+					loading_note = true;
 				}
 			}
-
-			traymenu.init();
-			titleMenu.init();
-
-			this.loadedEverything = true;
+			
+			if (!loading_note && self.quick_notes_bucket instanceof models.Rack && self.quick_notes_bucket.allnotes.length > 0) {
+				self.changeRack(self.quick_notes_bucket);
+			}
 		});
 
 		ipcRenderer.on('load-page-fail', (event, data) => {
-			this.sendFlashMessage(5000, 'error', 'Load Failed');
-			this.loadingUid = '';
+			self.sendFlashMessage(5000, 'error', 'Load Failed');
+			self.loadingUid = '';
 		});
 
 		ipcRenderer.on('load-page-finish', (event, data) => {
-			this.loadingUid = '';
+			self.loadingUid = '';
 		});
 
 		ipcRenderer.on('load-page-success', (event, data) => {
 			switch (data.mode) {
 				case 'note-from-url':
 					if (data.markdown) {
-						var new_note = this.addNote();
+						var new_note = self.addNote();
 						if (data.url) {
 							new_note.setMetadata("Web", data.url);
 						}
 						new_note.body = data.markdown;
-						this.sendFlashMessage(1000, 'info', 'New Note From Url');
+						self.sendFlashMessage(1000, 'info', 'New Note From Url');
 					} else {
-						this.sendFlashMessage(5000, 'error', 'Conversion Failed');
+						self.sendFlashMessage(5000, 'error', 'Conversion Failed');
 					}
 					break;
 				default:
@@ -430,29 +439,29 @@ var appVue = new Vue({
 
 		ipcRenderer.on('download-files-failed', (event, data) => {
 			if (!data.replaced || data.replaced.length == 0) return;
-			var noteObj = this.findNoteByPath(data.note);
+			var noteObj = self.findNoteByPath(data.note);
 			if (noteObj) {
 				for (var i=0; i<data.replaced.length; i++) {
 					var subStr = data.replaced[i];
 					noteObj.body = noteObj.body.replace(subStr.new, subStr.original);
 				}
 			}
-			this.sendFlashMessage(5000, 'error', data.error);
+			self.sendFlashMessage(5000, 'error', data.error);
 		});
 
 		ipcRenderer.on('bucket-rename', (event, data) => {
-			if (data && data.bucket_uid && this.editingBucket && this.editingBucket.uid == data.bucket_uid) {
+			if (data && data.bucket_uid && self.editingBucket && self.editingBucket.uid == data.bucket_uid) {
 				if (data.name) {
-					this.editingBucket.name = data.name;
-					this.editingBucket.saveModel();
-					if (this.selectedBucket != this.editingBucket) this.changeRack(this.editingBucket, true);
-					this.editingBucket = null;
-				} else if (this.editingBucket.name.length == 0) {
-					if (this.editingBucket.folders.length > 0) {
-						this.editingBucket.name = "New Bucket";
+					self.editingBucket.name = data.name;
+					self.editingBucket.saveModel();
+					if (self.selectedBucket != self.editingBucket) self.changeRack(self.editingBucket, true);
+					self.editingBucket = null;
+				} else if (self.editingBucket.name.length == 0) {
+					if (self.editingBucket.folders.length > 0) {
+						self.editingBucket.name = "New Bucket";
 					} else {
-						this.removeRack(this.editingBucket);
-						this.editingBucket = null;
+						self.removeRack(self.editingBucket);
+						self.editingBucket = null;
 					}
 				}
 			}

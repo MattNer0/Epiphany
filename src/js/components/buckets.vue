@@ -3,7 +3,7 @@
 		.my-shelf-rack(v-for="bucket in bucketsWithFolders"
 			:class="classBucket(bucket)"
 			:draggable="editingFolder === null && !bucket.trash_bin ? 'true' : 'false'"
-			v-tooltip="{ 'content': bucket.name, 'placement': 'left', 'boundariesElement': 'body' }"
+			v-tooltip="{ 'content': bucket.quick_notes ? 'Quick Notes' : bucket.name, 'placement': 'left', 'boundariesElement': 'body' }"
 			v-show="bucket.allnotes.length > 0 || !bucket.quick_notes"
 			@dragstart.stop="rackDragStart($event, bucket)"
 			@dragend.stop="rackDragEnd()"

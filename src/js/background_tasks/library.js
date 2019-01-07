@@ -126,6 +126,11 @@ export default {
 						} catch(err) {
 							rack_data = {};
 						}
+
+						if (rack == "_quick_notes") {
+							rack_data.ordering = 0;
+						}
+
 						valid_racks.push({
 							_type        : 'rack',
 							name         : rack,
@@ -133,7 +138,7 @@ export default {
 							trash_bin    : rack == ".coon_trash",
 							quick_notes  : rack == "_quick_notes",
 							hide_label   : rack_data.hidelabel,
-							ordering     : rack_data.ordering ? parseInt(rack_data.ordering) : ri+1,
+							ordering     : isNaN(rack_data.ordering) ? racks.length+ri+1 : parseInt(rack_data.ordering),
 							icon         : rack_data.icon || '',
 							path         : rackPath
 						});
