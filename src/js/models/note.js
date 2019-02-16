@@ -413,15 +413,19 @@ class Note extends Model {
 			do {
 				m = re.exec(this._body);
 				m = cleanMatch(m);
-				if (m && m[1].match(/^\+\+\++/)) {
-					// +++
-				} else if (m) {
-					m[2] = m[2].replace(/\s+/g,' ');
-					if (m[1] === 'updatedAt' || m[1] === 'createdAt') {
-						metadata[m[1]] = moment(m[2]).format('YYYY-MM-DD HH:mm:ss');
-					} else {
-						metadata[m[1]] = m[2];
+				try {
+					if (m && m[1].match(/^\+\+\++/)) {
+						// +++
+					} else if (m) {
+						m[2] = m[2].replace(/\s+/g,' ');
+						if (m[1] === 'updatedAt' || m[1] === 'createdAt') {
+							metadata[m[1]] = moment(m[2]).format('YYYY-MM-DD HH:mm:ss');
+						} else {
+							metadata[m[1]] = m[2];
+						}
 					}
+				} catch(e) {
+					console.warn(e)
 				}
 			} while (m);
 			this._metadata = metadata;

@@ -20,6 +20,7 @@ build/
 MYREADME.md
 mv_to_opt.sh
 package-lock.json
+yarn.lock
 
 */.directory
 */*/.directory

@@ -198,7 +198,7 @@
 				var buckets_submenu = new Menu();
 				buckets_submenu.append(new MenuItem({
 					type: 'checkbox',
-					label: 'Show Hidden Bucket',
+					label: 'Show Bin Bucket',
 					checked: this.showHidden,
 					click: () => {
 						this.$root.showHidden = !this.showHidden;

@@ -96,6 +96,7 @@ function makeMainWindow() {
 		tabbingIdentifier: 'epiphany',
 		frame            : false,
 		webPreferences   : {
+			nodeIntegration     : true,
 			devTools            : DEBUG,
 			webgl               : false,
 			webaudio            : false,
@@ -182,6 +183,7 @@ function makeBackgroundWindow(callback) {
 		show          : DEBUG,
 		skipTaskbar   : true,
 		webPreferences: {
+			nodeIntegration     : true,
 			devTools            : false,
 			webgl               : false,
 			webaudio            : false,
@@ -209,6 +211,7 @@ function makeBackgroundBrowserWindow(callback) {
 		show          : false,
 		skipTaskbar   : true,
 		webPreferences: {
+			nodeIntegration     : true,
 			devTools            : DEBUG,
 			webgl               : false,
 			webaudio            : false,
@@ -254,6 +257,7 @@ function makePopupWindow(width, height, callback) {
 		tabbingIdentifier: 'epiphany',
 		frame            : false,
 		webPreferences   : {
+			nodeIntegration     : true,
 			devTools            : DEBUG,
 			webgl               : false,
 			webaudio            : false,
