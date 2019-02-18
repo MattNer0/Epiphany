@@ -3,8 +3,7 @@
 		.my-shelf-rack(v-for="bucket in bucketsWithFolders"
 			:class="classBucket(bucket)"
 			:draggable="editingFolder === null && !bucket.trash_bin ? 'true' : 'false'"
-			v-tooltip="{ 'content': bucket.quick_notes ? 'Quick Notes' : bucket.name, 'placement': 'left', 'boundariesElement': 'body' }"
-			v-show="bucket.allnotes.length > 0 || !bucket.quick_notes"
+			v-tooltip="tooltipBucket(bucket)"
 			@dragstart.stop="rackDragStart($event, bucket)"
 			@dragend.stop="rackDragEnd()"
 			@dragover="rackDragOver($event, bucket)"
@@ -40,18 +39,18 @@
 	export default {
 		name: 'buckets',
 		props: {
-			'buckets'             : Array,
-			'selectedBucket'      : Object,
-			'selectedFolder'      : Object,
-			'draggingBucket'      : Object,
-			'draggingFolder'      : Object,
-			'draggingNote'        : Object,
-			'isFullScreen'        : Boolean,
-			'changeBucket'        : Function,
-			'editingFolder'       : String,
-			'originalNameBucket'  : String,
-			'search'              : String,
-			'showHidden'          : Boolean
+			'buckets'           : Array,
+			'selectedBucket'    : Object,
+			'selectedFolder'    : Object,
+			'draggingBucket'    : Object,
+			'draggingFolder'    : Object,
+			'draggingNote'      : Object,
+			'isFullScreen'      : Boolean,
+			'changeBucket'      : Function,
+			'editingFolder'     : String,
+			'originalNameBucket': String,
+			'search'            : String,
+			'showHidden'        : Boolean
 		},
 		directives: {
 			focus(element) {
@@ -67,6 +66,13 @@
 			}
 		},
 		methods: {
+			tooltipBucket(bucket) {
+				return {
+					'content'          : bucket.quick_notes ? 'Quick Notes' : bucket.name,
+					'placement'        : 'left',
+					'boundariesElement': 'body'
+				};
+			},
 			classBucket(bucket) {
 				if (bucket) {
 					return {
@@ -77,27 +83,6 @@
 					};
 				}
 			},
-			/*doneRackEdit(bucket, undo) {
-				if (!this.editingBucket) { return }
-				if (bucket.name.length == 0) {
-					if (this.originalNameBucket && this.originalNameBucket.length > 0) {
-						bucket.name = this.originalNameBucket;
-					} else if (bucket.folders.length > 0) {
-						bucket.name = "new bucket";
-					} else {
-						this.$root.removeRack(bucket);
-						this.$root.setEditingRack(null);
-						return;
-					}
-				} else if (undo) {
-					if (this.originalNameBucket && this.originalNameBucket.length > 0) {
-						bucket.name = this.originalNameBucket;
-					}
-				}
-				bucket.saveModel();
-				this.$root.setEditingRack(null);
-				if (this.selectedBucket != bucket) this.changeBucket(bucket);
-			},*/
 			// Dragging
 			rackDragStart(event, bucket) {
 				event.dataTransfer.setDragImage(event.target, 0, 0);
@@ -133,11 +118,11 @@
 				if (!rack) return;
 				var folder;
 				folder = new models.Folder({
-					name        : '',
-					rack        : rack,
-					parentFolder: undefined,
-					rackUid     : rack.uid,
-					ordering    : 0
+					'name'        : '',
+					'rack'        : rack,
+					'parentFolder': undefined,
+					'rackUid'     : rack.uid,
+					'ordering'    : 0
 				});
 				this.$root.addFolderToRack(rack, folder);
 				this.$root.setEditingFolder(folder);

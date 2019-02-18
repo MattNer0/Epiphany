@@ -283,12 +283,7 @@ var appVue = new Vue({
 					self.trash_bucket = r;
 				} else if (r.quick_notes) {
 					self.quick_notes_bucket = r;
-				} /*else {
-					if (r.ordering != i+1) {
-						r.ordering = i+1;
-						r.saveOrdering();
-					}
-				}*/
+				}
 			});
 
 			this.loadedRack = true;
@@ -404,9 +399,9 @@ var appVue = new Vue({
 				}
 			}
 			
-			if (!loading_note && self.quick_notes_bucket instanceof models.Rack && self.quick_notes_bucket.allnotes.length > 0) {
+			/*if (!loading_note && self.quick_notes_bucket instanceof models.Rack && self.quick_notes_bucket.allnotes.length > 0) {
 				self.changeRack(self.quick_notes_bucket);
-			}
+			}*/
 		});
 
 		ipcRenderer.on('load-page-fail', (event, data) => {

@@ -130,6 +130,10 @@ function makeMainWindow() {
 	appIcon.setContextMenu(contextMenu);
 	appIcon.setHighlightMode('always');
 	appIcon.on('click', function() {
+		if (mainWindow === null) {
+			app.exit();
+			return
+		}
 		if (mainWindow.isVisible()) {
 			mainWindow.hide();
 		} else {
