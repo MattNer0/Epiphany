@@ -17,10 +17,13 @@ export default {
 	refreshTrayMenu() {
 
 		var menu_entries = [];
+		if (mainWindow === null) {
+			mainWindow = electron.remote.getCurrentWindow();
+		}
 		
 		if (mainWindow.isVisible()) {
 			menu_entries.push({
-				label: 'Shop App',
+				label: 'Show App',
 				click() {
 					if (mainWindow.isVisible()) {
 						mainWindow.hide();
@@ -77,7 +80,7 @@ export default {
 				submenu_element.push(this.oneRackMenuItem(racks[i], rackfolder_cb, note_cb));
 			}
 		}
-		if (submenu_element && group_num == 0) {
+		if (submenu_element && group_num === 0) {
 			menu_array = submenu_element;
 		} else if (submenu_element) {
 			group_num += 1;
