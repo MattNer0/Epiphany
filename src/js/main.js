@@ -39,11 +39,9 @@ import component_noteMenu from './components/noteMenu.vue';
 import component_noteFooter from './components/noteFooter.vue';
 import component_buckets from './components/buckets.vue';
 import component_buckets_special from './components/bucketsSpecial.vue';
-//import component_buckets_menu from './components/bucketsMenu.vue';
 import component_folders from './components/folders.vue';
 import component_folders_special from './components/foldersSpecial.vue';
 import component_notes from './components/notes.vue';
-//import component_settings_menu from './components/settingsMenu.vue';
 import component_addNote from './components/addNote.vue';
 import component_titleBar from './components/titleBar.vue';
 import component_tabsBar from './components/tabsBar.vue';
@@ -125,9 +123,7 @@ var appVue = new Vue({
 		'folders'       : component_folders,
 		'foldersSpecial': component_folders_special,
 		'bucketsSpecial': component_buckets_special,
-		//'bucketsMenu'   : component_buckets_menu,
 		'notes'         : component_notes,
-		//'settingsMenu'  : component_settings_menu,
 		'modal'         : component_modal,
 		'addNote'       : component_addNote,
 		'titleBar'      : component_titleBar,
@@ -398,10 +394,6 @@ var appVue = new Vue({
 					loading_note = true;
 				}
 			}
-			
-			/*if (!loading_note && self.quick_notes_bucket instanceof models.Rack && self.quick_notes_bucket.allnotes.length > 0) {
-				self.changeRack(self.quick_notes_bucket);
-			}*/
 		});
 
 		ipcRenderer.on('load-page-fail', (event, data) => {
