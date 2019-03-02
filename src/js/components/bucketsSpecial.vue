@@ -1,15 +1,13 @@
 <template lang="pug">
 	.my-shelf-buckets(v-if="buckets.length > 0", @contextmenu.prevent.stop="")
-		.my-shelf-rack(
-			:class="{ 'isShelfSelected' : showSearch && !isFullScreen }"
-			v-tooltip="{ 'content': 'Search', 'placement': 'left', 'boundariesElement': 'body' }")
+		.my-shelf-rack(:class="{ 'isShelfSelected' : showSearch && !isFullScreen }")
 			.rack-object.bucket-special(@click="openSearch()")
-				a: i.rack-icon.coon-search
-		.my-shelf-rack(
-			:class="{ 'isShelfSelected' : showHistory && !isFullScreen }"
-			v-tooltip="{ 'content': 'History', 'placement': 'left', 'boundariesElement': 'body' }")
+				i.rack-icon.coon-search
+				a Search
+		.my-shelf-rack(:class="{ 'isShelfSelected' : showHistory && !isFullScreen }")
 			.rack-object.bucket-special(@click="openHistory()")
-				a: i.rack-icon.coon-clock
+				i.rack-icon.coon-clock
+				a History
 </template>
 
 <script>

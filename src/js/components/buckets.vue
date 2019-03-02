@@ -3,20 +3,32 @@
 		.my-shelf-rack(v-for="bucket in bucketsWithFolders"
 			:class="classBucket(bucket)"
 			:draggable="editingFolder === null && !bucket.trash_bin ? 'true' : 'false'"
-			v-tooltip="tooltipBucket(bucket)"
 			@dragstart.stop="rackDragStart($event, bucket)"
 			@dragend.stop="rackDragEnd()"
 			@dragover="rackDragOver($event, bucket)"
 			@dragleave.stop="rackDragLeave(bucket)"
 			@drop.stop="dropToRack($event, bucket)"
 			@contextmenu.prevent.stop="bucketMenu(bucket)")
-			.rack-object(
-				:class="{ 'dragging' : draggingBucket == bucket }",
-				@click="selectBucket(bucket)")
-				a(v-if="bucket.icon")
+			.rack-object(:class="{ 'dragging' : draggingBucket == bucket }", @click="selectBucket(bucket)")
+				template(v-if="bucket.icon")
 					i.rack-icon(:class="'coon-'+bucket.icon")
-				a(v-else)
-					| {{ bucket.shorten }}
+					a {{ bucket.quick_notes ? 'Quick Notes' : bucket.name }}
+				template(v-else)
+					i.rack-icon.coon-archive
+					a {{ bucket.name }}
+			
+			folders(
+				v-if="!bucket.quick_notes"
+				:parent-folder="bucket"
+				:selected-note="selectedNote"
+				:selected-folder="selectedFolder"
+				:dragging-folder="draggingFolder"
+				:dragging-note="draggingNote"
+				:change-bucket="changeBucket"
+				:change-folder="changeFolder"
+				:editing-folder="editingFolder"
+				:from-bucket="true"
+				:search="search")
 		
 		.my-shelf-rack(v-tooltip="{ 'content': 'New bucket', 'placement': 'left', 'boundariesElement': 'body' }")
 			.rack-object.bucket-special(@click="newBucket()")
@@ -36,17 +48,26 @@
 	import Datauri from "datauri";
 	import models from "../models";
 
+	import component_folders from './folders.vue';
+	import component_folders_special from './foldersSpecial.vue';
+
 	export default {
 		name: 'buckets',
+		components: {
+			'folders'       : component_folders,
+			'foldersSpecial': component_folders_special,
+		},
 		props: {
 			'buckets'           : Array,
 			'selectedBucket'    : Object,
 			'selectedFolder'    : Object,
+			'selectedNote'      : Object,
 			'draggingBucket'    : Object,
 			'draggingFolder'    : Object,
 			'draggingNote'      : Object,
 			'isFullScreen'      : Boolean,
 			'changeBucket'      : Function,
+			'changeFolder'      : Function,
 			'editingFolder'     : String,
 			'originalNameBucket': String,
 			'search'            : String,
@@ -66,17 +87,18 @@
 			}
 		},
 		methods: {
-			tooltipBucket(bucket) {
+			/*tooltipBucket(bucket) {
 				return {
 					'content'          : bucket.quick_notes ? 'Quick Notes' : bucket.name,
 					'placement'        : 'left',
 					'boundariesElement': 'body'
 				};
-			},
+			},*/
 			classBucket(bucket) {
 				if (bucket) {
 					return {
 						'isShelfSelected': (this.selectedBucket == bucket && !this.isDraggingNote && !this.isFullScreen) || bucket.dragHover,
+						'noCursor'       : !bucket.quick_notes,
 						'hiddenBucket'   : bucket.hidden && !this.showHidden,
 						'sortUpper'      : bucket.sortUpper,
 						'sortLower'      : bucket.sortLower

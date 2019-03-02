@@ -64,38 +64,32 @@ module.exports = {
 			{
 				test: /\.vue$/,
 				loader: 'vue-loader'
-			},
-			{
+			}, {
 				test: /\.pug$/,
 				loader: 'pug-plain-loader'
-			},
-			{
+			}, {
 				test: /\.js$/,
 				loader: 'babel-loader',
 				exclude: /(node_modules|dist)/
-			},
-			{
+			}, {
 				test: /\.(png|woff|woff2|ttf|svg)$/,
 				loader: 'url-loader',
 				options: {
 					'limit' : 100000
 				}
-			},
-			{
+			}, {
 				test: /\.html$/,
 				loader: 'html-loader',
 				options: {
 					'attrs' : false
 				}
-			},
-			{
+			}, {
 				test: /\.css$/,
 				use: [
 					'style-loader',
 					'css-loader'
 				]
-			},
-			{
+			}, {
 				test: /\.scss$/,
 				use: [
 					'vue-style-loader',

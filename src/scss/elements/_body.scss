@@ -106,18 +106,8 @@
 
 	.sidebar {
 		left: 0;
-		margin-left: 4.2em;
+		margin-left: 0;
 		transition: left 400ms;
-	}
-
-	.fixed-sidebar {
-		left: 0;
-		width: 4.2em;
-		z-index: 11;
-
-		.cell-container {
-			width: 100%;
-		}
 	}
 
 	.sidebar:after {

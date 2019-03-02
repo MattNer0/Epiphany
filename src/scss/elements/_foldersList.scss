@@ -1,9 +1,11 @@
 .my-shelf-buckets, .my-shelf-folders {
-	padding: 0 0.2em;
+	padding: 0 0.1em;
 }
 
-.my-shelf-buckets:first-child {
-	margin-bottom: 0.1em;
+.my-shelf-buckets {
+	.my-shelf-rack {
+		margin: 0.5em 0;
+	}
 }
 
 .my-shelf-buckets:nth-child(2) {
@@ -33,6 +35,14 @@
 
 		-webkit-mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.67) 67%, white 100%);
 	}
+}
+
+.my-shelf-buckets:last-child .my-shelf-rack:last-child {
+	margin-bottom: 0;
+}
+
+.my-shelf-rack.noCursor .rack-object {
+	cursor: default;
 }
 
 .my-shelf-folder > hr {
@@ -116,7 +126,7 @@
 .folder-object {
 	i.down {
 		position: absolute;
-		left: -0.1em;
+		left: 0.1em;
 		top: 0.75em;
 		display: none;
 		cursor: pointer;
@@ -142,16 +152,19 @@
 	}
 }
 
+.folder-object.openFolder {
+	i.down {
+		top: 0.7em;
+	}
+}
+
 .rack-object {
 	font-weight: bold;
 	margin: 0;
 	padding: 0.3em 0.2em;
 	border-radius: $folder-list-border-radius;
 	opacity: 1.0;
-
-	transition: background-color 200ms;
-
-	text-align: center;
+	text-align: left;
 	width: 100%;
 
 	input {
@@ -169,24 +182,19 @@
 	}
 
 	a {
-		display: flex;
-		justify-content: center;
-		align-items: center;
+		display: block;
 		box-sizing: border-box;
 		font-size: 150%;
 		line-height: 1em;
 		vertical-align: middle;
-		border-radius: 0.4em;
-		height: 1.8em;
-		width: 1.8em;
-		padding: 0.1em 0 0;
+		padding: 0;
 		margin: 0 auto;
-		text-align: center;
+		text-align: left;
 	}
 
 	i.rack-icon {
-		display: block;
-		font-size: 150%;
+		display: inline-block;
+		font-size: 140%;
 		margin-top: -0.05em;
 		vertical-align: middle;
 		color: inherit;
@@ -195,15 +203,13 @@
 	}
 
 	i.rack-icon + a {
-		display: block;
-		font-size: 120%;
-		line-height: 1em;
-		padding: 0.1em 0.2em;
-		border-radius: 1em;
-		height: auto;
-		width: auto;
-		margin: -0.5em 0.1em 0;
+		display: inline-block;
+		padding-left: 0.2em
 	}
+}
+
+.rack-object + .my-shelf-folders {
+	margin-top: 0.4em;
 }
 
 .rack-object.bucket-special {
@@ -212,7 +218,7 @@
 		display: block;
 		border: 0.1em dashed;
 		height: 1.8em;
-		width: 1.8em;
+		text-align: center;
 		font-size: 122.8%;
 		margin: 0 auto;
 		padding: 0.1em;
@@ -230,7 +236,7 @@
 .folder-object,
 .my-shelf-folder-span {
 	margin: 0;
-	padding: 0.3em 0.2em 0.3em 0.7em;
+	padding: 0.3em 0.2em 0.3em 1.1em;
 	font-weight: normal;
 	border-radius: $folder-list-border-radius;
 

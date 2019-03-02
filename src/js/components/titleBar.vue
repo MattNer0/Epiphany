@@ -5,12 +5,16 @@
 				span {{ windowTitle }}
 			.menu-bar(v-else-if="showMenuBar")
 				nav: ul
+					li.icon
 					li(@click="file_menu") File
 					li(@click="view_menu") View
 					li(@click="tools_menu") Tools
-					li(@click="quick_note") 
+					li(@click="quick_note")
 						i.coon-plus
 						|  New Quick Note
+					li(@click="open_sidebar", v-show="isFullScreen")
+						i.coon-sidebar
+						|  Open Sidebar
 
 			.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
 				.system-icon(@click="win_min", v-if="!windowTitle")
@@ -68,8 +72,8 @@
 				win.minimize();
 			},
 			resetSidebar() {
-				this.$root.racksWidth = 200;
-				this.$root.notesWidth = 200;
+				this.$root.racksWidth = 220;
+				this.$root.notesWidth = 220;
 				this.$root.init_sidebar_width();
 				Vue.nextTick(() => {
 					this.$root.save_editor_size();
@@ -77,6 +81,9 @@
 			},
 			quick_note() {
 				this.$root.newQuickNote();
+			},
+			open_sidebar() {
+				this.$root.setFullScreen(false);
 			},
 			newBucket() {
 				var bucket = new models.Rack({

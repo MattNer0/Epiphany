@@ -70,7 +70,8 @@
 			'changeBucket'        : Function,
 			'changeFolder'        : Function,
 			'editingFolder'       : String,
-			'search'              : String
+			'search'              : String,
+			'fromBucket'          : Boolean
 		},
 		data() {
 			return {
@@ -121,6 +122,9 @@
 				if (this.selectedFolder == folder) {
 					folder.openFolder = !folder.openFolder;
 				} else {
+					if (this.fromBucket) {
+						this.$root.closeOthers();
+					}
 					this.changeFolder(folder);
 					if (!folder.openFolder) {
 						folder.openFolder = true;
@@ -273,7 +277,7 @@
 					menu.append(new MenuItem({
 						label: 'Select folder',
 						click: () => {
-							this.changeFolder(folder);
+							this.selectFolder(folder);
 						}
 					}));
 					menu.append(new MenuItem({type: 'separator'}));

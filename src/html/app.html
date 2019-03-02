@@ -12,8 +12,8 @@
 	</title-bar>
 	<div class="my-main">
 		<div class="outer_wrapper">
-			<div class="fixed-sidebar">
-				<div v-show="loadedRack" class="cell-container" ref="sidebarBuckets" @contextmenu="bucketsMenu()">
+			<div class="sidebar">
+				<div v-show="loadedRack" class="cell-container" ref="sidebarFolders">
 					<div class="my-shelf">
 						<buckets-special
 							:buckets="racks"
@@ -26,10 +26,13 @@
 						<buckets
 							:buckets="racks"
 							:selected-bucket="selectedRack"
+							:selected-folder="selectedFolder"
+							:selected-note="selectedNote"
 							:dragging-bucket="draggingRack"
 							:dragging-folder="draggingFolder"
 							:dragging-note="draggingNote"
 							:change-bucket="changeRack"
+							:change-folder="changeFolder"
 							:editing-folder="editingFolder"
 							:is-full-screen="isFullScreen"
 							:original-name-bucket="originalNameRack"
@@ -37,14 +40,37 @@
 							:show-hidden="showHidden"
 							ref="refBuckets">
 						</buckets>
-						<!--buckets-menu
-							:show-settings="showSettings"
-							:is-full-screen="isFullScreen">
-						</buckets-menu-->
 					</div>
+					<!--@contextmenu="foldersMenu()"
+						div class="my-shelf-folders-outer">
+						<folders-special
+							v-if="selectedRack"
+							:bucket="selectedRack"
+							:show-all="showAll"
+							:show-favorites="showFavorites"
+							:dragging-folder="draggingFolder"
+							:search="search">
+						</folders-special>
+						<folders
+							v-if="selectedRack"
+							:parent-folder="selectedRack"
+							:selected-note="selectedNote"
+							:selected-folder="selectedFolder"
+							:dragging-folder="draggingFolder"
+							:dragging-note="draggingNote"
+							:change-bucket="changeRack"
+							:change-folder="changeFolder"
+							:editing-folder="editingFolder"
+							:search="search">
+						</folders>
+					</div-->
 				</div>
-			</div>
-			<div class="sidebar">
+				<handler-stack
+					v-show="loadedRack || showSearch"
+					:sidebar-drag="sidebarDrag"
+					:sidebar-drag-end="sidebarDragEnd"
+					ref="refHandleStack">
+				</handler-stack>
 				<div v-show="showSearch" class="cell-container search-container" ref="sidebarSearch">
 					<div class="my-shelf">
 						<div class="my-shelf-rack">
@@ -67,37 +93,6 @@
 						</div>
 					</div>
 				</div>
-				<div v-show="selectedRack && selectedRack != quick_notes_bucket" class="cell-container" ref="sidebarFolders" @contextmenu="foldersMenu()">
-					<div class="my-shelf-banner">Folders</div>
-					<div class="my-shelf-folders-outer">
-						<folders-special
-							v-if="selectedRack"
-							:bucket="selectedRack"
-							:show-all="showAll"
-							:show-favorites="showFavorites"
-							:dragging-folder="draggingFolder"
-							:search="search">
-						</folders-special>
-						<folders
-							v-if="selectedRack"
-							:parent-folder="selectedRack"
-							:selected-note="selectedNote"
-							:selected-folder="selectedFolder"
-							:dragging-folder="draggingFolder"
-							:dragging-note="draggingNote"
-							:change-bucket="changeRack"
-							:change-folder="changeFolder"
-							:editing-folder="editingFolder"
-							:search="search">
-						</folders>
-					</div>
-				</div>
-				<handler-stack
-					v-show="selectedRack"
-					:sidebar-drag="sidebarDrag"
-					:sidebar-drag-end="sidebarDragEnd"
-					ref="refHandleStack">
-				</handler-stack>
 				<div v-show="selectedFolder || showAll || showFavorites || showHistory" class="cell-container" ref="sidebarNotes">
 					<div class="my-shelf-banner" v-show="selectedFolder && !showSearch">Notes
 						<add-note

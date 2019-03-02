@@ -39,8 +39,6 @@ import component_noteMenu from './components/noteMenu.vue';
 import component_noteFooter from './components/noteFooter.vue';
 import component_buckets from './components/buckets.vue';
 import component_buckets_special from './components/bucketsSpecial.vue';
-import component_folders from './components/folders.vue';
-import component_folders_special from './components/foldersSpecial.vue';
 import component_notes from './components/notes.vue';
 import component_addNote from './components/addNote.vue';
 import component_titleBar from './components/titleBar.vue';
@@ -112,16 +110,14 @@ var appVue = new Vue({
 		modalDescription : 'description',
 		modalPrompts     : [],
 		modalOkcb        : null,
-		racksWidth       : settings.getSmart('racksWidth', 200),
-		notesWidth       : settings.getSmart('notesWidth', 200),
+		racksWidth       : settings.getSmart('racksWidth', 220),
+		notesWidth       : settings.getSmart('notesWidth', 220),
 		fontsize         : settings.getSmart('fontsize', 15),
 		notesDisplayOrder: 'updatedAt',
 	},
 	components: {
 		'flashmessage'  : component_flashmessage,
 		'buckets'       : component_buckets,
-		'folders'       : component_folders,
-		'foldersSpecial': component_folders_special,
 		'bucketsSpecial': component_buckets_special,
 		'notes'         : component_notes,
 		'modal'         : component_modal,
@@ -546,31 +542,24 @@ var appVue = new Vue({
 			});
 		},
 		openHistory() {
-			if (this.showHistory) {
-				this.toggleFullScreen();
-			} else {
-				this.changeRack(null);
-				this.showSearch = false;
-				this.showHistory = true;
-				this.setFullScreen(false);
-				this.update_editor_size();
-			}
+			this.changeRack(null);
+			this.showSearch = false;
+			this.showHistory = !this.showHistory;
 		},
 		openSearch() {
-			if (this.showSearch) {
-				this.toggleFullScreen();
-			} else {
-				this.changeRack(null);
-				this.showHistory = false;
-				this.showSearch = true;
-				this.setFullScreen(false);
-				this.update_editor_size();
+			this.changeRack(null);
+			this.showHistory = false;
+			this.showSearch = !this.showSearch;
 
-				this.$nextTick(() => {
-					var searchInput = document.getElementById('search-bar');
-					searchInput.focus();
-				});
-			}
+			this.$nextTick(() => {
+				var searchInput = document.getElementById('search-bar');
+				searchInput.focus();
+			});
+		},
+		closeOthers() {
+			this.changeRack(null);
+			this.showSearch = false;
+			this.showHistory = false;
 		},
 		changeRack(rack, from_sidebar) {
 			var should_update_size = false;
@@ -637,7 +626,7 @@ var appVue = new Vue({
 			this.originalNameRack = "";
 
 			if (folder && !this.showSearch && !this.showHistory) this.selectedRack = folder.rack;
-			if (!this.showHistory) this.selectedFolder = folder;
+			this.selectedFolder = folder;
 			this.showAll = false;
 			this.showFavorites = false;
 		},
@@ -692,7 +681,6 @@ var appVue = new Vue({
 				if (this.selectedRack === null && !this.showSearch) this.changeFolder(note.folder);
 				else if (!this.isFullScreen && from_sidebar) {
 					this.setFullScreen(true);
-					this.update_editor_size();
 				}
 				return;
 			}

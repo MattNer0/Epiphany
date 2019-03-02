@@ -155,16 +155,6 @@ function style_object(obj) {
 				"& .rack-object" : {
 					color: obj["sidebar-color"]
 				},
-				"& .rack-object" : {
-					"& a" : {
-						color: obj["sidebar-background"],
-						backgroundColor: obj["sidebar-color"]
-					},
-					"& input" : {
-						color: obj["sidebar-background"],
-						backgroundColor: obj["sidebar-color"]
-					}
-				},
 				"& .rack-object.dragging" : {
 					color: obj["sidebar-color"]+" !important"
 				}
@@ -230,11 +220,18 @@ function style_object(obj) {
 					color: obj["note-list-text-color-hover"]
 				}
 			},
-			".my-shelf-rack .rack-object:hover, .my-shelf-folder .folder-object:hover, .title-bar nav li:hover" : {
+			".my-shelf-rack:not(.noCursor) .rack-object:hover, .my-shelf-folder .folder-object:hover, .title-bar nav li:hover" : {
 				backgroundColor: obj["sidebar-background-hover"],
 				color: obj["folder-selected-color"]
 			},
-			".my-shelf-folder.sortInside > .folder-object, .my-shelf-folder.isShelfSelected > .folder-object, .my-shelf-rack.isShelfSelected > .rack-object" : {
+			".my-shelf-folder.sortInside > .folder-object, .my-shelf-folder.isShelfSelected > .folder-object" : {
+				backgroundColor: obj["sidebar-background-selected"],
+				color: obj["folder-selected-color"],
+				"& input" : {
+					color: obj["folder-selected-color"]
+				}
+			},
+			".my-shelf-rack.isShelfSelected:not(.noCursor) > .rack-object" : {
 				backgroundColor: obj["sidebar-background-selected"],
 				color: obj["folder-selected-color"],
 				"& input" : {
@@ -247,9 +244,6 @@ function style_object(obj) {
 				"& input" : {
 					color: obj["folder-selected-color"]
 				}
-			},
-			".my-shelf-rack .rack-object:hover a, .my-shelf-rack.isShelfSelected > .rack-object a" : {
-				backgroundColor: obj["folder-selected-color"]
 			},
 			".my-shelf-rack.sortUpper .rack-object:after, .my-shelf-folder.sortUpper:after" : {
 				backgroundColor: obj["sidebar-background-selected"]

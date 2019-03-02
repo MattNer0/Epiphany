@@ -21,9 +21,24 @@
 			list-style: none;
 
 			li {
-				padding: 0.1em 0.4em;
+				padding: 0.1em 0.5em;
 				cursor: default;
 				-webkit-user-select: none;
+			}
+
+			li.icon {
+				width: 1em;
+				height: 1em;
+				display: inline-block;
+				vertical-align: middle;
+				background-image: url('../images/tray.png');
+				background-repeat: no-repeat;
+				background-size: contain;
+				background-position: center;
+			}
+
+			li.icon:hover {
+				background-color: transparent !important;
 			}
 
 			/*li > a, li > div, li > span {

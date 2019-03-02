@@ -93,7 +93,7 @@ class Rack extends Model {
 		return folders_images;
 	}
 	
-	get shorten() {
+	/*get shorten() {
 		var name = this.name;
 		if (this.trash_bin) name = name.toUpperCase();
 		var splitName = name.replace(/[\._-]/gi, " ").trim().split(" ");
@@ -104,7 +104,7 @@ class Rack extends Model {
 		} else {
 			return splitName[0].slice(0,1)+splitName[1].slice(0,1);
 		}
-	}
+	}*/
 
 	searchnotes(search) {
 		return searcher.searchNotes(search, this.allnotes);
