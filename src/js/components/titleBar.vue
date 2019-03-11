@@ -12,9 +12,12 @@
 					li(@click="quick_note")
 						i.coon-plus
 						|  New Quick Note
-					li(@click="open_sidebar", v-show="isFullScreen")
+					li(@click="open_sidebar", v-if="isFullScreen")
 						i.coon-sidebar
 						|  Open Sidebar
+					li(@click="close_sidebar", v-else)
+						i.coon-sidebar
+						|  Close Sidebar
 
 			.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
 				.system-icon(@click="win_min", v-if="!windowTitle")
@@ -84,6 +87,9 @@
 			},
 			open_sidebar() {
 				this.$root.setFullScreen(false);
+			},
+			close_sidebar() {
+				this.$root.setFullScreen(true);
 			},
 			newBucket() {
 				var bucket = new models.Rack({

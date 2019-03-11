@@ -188,7 +188,7 @@ function makeBackgroundWindow(callback) {
 		skipTaskbar   : true,
 		webPreferences: {
 			nodeIntegration     : true,
-			devTools            : false,
+			devTools            : DEBUG,
 			webgl               : false,
 			webaudio            : false,
 			backgroundThrottling: true
@@ -198,6 +198,8 @@ function makeBackgroundWindow(callback) {
 	backgroundWindow.on('closed', () => { backgroundWindow = null; });
 	backgroundWindow.setMenu(null);
 	backgroundWindow.loadURL('file://' + __dirname + '/background.html');
+
+	if (DEBUG) backgroundWindow.webContents.openDevTools();
 
 	if (callback) {
 		backgroundWindow.once('ready-to-show', callback);
@@ -435,6 +437,7 @@ function init() {
 	// relay events to background task
 	ipcMain.on('download-files', (event, payload) => backgroundWindow.webContents.send('download-files', payload));
 	ipcMain.on('load-racks', (event, payload) => backgroundWindow.webContents.send('load-racks', payload));
+	ipcMain.on('cache-note', (event, payload) => backgroundWindow.webContents.send('cache-note', payload));
 	ipcMain.on('load-page', (event, payload) => {
 		if (backgroundBrowserWindow) {
 			backgroundBrowserWindow.webContents.send('load-page', payload);

@@ -13,45 +13,47 @@ function logMainProcess(message) {
 	ipcRenderer.send('console', message);
 }
 
-/**
- * @function loadNotes
- * @param  {type} library {description}
- * @param  {type} arrayRacks {description}
- * @return {type} {description}
- */
-function loadNotes(library, arrayRacks) {
+async function readNotesInsideFolders(allNotes, allImages, library, rack, folders, db) {
+	var arrayNotes = [];
+	var f;
+
+	for (f of folders) {
+		var newNotes = await libraryHelper.readNotesByFolder(library, f.path, db);
+		var newImages = await libraryHelper.readImagesByFolder(f.path);
+
+		allNotes = allNotes.concat(newNotes);
+		allImages = allImages.concat(newImages);
+
+		var fObj = {
+			notes: newNotes,
+			images: newImages,
+			folder: f.path,
+			rack: rack
+		};
+		if (f.folders) {
+			fObj.subnotes = await readNotesInsideFolders(allNotes, allImages, library, rack, f.folders, db);
+		}
+		arrayNotes.push(fObj);
+	}
+	return arrayNotes;
+}
+
+async function loadNotes(library, arrayRacks, db) {
 	var allNotes = [];
 	var allImages = [];
+	var r;
 
-	function readNotesInsideFolders(rack, folders) {
-		var arrayNotes = [];
-		folders.forEach((f) => {
-			var newNotes = libraryHelper.readNotesByFolder(f.path);
-			var newImages = libraryHelper.readImagesByFolder(f.path);
-
-			allNotes = allNotes.concat(newNotes);
-			allImages = allImages.concat(newImages);
-
-			var fObj = {
-				notes: newNotes,
-				images: newImages,
-				folder: f.path,
-				rack: rack
-			};
-			if (f.folders) {
-				fObj.subnotes = readNotesInsideFolders(rack, f.folders);
+	for (r of arrayRacks) {
+		try {
+			var arrayNotes = await readNotesInsideFolders(allNotes, allImages, library, r.rack, r.folders, db);
+			if (arrayNotes && arrayNotes.length > 0) {
+				ipcRenderer.send('loaded-notes', arrayNotes);
 			}
-			arrayNotes.push(fObj);
-		});
-		return arrayNotes;
+		} catch(err) {
+			logMainProcess(err.message)
+		}
 	}
 
-	arrayRacks.forEach((r) => {
-		var arrayNotes = readNotesInsideFolders(r.rack, r.folders);
-		if (arrayNotes && arrayNotes.length > 0) {
-			ipcRenderer.send('loaded-notes', arrayNotes);
-		}
-	});
 	ipcRenderer.send('loaded-all-notes', {
 		library: library,
 		notes: allNotes.map((note) => {
@@ -63,13 +65,7 @@ function loadNotes(library, arrayRacks) {
 	});
 }
 
-/**
- * @function loadFolders
- * @param  {type} library {description}
- * @param  {type} arrayRacks {description}
- * @return {type} {description}
- */
-function loadFolders(library, arrayRacks) {
+function loadFolders(arrayRacks) {
 	var arrayFolders = [];
 	arrayRacks.forEach((r) => {
 		if (r._type != 'rack') return;
@@ -80,7 +76,7 @@ function loadFolders(library, arrayRacks) {
 		});
 	});
 	ipcRenderer.send('loaded-folders', arrayFolders);
-	loadNotes(library, arrayFolders);
+	return arrayFolders;
 }
 
 window.onload = function () {
@@ -97,18 +93,35 @@ window.onload = function () {
 	});
 
 	ipcRenderer.on('load-racks', (event, data) => {
-		if (!data.library) return logMainProcess('load-racks: library missing');
+		if (!data.library) {
+			logMainProcess('load-racks: library missing');
+			return;
+		}
 
-		try {
+		libraryHelper.initDB(data.library).then((db) => {
 			var arrayRacks = libraryHelper.readRacks(data.library);
 			if (arrayRacks.length == 0) {
 				initialModels.initialSetup(data.library);
 				arrayRacks = libraryHelper.readRacks(data.library);
 			}
 			ipcRenderer.send('loaded-racks', { racks: arrayRacks });
-			loadFolders(data.library, arrayRacks);
-		} catch(e) {
-			logMainProcess(e.message);
+			var arrayFolders = loadFolders(arrayRacks);
+			return loadNotes(data.library, arrayFolders, db);
+		}).catch((err) => {
+			logMainProcess(err.message);
+		})
+	});
+
+	ipcRenderer.on('cache-note', (event, data) => {
+		if (!data.path || !data.library) {
+			logMainProcess('cache-note: path missing');
+			return;
 		}
+
+		libraryHelper.initDB(data.library).then((db) => {
+			return libraryHelper.insertNoteInDB(db, data)
+		}).catch((err) => {
+			logMainProcess(err.message);
+		})
 	});
 };

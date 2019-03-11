@@ -99,5 +99,8 @@ module.exports = {
 			}
 		]
 	},
+	externals: {
+		sqlite: 'commonjs sqlite',
+	},
 	plugins: webpackPlugins
 };

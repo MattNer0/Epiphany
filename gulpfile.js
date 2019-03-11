@@ -1,5 +1,6 @@
 const gulp     = require('gulp');
 const packager = require('electron-packager');
+const rebuild  = require('electron-rebuild');
 const _        = require('lodash');
 const path     = require('path');
 const fs       = require('fs');
@@ -16,7 +17,12 @@ var BASE_OPTION = {
 	ignore       : '(icons|releases|.idea.*|README\.md|\.DS_Store|env|gulpfile\.js|webpack\.config\.js|\.gitignore|\.gjslintrc)',
 	asar         : true,
 	prune        : true,
-	extraResource: ['./dist/icon.png','./dist/tray.png']
+	extraResource: ['./dist/icon.png','./dist/tray.png'],
+	afterCopy: [
+		(buildPath, electronVersion, platform, arch, callback) => {
+			rebuild({ buildPath, electronVersion, arch }).then(() => callback()).catch((error) => callback(error));
+		}
+	],
 };
 
 gulp.task('electron-darwin', function(done) {

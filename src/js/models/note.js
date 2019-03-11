@@ -18,9 +18,7 @@ class Note extends Model {
 
 		this._ext = data.extension || '.md';
 
-		var re = new RegExp('\\' + this._ext + '$');
-
-		this._name = data.name.replace(re, '');
+		this._name = data.name;
 		this._path = data.path;
 		if (data.folder || data.rack) {
 			this.rack = data.rack || data.folder.rack;
@@ -33,8 +31,26 @@ class Note extends Model {
 		this._trashed = false;
 		this._metadata = {};
 
+		if (data.photo) {
+			this._photo = path.basename(data.photo)
+		}
+
+		if (data.created_at && typeof data.created_at === 'number') {
+			this._metadata.createdAt = moment(data.created_at).format('YYYY-MM-DD HH:mm:ss');
+		}
+
+		if (data.updated_at && typeof data.updated_at === 'number') {
+			this._metadata.updatedAt = moment(data.updated_at).format('YYYY-MM-DD HH:mm:ss');
+		}
+
 		if (data.rack && data.rack.trash_bin) {
 			this._trashed = true;
+		}
+
+		if (data.summary) {
+			this._summary = data.summary;
+		} else {
+			this._summary = '';
 		}
 
 		if (!data.body || data.body == '') {
@@ -202,8 +218,11 @@ class Note extends Model {
 	}
 
 	get bodyWithoutTitle() {
-		if (this.body) {
+		if (this._body) {
 			return this.cleanPreviewBody(this.splitTitleFromBody().body);
+		}
+		if (this._summary) {
+			return this._summary;
 		}
 		return '';
 	}
@@ -264,19 +283,44 @@ class Note extends Model {
 	}
 
 	get img() {
-		var matched = (/(https?|epiphany|coonpad|pilemd):\/\/[-a-zA-Z0-9@:%_+.~#?&//=]+?\.(png|jpeg|jpg|gif)/).exec(this.body);
-		if (!matched) {
-			return null;
-		} else if (matched[1] == 'http' || matched[1] == 'https') {
-			return matched[0];
-		}
 		var dataUrl;
-		try {
-			dataUrl = new Image(matched[0], path.basename(matched[0]), this).makeAbsolutePath();
-		} catch (e) {
-			dataUrl = null;
+		if (this._photo) {
+			try {
+				dataUrl = new Image('epiphany://' + this._photo, this._photo, this).makeAbsolutePath();
+			} catch (e) {
+				dataUrl = null;
+			}
+			if (dataUrl) return dataUrl;
 		}
-		return dataUrl;
+		if (this._body) {
+			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/[-a-zA-Z0-9@:%_+.~#?&//=]+?\.(png|jpeg|jpg|gif)/).exec(this.body);
+			if (!matched) {
+				return null;
+			} else if (matched[1] == 'http' || matched[1] == 'https') {
+				return matched[0];
+			}
+			try {
+				dataUrl = new Image(matched[0], path.basename(matched[0]), this).makeAbsolutePath();
+			} catch (e) {
+				dataUrl = null;
+			}
+			return dataUrl;
+		}
+		return null;
+	}
+
+	get imgPath() {
+		if (this._body) {
+			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/([-a-zA-Z0-9@:%_+.~#?&//=]+?\.(png|jpeg|jpg|gif))/).exec(this.body);
+			if (!matched) {
+				return null;
+			} else if (matched[1] == 'http' || matched[1] == 'https') {
+				return matched[0];
+			} else {
+				return matched[2];
+			}
+		}
+		return null;
 	}
 
 	toJSON() {
@@ -438,7 +482,7 @@ class Note extends Model {
 	}
 
 	loadBody() {
-		if (this._loadedBody) return;
+		if (this._loadedBody) return false;
 
 		if (fs.existsSync(this.path)) {
 			var content = fs.readFileSync(this.path).toString();
@@ -446,7 +490,10 @@ class Note extends Model {
 				this.replaceBody(content);
 			}
 			this._loadedBody = true;
+			return true;
 		}
+
+		return false;
 	}
 
 	replaceBody(new_body) {
@@ -457,6 +504,24 @@ class Note extends Model {
 			this.downloadImages();
 		}
 		this._loadedBody = true;
+	}
+
+	getObjectDB(library) {
+		var photoPath = this.imgPath;
+		if (photoPath) {
+			photoPath = path.join(this.imagePath, photoPath)
+		}
+
+		var finalNote = {
+			name      : this.title,
+			photo     : photoPath ? path.relative(library, photoPath) : null,
+			summary   : this.bodyWithoutTitle.replace(/\n+/g, '\n').slice(0, 500),
+			path      : path.relative(library, this._path),
+			created_at: this.createdAt.valueOf(),
+			updated_at: this.updatedAt.valueOf(),
+			library   : library
+		};
+		return finalNote;
 	}
 
 	initializeCreationDate() {
@@ -510,6 +575,8 @@ class Note extends Model {
 	}
 
 	saveModel() {
+		console.log('save model???')
+		return; // @todo remove return
 		if(this._removed) return;
 
 		var body = this.bodyWithMetadata;

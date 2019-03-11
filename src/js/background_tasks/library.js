@@ -5,6 +5,9 @@ import ini from "ini";
 
 import { ipcRenderer } from "electron";
 import Datauri from "datauri";
+import sqlite from "sqlite";
+
+import models from "../models";
 
 /**
  * @function logError
@@ -109,6 +112,19 @@ function readFolderData(folder_path) {
 
 export default {
 
+	async initDB(library) {
+		models.setBaseLibraryPath(library);
+		var db = await sqlite.open(path.join(library,'epiphany.db'));
+		await db.run('CREATE TABLE IF NOT EXISTS notes '+
+			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, name TEXT, photo TEXT, summary TEXT, ' +
+			'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))');
+
+		//var diff = new Date().getTime() - 16070400000
+		//await db.run('DELETE FROM notes WHERE updated_at < ?', diff);
+
+		return db;
+	},
+
 	readRacks(library) {
 		var valid_racks = [];
 		if (fs.existsSync(library)) {
@@ -179,23 +195,28 @@ export default {
 			return [];
 		}
 	},
-	readNotesByFolder(folder) {
+	async readNotesByFolder(library, folder, db) {
 		if (!fs.existsSync(folder)) return [];
 
 		var valid_notes = [];
 		var notes = fs.readdirSync(folder);
-		notes.forEach((note) => {
+		var note;
+
+		for (note of notes) {
 			var notePath = path.join(folder, note);
-			if (fs.existsSync(notePath) && note.charAt(0) != ".") {
-				var noteData = isValidNotePath(notePath);
-				if (noteData) {
-					valid_notes.push(this.readNote(notePath, noteData));
-				}
+			var noteCache = await this.findNoteInDB(db, library, notePath)
+			if (noteCache) {
+				valid_notes.push(noteCache);
+
+			} else if (fs.existsSync(notePath) && note.charAt(0) != ".") {
+				var newNote = this.readNewNote(notePath);
+				//var newNote = await this.insertNoteInDB(db, library, notePath)
+				if (newNote) valid_notes.push(newNote);
 			}
-		});
+		}
 		return valid_notes;
 	},
-	readImagesByFolder(folder) {
+	async readImagesByFolder(folder) {
 		if (!fs.existsSync(folder)) return [];
 
 		var valid_images = [];
@@ -214,13 +235,14 @@ export default {
 		});
 		return valid_images;
 	},
-	readNote(notePath, noteData) {
-		var note = path.basename(notePath);
-		var body = fs.readFileSync(notePath).toString();
+	readNote(notePath, noteData, withBody) {
+		var note = path.basename(notePath, noteData.ext);
+		var body = null
+		if (withBody) body = fs.readFileSync(notePath).toString();
 		switch(noteData.ext) {
 			case '.mdencrypted':
 				return {
-					_type: 'encrypted',
+					type: 'encrypted',
 					name: note,
 					body: body,
 					path: notePath,
@@ -228,7 +250,7 @@ export default {
 				};
 			case '.opml':
 				return {
-					_type: 'outline',
+					type: 'outline',
 					name: note,
 					body: body,
 					path: notePath,
@@ -236,7 +258,7 @@ export default {
 				};
 			default:
 				return {
-					_type: 'note',
+					type: 'note',
 					name: note,
 					body: body,
 					path: notePath,
@@ -247,5 +269,57 @@ export default {
 	isNoteFile(filePath) {
 		if (!filePath) return false;
 		return isValidNotePath(filePath);
+	},
+	readNewNote(notePath) {
+		var noteData = isValidNotePath(notePath);
+		if (noteData) {
+			return this.readNote(notePath, noteData, false)
+		}
+		return null;
+	},
+	async insertNoteInDB(db, finalNote) {
+		var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', finalNote.path)
+		if (data) {
+			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== finalNote.photo) {
+				await db.run('UPDATE notes SET (name, summary, photo, created_at, updated_at) = (?, ?, ?, ?, ?) WHERE path = ?',
+					[finalNote.name, finalNote.summary, finalNote.photo, finalNote.created_at, finalNote.updated_at, finalNote.path]);
+			}
+		} else {
+			await db.run('INSERT INTO notes (name, summary, photo, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+				[finalNote.name, finalNote.summary, finalNote.photo, finalNote.path, finalNote.created_at, finalNote.updated_at]);
+		}
+	},
+	async findNoteInDB(db, library, notePath) {
+		try {
+			var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', path.relative(library, notePath))
+			if (data) {
+				var extension = path.extname(notePath);
+				var type;
+
+				switch(extension) {
+					case '.mdencrypted':
+						type = 'encrypted';
+					case '.opml':
+						type = 'outline';
+					default:
+						type = 'note';
+				}
+
+				return {
+					type      : type,
+					name      : data.name,
+					summary   : data.summary,
+					path      : path.join(library, data.path),
+					photo     : data.photo ? path.join(library, data.photo) : null,
+					created_at: data.created_at,
+					updated_at: data.updated_at,
+					extension : extension
+				}
+			}
+		} catch(err) {
+			logMainProcess(err.message)
+		}
+
+		return null;
 	}
 };

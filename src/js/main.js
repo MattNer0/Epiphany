@@ -89,6 +89,7 @@ var appVue = new Vue({
 		selectedRack     : null,
 		selectedFolder   : null,
 		selectedNote     : null,
+		timeoutNoteChange: false,
 		editTheme        : null,
 		showHistory      : false,
 		showSearch       : false,
@@ -312,7 +313,7 @@ var appVue = new Vue({
 			obj.notes.forEach((n) => {
 				n.rack = rack;
 				n.folder = folder;
-				switch(n._type) {
+				switch(n.type) {
 					case 'encrypted':
 						notes.push(new models.EncryptedNote(n));
 						break;
@@ -610,14 +611,6 @@ var appVue = new Vue({
 			if (should_update_size) {
 				this.update_editor_size();
 			}
-
-			if (same_rack) {
-				this.$nextTick(() => {
-					this.toggleFullScreen();
-				});
-			} else {
-				this.setFullScreen(false);
-			}
 		},
 		changeFolder(folder, weak) {
 			if (weak && folder && (this.showAll || this.showFavorites) && this.selectedRack == folder.rack) return;
@@ -674,6 +667,11 @@ var appVue = new Vue({
 
 			this.editTheme = null;
 
+			this.timeoutNoteChange = true
+			setTimeout(() => {
+				this.timeoutNoteChange = false
+			}, 200)
+
 			if (note === null) {
 				this.selectedNote = null;
 				return;
@@ -712,7 +710,11 @@ var appVue = new Vue({
 			if (note instanceof models.Outline) {
 				this.selectedNote = note;
 			} else {
-				if (!note.body) note.loadBody();
+				if (!note.body) {
+					if (note.loadBody()) {
+						ipcRenderer.send('cache-note', note.getObjectDB(models.getBaseLibraryPath()));
+					}
+				}
 				if (note.isEncrypted) {
 					var message = 'Insert the secret key to Encrypt and Decrypt this note';
 					this.$refs.dialog.init('Secret Key', message, [{
@@ -1549,9 +1551,11 @@ var appVue = new Vue({
 				this.updatePreview();
 			}
 		},
-		'selectedNote.body': function() {
+		'selectedNote.body': function(newBody, oldBody) {
 			if (this.selectedNote instanceof models.Outline) return;
-			this.saveNote();
+			if (oldBody && !this.timeoutNoteChange) {
+				this.saveNote();
+			}
 		},
 		selectedRack() {
 			this.scrollUpScrollbarNotes();

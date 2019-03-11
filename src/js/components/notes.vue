@@ -25,7 +25,7 @@
 					| No Title
 				.my-notes-note-image(v-if="note.img")
 					img(:src="note.img")
-				.my-notes-note-body(v-if="!note.img && note.body.length != 0")
+				.my-notes-note-body(v-else)
 					| {{ note.bodyWithoutTitle | truncate(80) }}
 
 </template>
