@@ -1,26 +1,6 @@
-# ide
-.idea/
-.vscode/
-
-# node
-
-node_modules/
-
-# front dist
-dist/build/app.js
-dist/build/background.js
-dist/build/bbrowser.js
-
-# What a shame. it's OSX
 .DS_Store
-
+.directory
+dist/
+node_modules/
 releases/
-build/
-
-MYREADME.md
-mv_to_opt.sh
-package-lock.json
-yarn.lock
-
-*/.directory
-*/*/.directory
+thumbs.db

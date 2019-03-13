@@ -1,0 +1,21 @@
+{
+	"productName": "Epiphany",
+	"buildDependenciesFromSource": true,
+	"directories": {
+		"output": "releases"
+	},
+	"extraFiles": [{
+		"from": "static/icon.png",
+		"to": "icon.png"
+	}],
+	"linux": {
+		"target": ["AppImage", "deb"],
+		"executableName": "epiphany-journal",
+		"icon": "icons/epiphany.iconset",
+		"maintainer": "MattNer0 <neromatt@tutanota.com>",
+		"synopsis": "Epiphany is a Digital Journal to write down and organize your ideas.",
+		"description": "Epiphany is a Digital Journal to write down and organize your ideas.",
+		"category": "Utility",
+		"mimeTypes": [ "text/markdown" ]
+	}
+}

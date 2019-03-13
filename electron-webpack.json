@@ -1,0 +1,11 @@
+{
+	"commonSourceDirectory": "src/common",
+	"title": true,
+	"main": {
+		"sourceDirectory": "src/main"
+	},
+	"renderer": {
+		"sourceDirectory": "src/renderer",
+		"webpackConfig": "webpack.renderer.config.js"
+	}
+}

@@ -29,37 +29,17 @@
 
 ```
 npm install
-npm run build
-npm run start
-```
-
-or
-
-```
-npm install
-npm run develop
+yarn dev
 ```
 
 ## Build (production)
 
 ```
-npm run linux
+yarn dist
 ```
 
 or
 
 ```
-npm run linux && npm run deb64
-```
-
-or
-
-```
-npm run windows
-```
-
-or
-
-```
-npm run darwin
+yarn dist -l
 ```
