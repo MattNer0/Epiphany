@@ -17,5 +17,9 @@
 		"description": "Epiphany is a Digital Journal to write down and organize your ideas.",
 		"category": "Utility",
 		"mimeTypes": [ "text/markdown" ]
+	},
+	"win": {
+		"target": ["portable"],
+		"icon": "icons/epiphany.ico"
 	}
 }
