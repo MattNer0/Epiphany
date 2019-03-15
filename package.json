@@ -83,18 +83,5 @@
         "dev": "electron-webpack dev",
         "dist": "yarn compile && electron-builder",
         "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
-    },
-    "scripts-old": {
-        "build": "NODE_ENV=development webpack --display-modules",
-        "darwin": "NODE_ENV=production webpack && gulp electron-darwin",
-        "deb64": "electron-installer-debian --src releases/linux/Epiphany-linux-x64 --arch amd64 --config src/deb/debconfig.json",
-        "develop": "NODE_ENV=development webpack && NODE_ENV=development electron ./dist",
-        "linux": "NODE_ENV=production webpack && electron-builder --config builder_config.json --linux --dir",
-        "linux-old": "NODE_ENV=production webpack && gulp electron-linux",
-        "postinstall": "electron-builder install-app-deps",
-        "rebuild": "electron-rebuild -f -w sqlite",
-        "start": "electron .",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "windows": "NODE_ENV=production webpack && gulp electron-windows"
     }
 }

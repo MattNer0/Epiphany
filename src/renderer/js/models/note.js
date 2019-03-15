@@ -36,11 +36,11 @@ class Note extends Model {
 			this._photo = path.basename(data.photo)
 		}
 
-		if (data.created_at && typeof data.created_at === 'number') {
+		if (data.created_at && (typeof data.created_at === 'number' || data.created_at instanceof Date)) {
 			this._metadata.createdAt = moment(data.created_at).format('YYYY-MM-DD HH:mm:ss');
 		}
 
-		if (data.updated_at && typeof data.updated_at === 'number') {
+		if (data.updated_at && (typeof data.updated_at === 'number' || data.updated_at instanceof Date)) {
 			this._metadata.updatedAt = moment(data.updated_at).format('YYYY-MM-DD HH:mm:ss');
 		}
 
@@ -125,8 +125,7 @@ class Note extends Model {
 	}
 
 	get metadataregex() {
-		return /^(([+-]{3,}\n)|([a-z]+)\s?[:=]\s+['"]?([\w\W\s]+?)['"]?\s*\n(?=(\w+\s?[:=])|\n|([+-]{3,}\n)?))\n*/gmiy;
-		//return /^((\+\+\++\n)|([a-z]+)\s?[:=]\s+[`'"]?([\w\W\s]+?)[`'"]?\s*\n(?=(\w+\s?[:=])|\n|(\+\+\++\n)?))\n*/gmiy;
+		return (/^(([+-]{3,}\n)|([a-z]+)\s?[:=]\s+['"]?([\w\W\s]+?)['"]?\s*\n(?=(\w+\s?[:=])|\n|([+-]{3,}\n)?))\n*/gmiy);
 	}
 
 	get metadata() {
@@ -437,11 +436,6 @@ class Note extends Model {
 		var metadata = {};
 		var m;
 
-		/**
-		 * @function cleanMatch
-		 * @param  {type} m {description}
-		 * @return {type} {description}
-		 */
 		function cleanMatch(m) {
 			if (!m) return m;
 			var newM = [];
@@ -510,7 +504,7 @@ class Note extends Model {
 	getObjectDB(library) {
 		var photoPath = this.imgPath;
 		if (photoPath) {
-			photoPath = path.join(this.imagePath, photoPath)
+			photoPath = path.join(this.imagePath, photoPath);
 		}
 
 		var finalNote = {

@@ -174,7 +174,7 @@ function style_object(obj) {
 					borderColor: obj["sidebar-color"]
 				}
 			},
-			".my-shelf-banner" : {
+			".my-shelf-banner, .my-search" : {
 				color: obj["sidebar-color"],
 				backgroundColor: obj["fixed-sidebar-background"],
 

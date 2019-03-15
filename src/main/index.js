@@ -91,6 +91,7 @@ function createMainWindow() {
 		frame            : false,
 		webPreferences   : {
 			nodeIntegration     : true,
+			contextIsolation    : false,
 			devTools            : isDevelopment,
 			webgl               : false,
 			webaudio            : false,
@@ -132,7 +133,12 @@ function createBackgroundWindow() {
 		data: {
 			windowName: windowName.background
 		},
-		windowOptions: {}
+		windowOptions: {
+			webPreferences: {
+				nodeIntegration     : true,
+				contextIsolation    : false
+			}
+		}
 	});
 
 	window.on('closed', () => {
@@ -149,7 +155,12 @@ function createBrowserWindow(callback) {
 		data: {
 			windowName: windowName.browser
 		},
-		windowOptions: {},
+		windowOptions: {
+			webPreferences: {
+				nodeIntegration     : false,
+				contextIsolation    : true
+			}
+		},
 		callback     : callback
 	});
 
@@ -173,7 +184,11 @@ function createPopupWindow(width, height, callback) {
 		parent           : mainWindow,
 		alwaysOnTop      : true,
 		darkTheme        : true,
-		frame            : false
+		frame            : false,
+		webPreferences: {
+			nodeIntegration     : true,
+			contextIsolation    : false
+		}
 	}
 
 	switch(height) {

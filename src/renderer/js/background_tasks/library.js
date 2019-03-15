@@ -227,31 +227,39 @@ export default {
 	readNote(notePath, noteData, withBody) {
 		var note = path.basename(notePath, noteData.ext);
 		var body = null
+		var created_at = noteData.stat && noteData.stat.birthtime ? noteData.stat.birthtime.valueOf() : null;
+		var updated_at = noteData.stat && noteData.stat.mtime ? noteData.stat.mtime.valueOf() : null;
 		if (withBody) body = fs.readFileSync(notePath).toString();
 		switch(noteData.ext) {
 			case '.mdencrypted':
 				return {
-					type: 'encrypted',
-					name: note,
-					body: body,
-					path: notePath,
-					extension: noteData.ext
+					type      : 'encrypted',
+					name      : note,
+					body      : body,
+					path      : notePath,
+					created_at: created_at,
+					updated_at: updated_at,
+					extension : noteData.ext
 				};
 			case '.opml':
 				return {
-					type: 'outline',
-					name: note,
-					body: body,
-					path: notePath,
-					extension: noteData.ext
+					type      : 'outline',
+					name      : note,
+					body      : body,
+					path      : notePath,
+					created_at: created_at,
+					updated_at: updated_at,
+					extension : noteData.ext
 				};
 			default:
 				return {
-					type: 'note',
-					name: note,
-					body: body,
-					path: notePath,
-					extension: noteData.ext
+					type      : 'note',
+					name      : note,
+					body      : body,
+					path      : notePath,
+					created_at: created_at,
+					updated_at: updated_at,
+					extension : noteData.ext
 				};
 		}
 	},
