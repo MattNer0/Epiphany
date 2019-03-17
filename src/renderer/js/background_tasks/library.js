@@ -275,20 +275,30 @@ export default {
 		return null;
 	},
 	async insertNoteInDB(db, finalNote) {
-		var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', finalNote.path)
+		let relativePath = finalNote.path
+		let photoPath = finalNote.photo
+		if (path.sep === '\\') {
+			relativePath = relativePath.split(path.sep).join('/')
+			photoPath = photoPath.split(path.sep).join('/')
+		}
+		var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', relativePath)
 		if (data) {
-			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== finalNote.photo) {
+			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== photoPath) {
 				await db.run('UPDATE notes SET (name, summary, photo, created_at, updated_at) = (?, ?, ?, ?, ?) WHERE path = ?',
-					[finalNote.name, finalNote.summary, finalNote.photo, finalNote.created_at, finalNote.updated_at, finalNote.path]);
+					[finalNote.name, finalNote.summary, photoPath, finalNote.created_at, finalNote.updated_at, relativePath]);
 			}
 		} else {
 			await db.run('INSERT INTO notes (name, summary, photo, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-				[finalNote.name, finalNote.summary, finalNote.photo, finalNote.path, finalNote.created_at, finalNote.updated_at]);
+				[finalNote.name, finalNote.summary, photoPath, finalNote.path, finalNote.created_at, finalNote.updated_at]);
 		}
 	},
 	async findNoteInDB(db, library, notePath) {
 		try {
-			var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', path.relative(library, notePath))
+			let relativePath = path.relative(library, notePath)
+			if (path.sep === '\\') {
+				relativePath = relativePath.split(path.sep).join('/')
+			}
+			var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', relativePath)
 			if (data) {
 				var extension = path.extname(notePath);
 				var type;

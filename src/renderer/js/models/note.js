@@ -293,7 +293,7 @@ class Note extends Model {
 			if (dataUrl) return dataUrl;
 		}
 		if (this._body) {
-			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/[-a-zA-Z0-9@:%_+.~#?&//=]+?\.(png|jpeg|jpg|gif)/).exec(this.body);
+			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/[-a-zA-Z0-9@:%_+.~#?&/\\=]+?\.(png|jpeg|jpg|gif)/).exec(this.body);
 			if (!matched) {
 				return null;
 			} else if (matched[1] == 'http' || matched[1] == 'https') {
@@ -311,7 +311,7 @@ class Note extends Model {
 
 	get imgPath() {
 		if (this._body) {
-			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/([-a-zA-Z0-9@:%_+.~#?&//=]+?\.(png|jpeg|jpg|gif))/).exec(this.body);
+			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/([-a-zA-Z0-9@:%_+.~#?&/\\=]+?\.(png|jpeg|jpg|gif))/).exec(this.body);
 			if (!matched) {
 				return null;
 			} else if (matched[1] == 'http' || matched[1] == 'https') {
@@ -609,7 +609,7 @@ class Note extends Model {
 							break;
 						}
 					}
-	
+
 					if (new_path) {
 						fs.writeFileSync(new_path, body);
 						util_file.moveFolderRecursiveSync(
@@ -784,7 +784,7 @@ class Outline extends Note {
 	set nodes(newValue) {
 		this._nodes = newValue;
 	}
-	
+
 	get nodes() {
 		return this._nodes;
 	}

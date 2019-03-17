@@ -248,7 +248,8 @@ app.on('activate', () => {
 app.on('ready', () => {
 
 	protocol.registerFileProtocol('epiphany', (request, callback) => {
-		const url = request.url.substr(9);
+		const url = request.url.substr(11);
+		console.log(decodeURI(url))
 		callback({ path: path.normalize(decodeURI(url)) });
 	}, (err) => {
 		if (err) console.error('Failed to register protocol');
@@ -268,7 +269,7 @@ app.on('ready', () => {
 			log.info('Saved to '+ dl.getSavePath())
 		}).catch(log.error);
 	});
-	
+
 	// relay events to background task
 	ipcMain.on('download-files', (event, payload) => backgroundWindow.webContents.send('download-files', payload));
 	ipcMain.on('load-racks', (event, payload) => backgroundWindow.webContents.send('load-racks', payload));
@@ -282,7 +283,7 @@ app.on('ready', () => {
 			});
 		}
 	});
-	
+
 	ipcMain.on('kill-bbrowser', (event, payload) => {
 		if (backgroundBrowserWindow) backgroundBrowserWindow.close();
 	});
@@ -296,7 +297,7 @@ app.on('ready', () => {
 			});
 		}
 	});
-	
+
 	// relay events to main task
 	ipcMain.on('loaded-racks', (event, payload) => mainWindow.webContents.send('loaded-racks', payload));
 	ipcMain.on('loaded-folders', (event, payload) => mainWindow.webContents.send('loaded-folders', payload));
@@ -306,7 +307,7 @@ app.on('ready', () => {
 		//start watching file changes
 		//backgroundWindow.webContents.send('loaded-all-notes', payload);
 	});
-	
+
 	ipcMain.on('load-page-fail', (event, payload) => mainWindow.webContents.send('load-page-fail', payload));
 	ipcMain.on('load-page-success', (event, payload) => mainWindow.webContents.send('load-page-success', payload));
 	ipcMain.on('load-page-favicon', (event, payload) => mainWindow.webContents.send('load-page-favicon', payload));

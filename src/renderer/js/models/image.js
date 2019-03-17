@@ -27,7 +27,7 @@ class Image {
 
 	makeFilePath() {
 		var p = this.localURL.replace(/^epiphany:\/\//i,'');
-		if(p.indexOf('.images/') == 0) {
+		if (p.indexOf('.images/') == 0) {
 			return path.join(Library.baseLibraryPath, p);
 		}
 
