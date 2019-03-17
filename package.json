@@ -62,7 +62,6 @@
         "electron": "^4.0.8",
         "electron-builder": "^20.38.5",
         "electron-devtools-installer": "^2.2.4",
-        "electron-installer-debian": "^1.1.0",
         "electron-packager": "^13.1.0",
         "electron-rebuild": "^1.8.4",
         "electron-webpack": "^2.6.2",
