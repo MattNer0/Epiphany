@@ -1,18 +1,9 @@
 import { ipcRenderer } from "electron";
 
 import htmlToMarkdown from "./background_tasks/htmlToMarkdown";
-import downloadHelper from "./background_tasks/download";
+import log from 'electron-log';
 
 export default function() {
-	/**
-	 * @function logError
-	 * @param  {type} message {description}
-	 * @return {type} {description}
-	 */
-	function logMainProcess(message) {
-		ipcRenderer.send('console', message);
-	}
-
 	var webviewEl;
 	function setWebviewData(data) {
 		if (!data) {
@@ -33,11 +24,6 @@ export default function() {
 
 		webviewEl.src = '';
 		webviewEl.title = '';
-	}
-
-	function compressThumbnail(thumbnail) {
-		thumbnail = thumbnail.resize({ width: 150 });
-		return thumbnail.toDataURL();
 	}
 
 	window.onload = function () {
@@ -65,13 +51,13 @@ export default function() {
 						break;
 				}
 			} catch(e) {
-				logMainProcess(e.message);
+				log.error(e.message);
 			}
 		});
 		webviewEl.addEventListener('did-fail-load', (e) => {
 			if (e.isMainFrame && e.errorCode > 0) {
-				logMainProcess('page load failed: '+webviewEl.src);
-				logMainProcess('error '+e.errorCode+': '+e.errorDescription);
+				log.warn('page load failed: '+webviewEl.src);
+				log.warn('error '+e.errorCode+': '+e.errorDescription);
 				ipcRenderer.send('load-page-fail', {
 					url : webviewEl.src,
 					mode: webviewEl.title
@@ -81,13 +67,13 @@ export default function() {
 		});
 
 		ipcRenderer.on('load-page', (event, data) => {
-			if (!data.url) return logMainProcess('load page: url missing');
+			if (!data.url) return log.error('load page: url missing');
 			try {
 				setWebviewData(data);
 				webviewEl.title = data.mode || 'undefined';
 				webviewEl.loadURL(data.url);
 			} catch(e) {
-				logMainProcess(e.message);
+				log.error(e.message);
 			}
 		});
 	};

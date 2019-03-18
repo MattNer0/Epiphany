@@ -26,6 +26,7 @@ export default {
 	Note          : Note,
 	EncryptedNote : EncryptedNote,
 	Outline       : Outline,
+	OutNode       : OutNode,
 	Folder        : Folder,
 	Rack          : Rack,
 	getBaseLibraryPath() {

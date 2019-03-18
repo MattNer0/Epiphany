@@ -127,9 +127,6 @@
 </template>
 
 <script>
-
-	import Vue from "vue";
-
 	export default {
 		name: 'settingsMenu',
 		props: {
@@ -162,7 +159,7 @@
 				this.$root.racksWidth = 200;
 				this.$root.notesWidth = 200;
 				this.$root.init_sidebar_width();
-				Vue.nextTick(() => {
+				this.$nextTick(() => {
 					this.$root.save_editor_size();
 				});
 			},

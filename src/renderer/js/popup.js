@@ -12,8 +12,6 @@ export default function() {
 	
 	Vue.use(VTooltip);
 
-	// electron things
-	
 	const { Menu, MenuItem } = remote;
 
 	// not to accept image dropping and so on.
@@ -26,23 +24,23 @@ export default function() {
 		e.stopPropagation();
 	});
 
-	var appVue = new Vue({
+	new Vue({
 		el: '#app',
 		template: require('../html/popup.html'),
 		data: {
-			currentTheme     : "",
-			type             : "",
-			title            : "",
-			message          : "",
-			libraryPath      : "",
-			menuBar          : false,
-			inputPlaceholder : "",
-			inputDefault     : "",
-			inputRequired    : true,
-			inputButtons     : [],
-			reduceToTray     : true,
-			alphanumericOnly : false,
-			closingCallback  : null
+			currentTheme    : "",
+			type            : "",
+			title           : "",
+			message         : "",
+			libraryPath     : "",
+			menuBar         : false,
+			inputPlaceholder: "",
+			inputDefault    : "",
+			inputRequired   : true,
+			inputButtons    : [],
+			reduceToTray    : true,
+			alphanumericOnly: false,
+			closingCallback : null
 		},
 		components: {
 			'titleBar'      : component_titleBar,
@@ -163,5 +161,4 @@ export default function() {
 			}
 		}
 	});
-	global.appVue = appVue;
 }

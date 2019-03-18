@@ -58,20 +58,19 @@
 			'foldersSpecial': component_folders_special,
 		},
 		props: {
-			'buckets'           : Array,
-			'selectedBucket'    : Object,
-			'selectedFolder'    : Object,
-			'selectedNote'      : Object,
-			'draggingBucket'    : Object,
-			'draggingFolder'    : Object,
-			'draggingNote'      : Object,
-			'isFullScreen'      : Boolean,
-			'changeBucket'      : Function,
-			'changeFolder'      : Function,
-			'editingFolder'     : String,
-			'originalNameBucket': String,
-			'search'            : String,
-			'showHidden'        : Boolean
+			'buckets'       : Array,
+			'selectedBucket': Object,
+			'selectedFolder': Object,
+			'selectedNote'  : Object,
+			'draggingBucket': Object,
+			'draggingFolder': Object,
+			'draggingNote'  : Object,
+			'isFullScreen'  : Boolean,
+			'changeBucket'  : Function,
+			'changeFolder'  : Function,
+			'editingFolder' : String,
+			'search'        : String,
+			'showHidden'    : Boolean
 		},
 		directives: {
 			focus(element) {
@@ -87,13 +86,6 @@
 			}
 		},
 		methods: {
-			/*tooltipBucket(bucket) {
-				return {
-					'content'          : bucket.quick_notes ? 'Quick Notes' : bucket.name,
-					'placement'        : 'left',
-					'boundariesElement': 'body'
-				};
-			},*/
 			classBucket(bucket) {
 				if (bucket) {
 					return {

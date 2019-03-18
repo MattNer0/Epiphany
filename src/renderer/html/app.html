@@ -35,35 +35,11 @@
 							:change-folder="changeFolder"
 							:editing-folder="editingFolder"
 							:is-full-screen="isFullScreen"
-							:original-name-bucket="originalNameRack"
 							:search="search"
 							:show-hidden="showHidden"
 							ref="refBuckets">
 						</buckets>
 					</div>
-					<!--@contextmenu="foldersMenu()"
-						div class="my-shelf-folders-outer">
-						<folders-special
-							v-if="selectedRack"
-							:bucket="selectedRack"
-							:show-all="showAll"
-							:show-favorites="showFavorites"
-							:dragging-folder="draggingFolder"
-							:search="search">
-						</folders-special>
-						<folders
-							v-if="selectedRack"
-							:parent-folder="selectedRack"
-							:selected-note="selectedNote"
-							:selected-folder="selectedFolder"
-							:dragging-folder="draggingFolder"
-							:dragging-note="draggingNote"
-							:change-bucket="changeRack"
-							:change-folder="changeFolder"
-							:editing-folder="editingFolder"
-							:search="search">
-						</folders>
-					</div-->
 				</div>
 				<handler-stack
 					v-show="loadedRack || showSearch"

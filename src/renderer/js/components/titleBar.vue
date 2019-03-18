@@ -34,7 +34,6 @@
 
 	import path from "path";
 	import elosenv from "../utils/elosenv";
-	import Vue from "vue";
 
 	import models from "../models";
 
@@ -78,7 +77,7 @@
 				this.$root.racksWidth = 220;
 				this.$root.notesWidth = 220;
 				this.$root.init_sidebar_width();
-				Vue.nextTick(() => {
+				this.$nextTick(() => {
 					this.$root.save_editor_size();
 				});
 			},

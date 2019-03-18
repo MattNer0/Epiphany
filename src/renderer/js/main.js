@@ -68,7 +68,6 @@ export default function() {
 		el: '#app',
 		template: require('../html/app.html'),
 		data: {
-			loadedEverything : false,
 			loadedRack       : false,
 			isFullScreen     : false,
 			isPreview        : false,
@@ -98,12 +97,10 @@ export default function() {
 			noteTabs         : [],
 			editingBucket    : null,
 			editingFolder    : null,
-			originalNameRack : "",
 			draggingRack     : null,
 			draggingFolder   : null,
 			draggingNote     : null,
 			search           : '',
-			loadingUid       : '',
 			allDragHover     : false,
 			messages         : [],
 			modalShow        : false,
@@ -360,24 +357,17 @@ export default function() {
 			ipcRenderer.on('loaded-all-notes', (event, data) => {
 				if (!data) return;
 
-				elosenv.console.log("Loaded all notes in the library.");
-
 				if (self.keepHistory && self.notes.length > 1) {
 					self.notesHistory = arr.sortBy(self.notes.filter((obj) => {
 						return !obj.isEncrypted && !obj.rack.trash_bin;
 					}), 'updatedAt').slice(0,10);
 				}
 
-				var loading_note = false;
-
 				traymenu.init();
 				titleMenu.init();
 
-				self.loadedEverything = true;
-
 				if (self.notes.length == 1) {
 					self.changeNote(self.notes[0]);
-					loading_note = true;
 
 				} else if (remote.getGlobal('argv')) {
 					var argv = remote.getGlobal('argv');
@@ -388,18 +378,15 @@ export default function() {
 						} else {
 							elosenv.console.error("Path not valid");
 						}
-						loading_note = true;
 					}
 				}
 			});
 
 			ipcRenderer.on('load-page-fail', (event, data) => {
 				self.sendFlashMessage(5000, 'error', 'Load Failed');
-				self.loadingUid = '';
 			});
 
 			ipcRenderer.on('load-page-finish', (event, data) => {
-				self.loadingUid = '';
 			});
 
 			ipcRenderer.on('load-page-success', (event, data) => {
@@ -594,7 +581,6 @@ export default function() {
 				} else if (rack === null || rack instanceof models.Rack) {
 					this.selectedRack = rack;
 					this.editingFolder = null;
-					this.originalNameRack = "";
 
 					this.showHistory = false;
 					this.showSearch = false;
@@ -616,7 +602,6 @@ export default function() {
 				if (weak && folder && (this.showAll || this.showFavorites) && this.selectedRack == folder.rack) return;
 				if ((this.selectedFolder === null && folder) || (this.selectedFolder && folder === null)) this.update_editor_size();
 				this.editingFolder = null;
-				this.originalNameRack = "";
 
 				if (folder && !this.showSearch && !this.showHistory) this.selectedRack = folder.rack;
 				this.selectedFolder = folder;
@@ -624,11 +609,8 @@ export default function() {
 				this.showFavorites = false;
 			},
 			showAllRack(rack) {
-				//this.changeRack(rack);
-
 				this.selectedFolder = null;
 				this.editingFolder = null;
-				this.originalNameRack = "";
 				this.showHistory = false;
 				this.showSearch = false;
 				this.showAll = true;
@@ -637,11 +619,8 @@ export default function() {
 				this.update_editor_size();
 			},
 			showFavoritesRack(rack) {
-				//this.changeRack(rack);
-
 				this.selectedFolder = null;
 				this.editingFolder = null;
-				this.originalNameRack = "";
 				this.showHistory = false;
 				this.showSearch = false;
 				this.showAll = false;
