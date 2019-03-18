@@ -135,6 +135,7 @@ function createBackgroundWindow() {
 		},
 		windowOptions: {
 			webPreferences: {
+				devTools            : isDevelopment,
 				nodeIntegration     : true,
 				contextIsolation    : false
 			}
@@ -157,8 +158,9 @@ function createBrowserWindow(callback) {
 		},
 		windowOptions: {
 			webPreferences: {
-				nodeIntegration     : false,
-				contextIsolation    : true
+				devTools            : isDevelopment,
+				nodeIntegration     : true,
+				contextIsolation    : isDevelopment ? false : true
 			}
 		},
 		callback     : callback

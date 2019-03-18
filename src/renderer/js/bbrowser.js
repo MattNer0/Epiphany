@@ -5,6 +5,13 @@ import log from 'electron-log';
 
 export default function() {
 	var webviewEl;
+
+	function openData(data) {
+		setWebviewData(data);
+		webviewEl.title = data.mode || 'undefined';
+		webviewEl.loadURL(data.url);
+	}
+
 	function setWebviewData(data) {
 		if (!data) {
 			ipcRenderer.send('kill-bbrowser');
@@ -27,8 +34,9 @@ export default function() {
 	}
 
 	window.onload = function () {
-		webviewEl = document.getElementById('webview');
-
+		webviewEl = document.createElement('webview');
+		webviewEl.id = 'webview';
+		webviewEl.src = 'about:blank';
 		webviewEl.addEventListener('dom-ready', (e) => {
 			try {
 				if (webviewEl.isLoading() && webviewEl.isWaitingForResponse()) {
@@ -65,14 +73,14 @@ export default function() {
 				setWebviewData();
 			}
 		});
+		document.body.appendChild(webviewEl);
 
 		ipcRenderer.on('load-page', (event, data) => {
 			if (!data.url) return log.error('load page: url missing');
 			try {
-				setWebviewData(data);
-				webviewEl.title = data.mode || 'undefined';
-				webviewEl.loadURL(data.url);
+				openData(data);
 			} catch(e) {
+				log.error('load-page failed');
 				log.error(e.message);
 			}
 		});
