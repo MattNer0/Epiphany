@@ -1,190 +1,178 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs'
+import path from 'path'
 
-import _ from "lodash";
-import searcher from "../searcher";
+import _ from 'lodash'
+import searcher from '../searcher'
 
-import jsonDataFile from "../utils/jsonDataFile";
-import util_file from "../utils/file";
+import jsonDataFile from '../utils/jsonDataFile'
+import utilFile from '../utils/file'
 
-import Model from "./baseModel";
+import Model from './baseModel'
 
-var Library;
+var Library
 
 class Rack extends Model {
 
 	constructor(data) {
-		super(data);
+		super(data)
 
-		this.name = data.name.replace(/^\d+\. /, "") || '';
-		this.previousName = this.name;
+		this.name = data.name.replace(/^\d+\. /, '') || ''
+		this.previousName = this.name
 
-		this.ordering = data.ordering || 0;
+		this.ordering = data.ordering || 0
 
-		this._path = data.path;
+		this._path = data.path
 
-		this.dragHover = false;
-		this.sortUpper = false;
-		this.sortLower = false;
+		this.dragHover = false
+		this.sortUpper = false
+		this.sortLower = false
 
-		this._icon = data.icon;
-		this._hidden = data.hidden;
-		this.trash_bin = data.trash_bin;
-		this.quick_notes = data.quick_notes;
+		this._icon = data.icon
+		this._hidden = data.hidden
+		this.trash_bin = data.trash_bin
+		this.quick_notes = data.quick_notes
 
-		this._openFolder = false;
+		this._openFolder = false
 
-		this.hideLabel = data.hide_label || false;
+		this.hideLabel = data.hide_label || false
 
-		this.folders = [];
+		this.folders = []
 	}
 
 	get data() {
 		return _.assign(super.data, {
-			name: this.name,
-			fsName: this.fsName,
+			name    : this.name,
+			fsName  : this.fsName,
 			ordering: this.ordering,
-			path: this._path,
-		});
+			path    : this._path
+		})
 	}
 
 	get fsName() {
-		return this.name ? this.name.replace(/[^\w\. _-]/g, '') : "";
+		return this.name ? this.name.replace(/[^\w. _-]/g, '') : ''
 	}
 
 	get path() {
-		if (this.previousName == this.name && this._path && fs.existsSync(this._path)) {
-			return this._path;
+		if (this.previousName === this.name && this._path && fs.existsSync(this._path)) {
+			return this._path
 		}
-		var new_path = path.join(
+		var newPath = path.join(
 			Library.baseLibraryPath,
 			this.fsName
-		);
-		return new_path;
+		)
+		return newPath
 	}
 
 	set path(newValue) {
-		if (newValue != this._path) {
-			this._path = newValue;
+		if (newValue !== this._path) {
+			this._path = newValue
 		}
 	}
 
 	get allnotes() {
-		var all_notes = [];
+		var allNotes = []
 		this.folders.forEach((folder) => {
-			all_notes = all_notes.concat(folder.allnotes);
-		});
-		return all_notes;
+			allNotes = allNotes.concat(folder.allnotes)
+		})
+		return allNotes
 	}
 
 	get starrednotes() {
 		return this.allnotes.filter(function(obj) {
-			return obj.starred;
-		});
+			return obj.starred
+		})
 	}
 
 	get foldersWithImages() {
-		var folders_images = [];
+		var foldersImages = []
 		this.folders.forEach((folder) => {
 			if (folder.images.length > 0 || folder.foldersWithImages.length > 0) {
-				folders_images.push(folder);
+				foldersImages.push(folder)
 			}
-		});
-		return folders_images;
+		})
+		return foldersImages
 	}
-	
-	/*get shorten() {
-		var name = this.name;
-		if (this.trash_bin) name = name.toUpperCase();
-		var splitName = name.replace(/[\._-]/gi, " ").trim().split(" ");
-		if (splitName.length == 0) {
-			return "??";
-		} else if (splitName.length == 1) {
-			return name.slice(0,2);
-		} else {
-			return splitName[0].slice(0,1)+splitName[1].slice(0,1);
-		}
-	}*/
 
 	searchnotes(search) {
-		return searcher.searchNotes(search, this.allnotes);
+		return searcher.searchNotes(search, this.allnotes)
 	}
 
 	searchstarrednotes(search) {
-		return searcher.searchNotes(search, this.starrednotes);
+		return searcher.searchNotes(search, this.starrednotes)
 	}
 
 	get hidden() {
-		return this._hidden;
+		return this._hidden
 	}
 
 	get relativePath() {
-		return this.path.replace(Library.baseLibraryPath+'/', '');
+		return this.path.replace(Library.baseLibraryPath+'/', '')
 	}
 
 	get rackExists() {
-		return fs.existsSync(this._path);
+		return fs.existsSync(this._path)
 	}
 
 	get rackUid() {
-		return this.uid;
+		return this.uid
 	}
 
 	get extension() {
-		return false;
+		return false
 	}
 
 	get rack() {
-		return this;
+		return this
 	}
 
 	get openFolder() {
-		return this._openFolder;
+		return this._openFolder
 	}
 
 	set openFolder(value) {
-		this._openFolder = value;
+		this._openFolder = value
 	}
 
 	get icon() {
-		if (this.trash_bin) return 'trash-2';
-		else if (this.quick_notes) return 'file-text';
-		return this._icon;
+		if (this.trash_bin) return 'trash-2'
+		else if (this.quick_notes) return 'file-text'
+		return this._icon
 	}
 
-	hasFolder(folder_name) {
-		var results = this.folders.filter((f) => { return f.name == folder_name });
-		return results[0];
+	hasFolder(folderName) {
+		var results = this.folders.filter((f) => { return f.name === folderName })
+		if (results.length > 0) return results[0]
+		return null
 	}
 
 	toJSON() {
 		return {
-			name: this.name,
-			path: this._path,
+			name    : this.name,
+			path    : this._path,
 			ordering: this.ordering,
-			folders: this.folders.map((f) => { return f.toJSON(); })
-		};
+			folders : this.folders.map((f) => { return f.toJSON() })
+		}
 	}
 
 	update(data) {
-		super.update(data);
-		this.name = data.name;
-		this.ordering = data.ordering;
+		super.update(data)
+		this.name = data.name
+		this.ordering = data.ordering
 	}
 
 	remove(origNotes) {
 		this.folders.forEach((folder) => {
-			folder.remove(origNotes);
-		});
-		this.removeFromStorage();
+			folder.remove(origNotes)
+		})
+		this.removeFromStorage()
 	}
 
 	removeFromStorage() {
 		if (fs.existsSync(this._path)) {
-			var bucket_json = path.join(this._path, '.bucket.json');
-			if (fs.existsSync(bucket_json)) fs.unlinkSync(bucket_json);
-			fs.rmdirSync(this._path);
-			this.uid = null;
+			var bucketJson = path.join(this._path, '.bucket.json')
+			if (fs.existsSync(bucketJson)) fs.unlinkSync(bucketJson)
+			fs.rmdirSync(this._path)
+			this.uid = null
 		}
 	}
 
@@ -193,42 +181,42 @@ class Rack extends Model {
 			path.join(this._path, '.bucket.json'),
 			'ordering',
 			this.ordering
-		);
+		)
 	}
 
 	saveBucketData() {
-		if (this._icon == "delete") this._icon = undefined;
+		if (this._icon === 'delete') this._icon = undefined
 		jsonDataFile.writeMultipleKeys(
 			path.join(this._path, '.bucket.json'),
-			['ordering', 'hidelabel','icon'],
+			['ordering', 'hidelabel', 'icon'],
 			[this.ordering, this.hideLabel, this._icon]
-		);
+		)
 	}
 
 	saveModel() {
-		if (!this.name || !this.uid || this.name.length == 0) {
-			return;
+		if (!this.name || !this.uid || this.name.length === 0) {
+			return
 		}
 
-		var new_path = this.path; //path.join(Library.baseLibraryPath, this.fsName);
-		if (new_path != this._path || !fs.existsSync(new_path)) {
+		var newPath = this.path
+		if (newPath !== this._path || !fs.existsSync(newPath)) {
 			try {
 				if (this._path && fs.existsSync(this._path)) {
-					util_file.moveFolderRecursiveSync(this._path, Library.baseLibraryPath, this.fsName);
+					utilFile.moveFolderRecursiveSync(this._path, Library.baseLibraryPath, this.fsName)
 				} else {
-					fs.mkdirSync(new_path);
+					fs.mkdirSync(newPath)
 				}
-				this.path = new_path;
-			} catch(e) {
-				return console.error(e);
+				this.path = newPath
+			} catch (e) {
+				return console.error(e)
 			}
 		}
-		this.saveBucketData();
-		this.previousName = this.name;
+		this.saveBucketData()
+		this.previousName = this.name
 	}
 }
 
 export default function(library) {
-	Library = library;
-	return { Rack : Rack };
-};
+	Library = library
+	return { Rack: Rack }
+}

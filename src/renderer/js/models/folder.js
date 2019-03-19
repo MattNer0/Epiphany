@@ -1,174 +1,172 @@
-import fs from "fs";
-import path from "path";
-import searcher from "../searcher";
-import jsonDataFile from "../utils/jsonDataFile";
-import util_file from "../utils/file";
-import Model from "./baseModel";
-
-var Library;
+import fs from 'fs'
+import path from 'path'
+import searcher from '../searcher'
+import jsonDataFile from '../utils/jsonDataFile'
+import utilFile from '../utils/file'
+import Model from './baseModel'
 
 class Folder extends Model {
 	constructor(data) {
-		super(data);
+		super(data)
 
-		this.name = data.name.replace(/^\d+\. /, "") || '';
-		this.ordering = data.ordering || 0;
+		this.name = data.name.replace(/^\d+\. /, '') || ''
+		this.ordering = data.ordering || 0
 
-		this.rack = data.rack;
-		this.parentFolder = data.parentFolder;
-		this._path = data.path || '';
+		this.rack = data.rack
+		this.parentFolder = data.parentFolder
+		this._path = data.path || ''
 
-		this.dragHover = false;
-		this.sortUpper = false;
-		this.sortLower = false;
+		this.dragHover = false
+		this.sortUpper = false
+		this.sortLower = false
 
-		this.openNotes = false;
-		this._openFolder = false;
+		this.openNotes = false
+		this._openFolder = false
 
-		this.folders = [];
+		this.folders = []
 		if (data.folders && data.folders.length > 0) {
 			for (var fi = 0; fi < data.folders.length; fi++) {
-				var fObj = data.folders[fi];
-				fObj.rack = this.rack;
-				fObj.parentFolder = this;
-				this.folders.push(new Folder(fObj));
+				var fObj = data.folders[fi]
+				fObj.rack = this.rack
+				fObj.parentFolder = this
+				this.folders.push(new Folder(fObj))
 			}
 		}
-		this._notes = [];
-		this._images = [];
+		this._notes = []
+		this._images = []
 	}
 
 	remove(origNotes) {
 		origNotes.forEach((note) => {
-			if (note.folder.uid && note.folder.uid == this.uid) {
-				note.remove();
+			if (note.folder.uid && note.folder.uid === this.uid) {
+				note.remove()
 			}
-		});
-		Folder.removeModelFromStorage(this);
+		})
+		Folder.removeModelFromStorage(this)
 	}
 
 	get data() {
 		return {
-			uid: this.uid,
-			name: this.name,
-			fsName: this.fsName,
+			uid     : this.uid,
+			name    : this.name,
+			fsName  : this.fsName,
 			ordering: this.ordering,
-			rack: this.rack,
-			path: this._path
-		};
+			rack    : this.rack,
+			path    : this._path
+		}
 	}
 
 	get path() {
 		if (this._path && fs.existsSync(this._path)) {
-			return this._path;
+			return this._path
 		}
 		return path.join(
 			this.parent.path,
 			this.fsName
-		);
+		)
 	}
 
 	get fsName() {
-		return this.name ? this.name.replace(/[^\w\. _-]/g, '') : '';
+		return this.name ? this.name.replace(/[^\w. _-]/g, '') : ''
 	}
 
 	set path(newValue) {
-		if (newValue != this._path) {
-			this._path = newValue;
+		if (newValue !== this._path) {
+			this._path = newValue
 		}
 	}
 
 	get folderExists() {
-		return fs.existsSync(this._path);
+		return fs.existsSync(this._path)
 	}
 
 	get allnotes() {
-		var all_notes = this.notes.slice();
+		var allNotes = this.notes.slice()
 		this.folders.forEach((folder) => {
-			all_notes = all_notes.concat(folder.allnotes);
-		});
-		return all_notes;
+			allNotes = allNotes.concat(folder.allnotes)
+		})
+		return allNotes
 	}
 
 	get allimages() {
-		var all_images = this.images.slice();
+		var allImages = this.images.slice()
 		this.folders.forEach((folder) => {
-			all_images = all_images.concat(folder.allimages);
-		});
-		return all_images;
+			allImages = allImages.concat(folder.allimages)
+		})
+		return allImages
 	}
 
 	get foldersWithImages() {
-		var folders_images = [];
+		var foldersImages = []
 		this.folders.forEach((folder) => {
 			if (folder.images.length > 0 || folder.foldersWithImages.length > 0) {
-				folders_images.push(folder);
+				foldersImages.push(folder)
 			}
-		});
-		return folders_images;
+		})
+		return foldersImages
 	}
 
 	searchnotes(search) {
-		return searcher.searchNotes(search, this.allnotes);
+		return searcher.searchNotes(search, this.allnotes)
 	}
 
 	set parent(f) {
 		if (!f) {
-			return;
+			return
 		}
 
 		if (f.folderExists) {
-			this.parentFolder = f;
+			this.parentFolder = f
 		}
 	}
 
 	get parent() {
-		return this.parentFolder || this.rack;
+		return this.parentFolder || this.rack
 	}
 
-	set notes(notes_list) {
-		this._notes = notes_list;
+	set notes(notesList) {
+		this._notes = notesList
 	}
 
 	get notes() {
-		return this._notes;
+		return this._notes
 	}
 
-	set images(images_list) {
-		this._images = images_list;
+	set images(imagesList) {
+		this._images = imagesList
 	}
 
 	get images() {
-		return this._images;
+		return this._images
 	}
 
 	get rackUid() {
-		return this.rack.uid;
+		return this.rack.uid
 	}
 
 	get openFolder() {
-		return this._openFolder;
+		return this._openFolder
 	}
 
 	set openFolder(value) {
-		this._openFolder = value;
-		if (value) this.parent.openFolder = true;
+		this._openFolder = value
+		if (value) this.parent.openFolder = true
 	}
 
 	toJSON() {
 		return {
-			name: this.name,
-			path: this._path,
-			rack: this.rack,
+			name    : this.name,
+			path    : this._path,
+			rack    : this.rack,
 			ordering: this.ordering,
-			notes: this._notes.map((n) => { return n.toJSON(); })
-		};
+			notes   : this._notes.map((n) => { return n.toJSON() })
+		}
 	}
 
 	update(data) {
-		super.update(data);
-		this.name = data.name;
-		this.ordering = data.ordering;
+		super.update(data)
+		this.name = data.name
+		this.ordering = data.ordering
 	}
 
 	saveOrdering() {
@@ -176,48 +174,45 @@ class Folder extends Model {
 			path.join(this._path, '.folder.json'),
 			'ordering',
 			this.ordering
-		);
+		)
 	}
 
 	saveModel() {
 		if (!this.name || !this.uid) {
-			return;
+			return
 		}
 
-		var new_path = path.join(this.parent.path, this.fsName);
-		if (new_path != this._path || !fs.existsSync(new_path)) {
+		var newPath = path.join(this.parent.path, this.fsName)
+		if (newPath !== this._path || !fs.existsSync(newPath)) {
 			try {
 				if (this._path && fs.existsSync(this._path)) {
-					util_file.moveFolderRecursiveSync(
+					utilFile.moveFolderRecursiveSync(
 						this._path,
 						this.parent.path,
 						this.fsName
-					);
+					)
 				} else {
-					fs.mkdirSync(new_path);
+					fs.mkdirSync(newPath)
 				}
-				this.path = new_path;
-			} catch(e){
-				return console.error(e);
+				this.path = newPath
+			} catch (e) {
+				return console.error(e)
 			}
 		}
-		this.saveOrdering();
+		this.saveOrdering()
 	}
 
 	static removeModelFromStorage(model) {
 		if (!model) {
-			return;
+			return
 		}
 		if (fs.existsSync(model.data.path)) {
-			var folder_json = path.join(model.data.path, '.folder.json');
-			if (fs.existsSync(folder_json)) fs.unlinkSync(folder_json);
-			fs.rmdirSync(model.data.path);
-			model.uid = null;
+			var folderJson = path.join(model.data.path, '.folder.json')
+			if (fs.existsSync(folderJson)) fs.unlinkSync(folderJson)
+			fs.rmdirSync(model.data.path)
+			model.uid = null
 		}
 	}
 }
 
-export default function(library) {
-	Library = library;
-	return { Folder : Folder };
-};
+export default Folder

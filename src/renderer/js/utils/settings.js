@@ -1,95 +1,95 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs'
+import path from 'path'
 
-import { remote } from 'electron';
+import { remote } from 'electron'
 
-import elosenv from "./elosenv";
+import elosenv from './elosenv'
 
-var settings_data = {};
-var settings_filename = 'epiphanyConfig.json';
-var settings_path;
+var settingsData = {}
+var settingsFilename = 'epiphanyConfig.json'
+var settingsPath
 
 export default {
 	init(filename) {
-		if (filename) settings_filename = filename;
-		settings_path = path.join(elosenv.userDataPath(), settings_filename);
-		if (!fs.existsSync(settings_path)) {
-			settings_path = path.join(elosenv.userDataPath(), settings_filename);
+		if (filename) settingsFilename = filename
+		settingsPath = path.join(elosenv.userDataPath(), settingsFilename)
+		if (!fs.existsSync(settingsPath)) {
+			settingsPath = path.join(elosenv.userDataPath(), settingsFilename)
 		}
 
 		try {
-			settings_data = JSON.parse(fs.readFileSync(settings_path));
+			settingsData = JSON.parse(fs.readFileSync(settingsPath))
 		} catch (e) {
-			console.error(e);
-			settings_data = {};
+			console.error(e)
+			settingsData = {}
 		}
 	},
 
 	get(key) {
-		return settings_data[key];
+		return settingsData[key]
 	},
 
-	getSmart(key, default_value) {
-		return typeof settings_data[key] == typeof default_value ? settings_data[key] : default_value;
+	getSmart(key, defaultValue) {
+		return typeof settingsData[key] === typeof defaultValue ? settingsData[key] : defaultValue
 	},
 
-	getJSON(key, default_value) {
-		var value = settings_data[key];
-		if (value && typeof value == "string") {
+	getJSON(key, defaultValue) {
+		var value = settingsData[key]
+		if (value && typeof value === 'string') {
 			try {
-				return JSON.parse(value);
-			} catch(e) {
-				return value;
+				return JSON.parse(value)
+			} catch (e) {
+				return value
 			}
 		} else if (value) {
-			return value;
+			return value
 		}
-		return default_value;
+		return defaultValue
 	},
 
 	set(key, value) {
-		settings_data[key] = value;
-		if (settings_path) {
+		settingsData[key] = value
+		if (settingsPath) {
 			try {
-				fs.writeFileSync(settings_path, JSON.stringify(settings_data, null, 2));
+				fs.writeFileSync(settingsPath, JSON.stringify(settingsData, null, 2))
 			} catch (e) {
-				console.error(e);
+				console.error(e)
 			}
 		}
 	},
 
 	loadWindowSize() {
-		var win = remote.getCurrentWindow();
-		if (settings_data['screen_maximized']) {
-			win.maximize();
-		} else if (settings_data['screen_width'] && settings_data['screen_height']) {
-			win.setSize(settings_data['screen_width'] , settings_data['screen_height']);
+		var win = remote.getCurrentWindow()
+		if (settingsData['screen_maximized']) {
+			win.maximize()
+		} else if (settingsData['screen_width'] && settingsData['screen_height']) {
+			win.setSize(settingsData['screen_width'], settingsData['screen_height'])
 		}
 	},
 
 	saveWindowSize() {
-		var win = remote.getCurrentWindow();
-		var current_size = win.getSize();
-		var current_bounds = win.getBounds();
+		var win = remote.getCurrentWindow()
+		var currentSize = win.getSize()
+		var currentBounds = win.getBounds()
 
 		if (win.isMaximized()) {
-			settings_data['screen_maximized'] = true;
-			settings_data['screen_width'] = current_size[0];
-			settings_data['screen_height'] = current_size[1];
-			settings_data['screen_x'] = current_bounds.x;
-			settings_data['screen_y'] = current_bounds.y;
+			settingsData['screen_maximized'] = true
+			settingsData['screen_width'] = currentSize[0]
+			settingsData['screen_height'] = currentSize[1]
+			settingsData['screen_x'] = currentBounds.x
+			settingsData['screen_y'] = currentBounds.y
 		} else {
-			settings_data['screen_maximized'] = false;
-			settings_data['screen_width'] = current_size[0];
-			settings_data['screen_height'] = current_size[1];
-			settings_data['screen_x'] = current_bounds.x;
-			settings_data['screen_y'] = current_bounds.y;
+			settingsData['screen_maximized'] = false
+			settingsData['screen_width'] = currentSize[0]
+			settingsData['screen_height'] = currentSize[1]
+			settingsData['screen_x'] = currentBounds.x
+			settingsData['screen_y'] = currentBounds.y
 		}
 
 		try {
-			fs.writeFileSync(settings_path, JSON.stringify(settings_data, null, 2));
+			fs.writeFileSync(settingsPath, JSON.stringify(settingsData, null, 2))
 		} catch (e) {
-			console.error(e);
+			console.error(e)
 		}
 	}
-};
+}

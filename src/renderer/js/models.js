@@ -6,19 +6,17 @@ var baseLibrary = new Library()
 
 import ImageBldr from './models/image'
 import NoteBldr from './models/note'
-import FolderBldr from './models/folder'
+import Folder from './models/folder'
 import RackBldr from './models/rack'
 
 const Image = ImageBldr(baseLibrary)
 const NoteModels = NoteBldr(baseLibrary)
-const FolderModels = FolderBldr(baseLibrary)
 const RackModels = RackBldr(baseLibrary)
 
 const Note = NoteModels.Note
 const EncryptedNote = NoteModels.EncryptedNote
 const Outline = NoteModels.Outline
 const OutNode = NoteModels.OutNode
-const Folder = FolderModels.Folder
 const Rack = RackModels.Rack
 
 export default {

@@ -251,12 +251,6 @@
 				}));
 
 				if (!bucket.trash_bin && !bucket.quick_notes) {
-					/*menu.append(new MenuItem({
-						label: 'Set Bucket Thumbnail',
-						click: () => {
-							this.selectRackThumbnail(bucket);
-						}
-					}));*/
 					menu.append(new MenuItem({type: 'separator'}));
 					menu.append(new MenuItem({
 						label: 'Rename bucket',
