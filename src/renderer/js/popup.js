@@ -1,41 +1,39 @@
-import Vue from 'vue';
+import Vue from 'vue'
 import VTooltip from 'v-tooltip'
-import { ipcRenderer, remote } from "electron";
-import theme from "./utils/theme";
+import { ipcRenderer, remote } from 'electron'
+import theme from './utils/theme'
 
 // vue.js plugins
-import component_titleBar from './components/titleBar.vue';
-import component_inputText from './components/popupInputText.vue';
-import component_about from './components/popupAbout.vue';
+import componentTitleBar from './components/titleBar.vue'
+import componentInputText from './components/popupInputText.vue'
+import componentAbout from './components/popupAbout.vue'
 
 export default function() {
-	
-	Vue.use(VTooltip);
-
-	const { Menu, MenuItem } = remote;
+	Vue.use(VTooltip)
 
 	// not to accept image dropping and so on.
 	// electron will show local images without this.
 	document.addEventListener('dragover', (e) => {
-		e.preventDefault();
-	});
+		e.preventDefault()
+	})
 	document.addEventListener('drop', (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-	});
+		e.preventDefault()
+		e.stopPropagation()
+	})
 
-	new Vue({
-		el: '#app',
+	// eslint-disable-next-line no-unused-vars
+	let vueApp = new Vue({
+		el      : '#app',
 		template: require('../html/popup.html'),
-		data: {
-			currentTheme    : "",
-			type            : "",
-			title           : "",
-			message         : "",
-			libraryPath     : "",
+		data    : {
+			currentTheme    : '',
+			type            : '',
+			title           : '',
+			message         : '',
+			libraryPath     : '',
 			menuBar         : false,
-			inputPlaceholder: "",
-			inputDefault    : "",
+			inputPlaceholder: '',
+			inputDefault    : '',
 			inputRequired   : true,
 			inputButtons    : [],
 			reduceToTray    : true,
@@ -43,48 +41,47 @@ export default function() {
 			closingCallback : null
 		},
 		components: {
-			'titleBar'      : component_titleBar,
-			'inputText'     : component_inputText,
-			'about'         : component_about
+			'titleBar' : componentTitleBar,
+			'inputText': componentInputText,
+			'about'    : componentAbout
 		},
 		computed: { },
 		created() { },
 		mounted() {
-			var self = this;
-
+			var self = this
 			ipcRenderer.on('open-popup', (event, data) => {
 				if (!data) {
-					self.closeWindow();
+					self.closeWindow()
 				}
 
-				self.currentTheme = data.theme;
-				self.type = data.type;
-				self.title = data.title;
-				self.message = data.message ? data.message : "";
-				self.closingCallback = null;
+				self.currentTheme = data.theme
+				self.type = data.type
+				self.title = data.title
+				self.message = data.message ? data.message : ''
+				self.closingCallback = null
 
-				self.libraryPath = data.library ? data.library : "";
+				self.libraryPath = data.library ? data.library : ''
 
-				switch(data.type) {
-					case "input-text":
-						switch(data.form) {
-							case "note-url":
-								self.inputRequired = true;
-								self.inputPlaceholder = "https://...";
-								self.inputDefault = "";
+				switch (data.type) {
+					case 'input-text':
+						switch (data.form) {
+							case 'note-url':
+								self.inputRequired = true
+								self.inputPlaceholder = 'https://...'
+								self.inputDefault = ''
 								self.inputButtons = [{
-									label: "Cancel",
-									type: "close"
+									label: 'Cancel',
+									type : 'close'
 								}, {
-									label: "Ok",
-									type: "submit",
+									label: 'Ok',
+									type : 'submit',
 									validate(data) {
-										var expression = /[-a-zA-Z0-9@:%_+.~#?&=]{2,256}(\.[a-z]{2,4}|:\d+)\b(\/[-a-zA-Z0-9@:%_+.~#?&/=]*)?/gi;
-										var regex = new RegExp(expression);
+										var expression = /[-a-zA-Z0-9@:%_+.~#?&=]{2,256}(\.[a-z]{2,4}|:\d+)\b(\/[-a-zA-Z0-9@:%_+.~#?&/=]*)?/gi
+										var regex = new RegExp(expression)
 										if (data.input_data.match(regex)) {
-											return false;
+											return false
 										}
-										return 'input_data';
+										return 'input_data'
 									},
 									callback(data) {
 										ipcRenderer.send('load-page', {
@@ -92,73 +89,73 @@ export default function() {
 											mode          : 'note-from-url',
 											webpreferences: 'images=no',
 											style         : { height: '10000px' }
-										});
-									},
-								}];
-								break;
-							case "bucket-name":
-								self.inputRequired = true;
-								self.inputPlaceholder = "Bucket Name";
-								self.inputDefault = data.bucket;
-								self.alphanumericOnly = true;
+										})
+									}
+								}]
+								break
+							case 'bucket-name':
+								self.inputRequired = true
+								self.inputPlaceholder = 'Bucket Name'
+								self.inputDefault = data.bucket
+								self.alphanumericOnly = true
 
 								self.closingCallback = function() {
 									ipcRenderer.send('bucket-rename', {
-										name       : null,
-										bucket_uid : data.bucket_uid
-									});
-								};
+										name      : null,
+										bucket_uid: data.bucket_uid
+									})
+								}
 
 								self.inputButtons = [{
-									label: "Cancel",
-									type: "close"
+									label: 'Cancel',
+									type : 'close'
 								}, {
-									label: "Ok",
-									type: "submit",
+									label: 'Ok',
+									type : 'submit',
 									validate(form) {
 										if (form.input_data.length > 0 && form.input_data.length < 128 && /^[\w\s]+$/.test(form.input_data)) {
-											return false;
+											return false
 										}
-										return 'input_data';
+										return 'input_data'
 									},
 									callback(form) {
 										ipcRenderer.send('bucket-rename', {
-											name       : form.input_data,
-											bucket_uid : data.bucket_uid
-										});
-									},
-								}];
-								break;
+											name      : form.input_data,
+											bucket_uid: data.bucket_uid
+										})
+									}
+								}]
+								break
 							default:
-								self.closeWindow();
+								self.closeWindow()
 						}
-						break;
+						break
 				}
-			});
+			})
 		},
 		methods: {
 			closingWindow(quit) {
 				if (quit) {
-					remote.app.quit();
+					remote.app.quit()
 				} else {
-					if (this.closingCallback && typeof this.closingCallback == "function") {
-						this.closingCallback();
+					if (this.closingCallback && typeof this.closingCallback === 'function') {
+						this.closingCallback()
 					}
-					this.closeWindow();
+					this.closeWindow()
 				}
 			},
-			inputSubmit(input_text) {
-				this.closeWindow();
+			inputSubmit() {
+				this.closeWindow()
 			},
 			closeWindow() {
-				var win = remote.getCurrentWindow();
-				win.close();
+				var win = remote.getCurrentWindow()
+				win.close()
 			}
 		},
 		watch: {
 			currentTheme() {
-				if (this.currentTheme) theme.load(this.currentTheme);
+				if (this.currentTheme) theme.load(this.currentTheme)
 			}
 		}
-	});
+	})
 }

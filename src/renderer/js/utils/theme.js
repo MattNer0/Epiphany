@@ -1,11 +1,9 @@
-import fs from "fs";
+import jss from 'jss'
+import jssPresetDefault from 'jss-preset-default'
 
-import jss from "jss";
-import jss_preset_default from "jss-preset-default";
+jss.setup(jssPresetDefault())
 
-jss.setup(jss_preset_default());
-
-function style_object(obj) {
+function styleObject(obj) {
 	var styles = {
 		"@global": {
 			"html" : {
@@ -23,7 +21,7 @@ function style_object(obj) {
 			},
 			"#action-bar": {
 				color: obj["action-bar-color"],
-	
+
 				"& nav" : {
 					borderTop: "1px solid "+obj["app-border"],
 					borderBottom: "1px solid "+obj["app-border"]
@@ -418,49 +416,48 @@ function style_object(obj) {
 			}
 		}
 	}
-	return styles;
+	return styles
 }
 
-var current_sheet;
+var currentSheet
 
 export default {
-	read_file(file_name) {
+	read_file(fileName) {
 		return require.context(
-			"../../themes",
+			'../../themes',
 			false,
 			/\.json$/
-		)("./" + file_name + ".json");
+		)('./' + fileName + '.json')
 	},
-	load(theme_name) {
-		var theme_object;
-		if (typeof theme_name == "string") {
+	load(themeName) {
+		var themeObject
+		if (typeof themeName === 'string') {
 			try {
-				theme_object = JSON.parse(theme_name);
-			} catch(e) {
-				theme_object = this.read_file(theme_name);
+				themeObject = JSON.parse(themeName)
+			} catch (e) {
+				themeObject = this.read_file(themeName)
 			}
-		} else if (typeof theme_name == "object") {
-			theme_object = theme_name;
+		} else if (typeof themeName === 'object') {
+			themeObject = themeName
 		} else {
-			console.warn("theme error");
-			return;
+			console.warn('theme error')
+			return
 		}
 
-		if (current_sheet) {
-			current_sheet.detach();
-			current_sheet = null;
+		if (currentSheet) {
+			currentSheet.detach()
+			currentSheet = null
 		}
-		
-		current_sheet = jss.createStyleSheet(style_object(theme_object));
-		current_sheet.attach();
+
+		currentSheet = jss.createStyleSheet(styleObject(themeObject))
+		currentSheet.attach()
 	},
 	keys() {
-		var theme_object = require.context(
-			"../../themes",
+		var themeObject = require.context(
+			'../../themes',
 			false,
 			/\.json$/
-		)("./dark.json");
-
-		return Object.keys(theme_object);
+		)('./dark.json')
+		return Object.keys(themeObject)
 	}
-};
+}

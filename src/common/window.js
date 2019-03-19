@@ -1,5 +1,5 @@
-import window from 'electron-window';
-import log from 'electron-log';
+import window from 'electron-window'
+import log from 'electron-log'
 
 /**
  * There are four windows that make up the application. Each need their own renderer.
@@ -7,10 +7,10 @@ import log from 'electron-log';
  */
 export const windowName = {
 	application: 'main',
-	dialog: 'popup',
-	background: 'background',
-	browser: 'bbrowser'
-};
+	dialog     : 'popup',
+	background : 'background',
+	browser    : 'bbrowser'
+}
 
 /**
  * Makes the correct uri or path to locate the auto-generated index.html file from electron-webpack.
@@ -39,47 +39,48 @@ export const windowName = {
  * @return {string} uriOrPath
  */
 export function makeUrlToHtmlFile (isDevelopment) {
+	// MUST be backslashes for packaged version
 	return isDevelopment && process.env.ELECTRON_WEBPACK_WDS_PORT
 		? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}/`
-		: `${__dirname}\\index.html`;  // MUST be backslashes for packaged version
+		: `${__dirname}\\index.html`
 }
 
 export function makeRendererWindow (isDevelopment = false, options = {}) {
 
 	// ... stripped out default options for sample
-	let aWindow = window.createWindow(options.windowOptions);
+	let aWindow = window.createWindow(options.windowOptions)
 
-	const uriOrPath = makeUrlToHtmlFile(isDevelopment);
-	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`);
+	const uriOrPath = makeUrlToHtmlFile(isDevelopment)
+	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`)
 
 	aWindow.showURL(uriOrPath, options.data, () => {
 		// most times you don't need a post-construction hook
 		// but electron-window is NOT equivalent to window.loadURL
 		if (typeof options.callback === 'function') {
-			options.callback(aWindow);
+			options.callback(aWindow)
 		}
-		if (isDevelopment) log.info(`Window '${options.data.windowName}' opened`);
-	});
+		if (isDevelopment) log.info(`Window '${options.data.windowName}' opened`)
+	})
 
-	return aWindow;
+	return aWindow
 }
 
 export function makeBackgroundRendererWindow (isDevelopment = false, options = {}) {
 
 	// ... stripped out default options for sample
-	let aWindow = window.createWindow(options.windowOptions);
+	let aWindow = window.createWindow(options.windowOptions)
 
-	const uriOrPath = makeUrlToHtmlFile(isDevelopment);
-	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`);
+	const uriOrPath = makeUrlToHtmlFile(isDevelopment)
+	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`)
 
 	aWindow._loadURLWithArgs(uriOrPath, options.data, () => {
 		// most times you don't need a post-construction hook
 		// but electron-window is NOT equivalent to window.loadURL
 		if (typeof options.callback === 'function') {
-			options.callback(aWindow);
+			options.callback(aWindow)
 		}
-		if (isDevelopment) log.info(`Window '${options.data.windowName}' opened`);
-	});
+		if (isDevelopment) log.info(`Window '${options.data.windowName}' opened`)
+	})
 
-	return aWindow;
+	return aWindow
 }

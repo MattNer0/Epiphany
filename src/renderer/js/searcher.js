@@ -1,5 +1,4 @@
-import _ from "lodash";
-import models from "./models";
+import _ from 'lodash'
 
 /**
  * @function allWords
@@ -13,8 +12,8 @@ function allWords(text, words) {
 	 * allWords("Hi Goodbye", ["ell", "oo"]) => false
 	 */
 	return _.every(_.map(words, (word) => {
-		return _.includes(text, word);
-	}));
+		return _.includes(text, word)
+	}))
 }
 
 export default {
@@ -26,15 +25,15 @@ export default {
 	 * @return {Array} Filtered notes using search input
 	 */
 	searchNotes(searchInput, notes) {
-		if (!searchInput) return notes;
-		var searchPayload = this.calculateSearchMeaning(searchInput);
+		if (!searchInput) return notes
+		var searchPayload = this.calculateSearchMeaning(searchInput)
 		var filteredNotes = notes.filter((note) => {
-			if (searchPayload.words.length == 0) return true;
-			if (!note.body && note.loadBody) note.loadBody();
-			if (note.body && allWords(note.body.toLowerCase(), searchPayload.words)) return true;
-			return false;
-		});
-		return filteredNotes;
+			if (searchPayload.words.length === 0) return true
+			if (!note.body && note.loadBody) note.loadBody()
+			if (note.body && allWords(note.body.toLowerCase(), searchPayload.words)) return true
+			return false
+		})
+		return filteredNotes
 	},
 
 	/**
@@ -44,13 +43,13 @@ export default {
 	 */
 	calculateSearchMeaning(searchInput) {
 		if (!searchInput) {
-			return { words: [] };
+			return { words: [] }
 		}
 
-		var words = searchInput.toLowerCase().split(' ');
+		var words = searchInput.toLowerCase().split(' ')
 		words = words.filter(function(str) {
-			return str.length > 0;
-		});
-		return { words: words };
+			return str.length > 0
+		})
+		return { words: words }
 	}
-};
+}

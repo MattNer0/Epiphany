@@ -1,21 +1,19 @@
-import electron from "electron";
-const Menu = electron.remote.Menu;
+import { remote } from 'electron'
 
 export default {
 	init() {
-		this.refreshTitleMenu();
+		this.refreshTitleMenu()
 	},
 	refreshTitleMenu() {
-		var menu_entries = [];
-		menu_entries.push({
+		var menuEntries = []
+		menuEntries.push({
 			label: 'Quit',
 			click() {
-				electron.remote.app.isQuiting = true;
-				electron.remote.app.quit();
+				remote.app.isQuiting = true
+				remote.app.quit()
 			}
-		});
-		var contextMenu = Menu.buildFromTemplate(menu_entries);
-
-		Menu.setApplicationMenu(contextMenu);
+		})
+		var contextMenu = remote.Menu.buildFromTemplate(menuEntries)
+		remote.Menu.setApplicationMenu(contextMenu)
 	}
 }

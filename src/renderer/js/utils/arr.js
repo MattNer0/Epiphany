@@ -7,20 +7,20 @@ export default {
 	 * @return {Array}              The Array of objects after ordering
 	 */
 	sortBy(objs, property, asc) {
-		asc = Boolean(asc);
+		asc = Boolean(asc)
 		return objs.sort((a, b) => {
 			if (a[property] > b[property]) {
-				return asc ? 1 : -1;
+				return asc ? 1 : -1
 			} else if (a[property] < b[property]) {
-				return asc ? -1 : 1;
+				return asc ? -1 : 1
 			}
-			return 0;
-		});
+			return 0
+		})
 	},
 	findBy(objs, property, value) {
 		return objs.find((obj) => {
-			return obj[property] == value;
-		});
+			return obj[property] === value
+		})
 	},
 	/**
 	 * remove one element from array.
@@ -29,10 +29,10 @@ export default {
 	 * @return {Array}             The Array after the object was removed
 	 */
 	remove(objs, detector) {
-		if (!objs.length) return;
-		var t = objs.find(detector);
-		if (!t) return;
-		var index = objs.indexOf(t);
-		if (index > -1) return objs.splice(index, 1);
+		if (!objs.length) return
+		var t = objs.find(detector)
+		if (!t) return
+		var index = objs.indexOf(t)
+		if (index > -1) return objs.splice(index, 1)
 	}
-};
+}

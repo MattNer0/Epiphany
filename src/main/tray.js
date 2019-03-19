@@ -1,35 +1,35 @@
-import path from "path";
+import path from 'path'
 import { Tray, Menu } from 'electron'
 
 export default function(mainWindow, app) {
 
-	let appIcon = new Tray(path.join(__static, 'tray.png'));
+	let appIcon = new Tray(path.join(__static, 'tray.png'))
 	let contextMenu = Menu.buildFromTemplate([{
 		label: 'Show App',
 		click() {
-			mainWindow.show();
+			mainWindow.show()
 		}
-	},{
+	}, {
 		label: 'Quit',
 		click() {
-			app.isQuiting = true;
-			app.quit();
+			app.isQuiting = true
+			app.quit()
 		}
-	}]);
-	appIcon.setToolTip('Epiphany');
-	appIcon.setContextMenu(contextMenu);
-	appIcon.setHighlightMode('always');
+	}])
+	appIcon.setToolTip('Epiphany')
+	appIcon.setContextMenu(contextMenu)
+	appIcon.setHighlightMode('always')
 	appIcon.on('click', function() {
 		if (mainWindow === null) {
-			app.exit();
+			app.exit()
 			return
 		}
 		if (mainWindow.isVisible()) {
-			mainWindow.hide();
+			mainWindow.hide()
 		} else {
-			mainWindow.show();
+			mainWindow.show()
 		}
-	});
+	})
 
-	return appIcon;
+	return appIcon
 }

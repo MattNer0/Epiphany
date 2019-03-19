@@ -1,135 +1,136 @@
-import electron from "electron";
-const Menu = electron.remote.Menu;
+import { remote } from 'electron'
+const Menu = remote.Menu
 
-var mainWindow = null;
-var appIcon = null;
-var menu_array = [];
+var mainWindow = null
+var appIcon = null
+var menuArray = []
 
 export default {
 	init() {
-		mainWindow = electron.remote.getCurrentWindow();
-		appIcon = electron.remote.getGlobal('appIcon');
+		mainWindow = remote.getCurrentWindow()
+		appIcon = remote.getGlobal('appIcon')
 
-		mainWindow.on('show', this.refreshTrayMenu);
-		mainWindow.on('hide', this.refreshTrayMenu);
-		this.refreshTrayMenu();
+		mainWindow.on('show', this.refreshTrayMenu)
+		mainWindow.on('hide', this.refreshTrayMenu)
+		this.refreshTrayMenu()
 	},
 	refreshTrayMenu() {
 
-		var menu_entries = [];
+		var menuEntries = []
 		if (mainWindow === null) {
-			mainWindow = electron.remote.getCurrentWindow();
+			mainWindow = remote.getCurrentWindow()
 		}
-		
+
 		if (mainWindow.isVisible()) {
-			menu_entries.push({
+			menuEntries.push({
 				label: 'Show App',
 				click() {
 					if (mainWindow.isVisible()) {
-						mainWindow.hide();
+						mainWindow.hide()
 					}
 
-					mainWindow.show();
-					if (mainWindow.isMinimized()) mainWindow.restore();
+					mainWindow.show()
+					if (mainWindow.isMinimized()) mainWindow.restore()
 				}
-			});
+			})
 		}
 
-		menu_entries.push({
+		menuEntries.push({
 			label: mainWindow.isVisible() ? 'Minimize App' : 'Show App',
 			click() {
 				if (mainWindow.isVisible()) {
-					mainWindow.hide();
+					mainWindow.hide()
 				} else {
-					mainWindow.show();
-					if (mainWindow.isMinimized()) mainWindow.restore();
+					mainWindow.show()
+					if (mainWindow.isMinimized()) mainWindow.restore()
 				}
 			}
-		});
-		menu_entries.push({ type: 'separator' });
-		menu_entries.push({
+		})
+		menuEntries.push({ type: 'separator' })
+		menuEntries.push({
 			label: 'Quit',
 			click() {
-				electron.remote.app.isQuiting = true;
-				electron.remote.app.quit();
+				remote.app.isQuiting = true
+				remote.app.quit()
 			}
-		});
-		var contextMenu = Menu.buildFromTemplate(menu_entries);
+		})
+		var contextMenu = Menu.buildFromTemplate(menuEntries)
 
-		appIcon.setContextMenu(contextMenu);
+		appIcon.setContextMenu(contextMenu)
 
 		if (mainWindow.isVisible()) {
-			mainWindow.setVisibleOnAllWorkspaces(false);
+			mainWindow.setVisibleOnAllWorkspaces(false)
 		} else {
-			mainWindow.setVisibleOnAllWorkspaces(true);
+			mainWindow.setVisibleOnAllWorkspaces(true)
 		}
 	},
-	setRacks(racks, rackfolder_cb, note_cb) {
-		menu_array = [];
-		var submenu_element = [];
-		var group_num = 0;
+	setRacks(racks, rackfolderCallback, noteCallback) {
+		menuArray = []
+		var submenuElement = []
+		var groupNum = 0
+
 		for (var i = 0; i < racks.length; i++) {
 			if (racks[i].data.separator) {
-				group_num += 1;
-				menu_array.push({
-					label: 'Rack Group ' + group_num,
-					submenu: submenu_element.slice()
-				});
-				submenu_element = [];
+				groupNum += 1
+				menuArray.push({
+					label  : 'Rack Group ' + groupNum,
+					submenu: submenuElement.slice()
+				})
+				submenuElement = []
 			} else {
-				submenu_element.push(this.oneRackMenuItem(racks[i], rackfolder_cb, note_cb));
+				submenuElement.push(this.oneRackMenuItem(racks[i], rackfolderCallback, noteCallback))
 			}
 		}
-		if (submenu_element && group_num === 0) {
-			menu_array = submenu_element;
-		} else if (submenu_element) {
-			group_num += 1;
-			menu_array.push({
-				label: 'Rack Group ' + group_num,
-				submenu: submenu_element.slice()
-			});
+		if (submenuElement && groupNum === 0) {
+			menuArray = submenuElement
+		} else if (submenuElement) {
+			groupNum += 1
+			menuArray.push({
+				label  : 'Rack Group ' + groupNum,
+				submenu: submenuElement.slice()
+			})
 		}
-		if (appIcon) this.refreshTrayMenu();
+		if (appIcon) this.refreshTrayMenu()
 	},
-	oneRackMenuItem(rack, rackfolder_cb, note_cb) {
-		var folder_array = [];
+	oneRackMenuItem(rack, rackfolderCallback, noteCallback) {
+		var folderArray = []
 		if (rack.folders) {
 			for (var i = 0; i < rack.folders.length; i++) {
-				folder_array.push(this.oneFolderMenuItem(rack.folders[i], rackfolder_cb, note_cb));
+				folderArray.push(this.oneFolderMenuItem(rack.folders[i], rackfolderCallback, noteCallback))
 			}
 		}
 
 		return {
-			label: rack.name,
-			submenu: folder_array.length > 0 ? folder_array : undefined,
-			click: function() {
-				if (rackfolder_cb) rackfolder_cb(rack);
+			label  : rack.name,
+			submenu: folderArray.length > 0 ? folderArray: undefined,
+			click() {
+				if (rackfolderCallback) rackfolderCallback(rack)
 			}
-		};
+		}
 	},
-	oneFolderMenuItem(folder, rackfolder_cb, note_cb) {
-		var note_array = [];
+	oneFolderMenuItem(folder, rackfolderCallback, noteCallback) {
+		var noteArray = []
 		if (folder.notes) {
 			for (var i = 0; i < folder.notes.length; i++) {
-				note_array.push(this.oneNoteMenuItem(folder.notes[i], note_cb));
+				noteArray.push(this.oneNoteMenuItem(folder.notes[i], noteCallback))
 			}
 		}
 
 		return {
-			label: folder.name,
-			submenu: note_array.length > 0 ? note_array : undefined,
-			click: function() {
-				if (rackfolder_cb) rackfolder_cb(folder);
+			label  : folder.name,
+			submenu: noteArray.length > 0 ? noteArray: undefined,
+			click() {
+				if (rackfolderCallback) rackfolderCallback(folder)
 			}
-		};
+		}
 	},
-	oneNoteMenuItem(note, note_cb) {
+	oneNoteMenuItem(note, noteCallback) {
 		return {
 			label: note.title,
-			click: function() {
-				if (!mainWindow.isVisible()) mainWindow.show();
-				if (note_cb) note_cb(note);
+			click() {
+				if (!mainWindow.isVisible()) mainWindow.show()
+				if (noteCallback) noteCallback(note)
 			}
-		};
+		}
 	}
-};
+}

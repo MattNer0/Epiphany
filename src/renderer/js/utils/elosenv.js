@@ -1,35 +1,35 @@
-import { remote } from "electron";
-import log from 'electron-log';
-import path from "path";
+import { remote } from 'electron'
+import log from 'electron-log'
+import path from 'path'
 
 export default {
 	homePath() {
-		return remote.app.getPath('home');
+		return remote.app.getPath('home')
 	},
 	documentsPath() {
-		return remote.app.getPath('documents');
+		return remote.app.getPath('documents')
 	},
 	appDataPath() {
-		return remote.app.getPath('appData');
+		return remote.app.getPath('appData')
 	},
 	userDataPath() {
-		return remote.app.getPath('userData');
+		return remote.app.getPath('userData')
 	},
 	tempPath() {
-		return remote.app.getPath('temp');
+		return remote.app.getPath('temp')
 	},
 	workingDirectory() {
-		var exe = remote.app.getPath('exe');
-		return path.dirname(exe);
+		var exe = remote.app.getPath('exe')
+		return path.dirname(exe)
 	},
 	isDarwin() {
-		return remote.getGlobal("isDarwin");
+		return remote.getGlobal('isDarwin')
 	},
 	isLinux() {
-		return remote.getGlobal("isLinux");
+		return remote.getGlobal('isLinux')
 	},
 	isDebug() {
-		return remote.getGlobal("isDebug");
+		return remote.getGlobal('isDebug')
 	},
 	console: {
 		log: (message) => {
@@ -42,4 +42,4 @@ export default {
 			log.error(message)
 		}
 	}
-};
+}
