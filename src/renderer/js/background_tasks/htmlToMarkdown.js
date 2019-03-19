@@ -1,32 +1,32 @@
-import TurndownService from "turndown";
-import { gfm } from "turndown-plugin-gfm";
+import TurndownService from 'turndown'
+import { gfm } from 'turndown-plugin-gfm'
 
 var turndownService = new TurndownService({
-	hr: "---",
-	headingStyle: "atx",
-	bulletListMarker: "*",
-	codeBlockStyle: "fenced"
-});
+	hr              : '---',
+	headingStyle    : 'atx',
+	bulletListMarker: '*',
+	codeBlockStyle  : 'fenced'
+})
 
-turndownService.use(gfm);
+turndownService.use(gfm)
 turndownService.addRule('article', {
 	filter: ['span', 'article'],
-	replacement: function(content) {
-		return content;
+	replacement(content) {
+		return content
 	}
-});
+})
 turndownService.addRule('div', {
 	filter: ['div'],
-	replacement: function(content) {
-		return '\n' + content + '\n';
+	replacement(content) {
+		return '\n' + content + '\n'
 	}
-});
+})
 turndownService.addRule('script', {
 	filter: ['script', 'style', 'noscript', 'form', 'nav', 'iframe', 'input', 'header', 'footer'],
-	replacement: function(content) {
-		return '';
+	replacement(content) {
+		return ''
 	}
-});
+})
 
 export default {
 
@@ -42,24 +42,24 @@ export default {
 			"document.querySelector('div[itemtype=\"http://schema.org/Question\"]') ? document.querySelector('div[itemtype=\"http://schema.org/Question\"]').innerHTML",
 			"document.querySelector('p + p + p + p') ? document.querySelector('p + p + p + p').parentNode.innerHTML",
 			"document.querySelector('body').innerHTML"
-		];
+		]
 
-		return elements.join(' : ');
+		return elements.join(' : ')
 	},
 
-	convert(html_source, page_url, page_title) {
-		var new_md = turndownService.turndown(html_source);
-		new_md = new_md.replace(/\n+/gi, '\n');
-		new_md = new_md.replace(/(!\[\]\(.+?\))(\s*\1+)/gi, '$1');
-		new_md = new_md.replace(/(\[!\[.*?\].+?\]\(.+?\))/gi, '\n$1\n');
-		new_md = new_md.replace(/\]\(\/\//gi, '](http://');
+	convert(htmlSource, pageUrl, pageTitle) {
+		var newMd = turndownService.turndown(htmlSource)
+		newMd = newMd.replace(/\n+/gi, '\n')
+		newMd = newMd.replace(/(!\[\]\(.+?\))(\s*\1+)/gi, '$1')
+		newMd = newMd.replace(/(\[!\[.*?\].+?\]\(.+?\))/gi, '\n$1\n')
+		newMd = newMd.replace(/\]\(\/\//gi, '](http://')
 
-		if (!new_md.match(/^# /gm)) {
-			new_md = '# ' + page_title + '\n\n' + new_md;
+		if (!newMd.match(/^# /gm)) {
+			newMd = '# ' + pageTitle + '\n\n' + newMd
 		}
 
-		if (new_md && page_url) new_md = '[Source](' + page_url + ')\n\n' + new_md;
+		if (newMd && pageUrl) newMd = '[Source](' + pageUrl + ')\n\n' + newMd
 
-		return new_md;
+		return newMd
 	}
-};
+}

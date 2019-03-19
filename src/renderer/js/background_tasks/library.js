@@ -1,22 +1,16 @@
-import fs from "fs";
-import path from "path";
-import ini from "ini";
-import Datauri from "datauri";
-import log from 'electron-log';
-import sqlite from "sqlite";
+import fs from 'fs'
+import path from 'path'
+import log from 'electron-log'
+import sqlite from 'sqlite'
 
-import models from "../models";
-
-function dataImage(path) {
-	return Datauri.sync(path);
-}
+import models from '../models'
 
 /**
  * @function getValidMarkdownFormats
  * @return {Array} Array of valid formats
  */
 function getValidMarkdownFormats() {
-	return ['.md', '.markdown', '.txt', '.mdencrypted', '.opml'];
+	return ['.md', '.markdown', '.txt', '.mdencrypted', '.opml']
 }
 
 /**
@@ -24,7 +18,7 @@ function getValidMarkdownFormats() {
  * @return {Array} Array of valid formats
  */
 function getValidImageFormats() {
-	return ['.jpg', '.jpeg', '.bmp', '.gif', '.png'];
+	return ['.jpg', '.jpeg', '.bmp', '.gif', '.png']
 }
 
 /**
@@ -33,16 +27,16 @@ function getValidImageFormats() {
  * @return {type} {description}
  */
 function isValidNotePath(notePath) {
-	var valid_formats = getValidMarkdownFormats();
-	var noteStat = fs.statSync(notePath);
-	var noteExt = path.extname(notePath);
-	if (noteStat.isFile() && valid_formats.indexOf(noteExt) >= 0 ) {
+	var validFormats = getValidMarkdownFormats()
+	var noteStat = fs.statSync(notePath)
+	var noteExt = path.extname(notePath)
+	if (noteStat.isFile() && validFormats.indexOf(noteExt) >= 0) {
 		return {
-			ext: noteExt,
+			ext : noteExt,
 			stat: noteStat
-		};
+		}
 	}
-	return false;
+	return false
 }
 
 /**
@@ -51,228 +45,207 @@ function isValidNotePath(notePath) {
  * @return {type} {description}
  */
 function isValidImagePath(imagePath) {
-	var valid_formats = getValidImageFormats();
-	var imageStat = fs.statSync(imagePath);
-	var imageExt = path.extname(imagePath);
-	if (imageStat.isFile() && valid_formats.indexOf(imageExt) >= 0 ) {
+	var validFormats = getValidImageFormats()
+	var imageStat = fs.statSync(imagePath)
+	var imageExt = path.extname(imagePath)
+	if (imageStat.isFile() && validFormats.indexOf(imageExt) >= 0) {
 		return {
-			ext: imageExt,
+			ext : imageExt,
 			stat: imageStat
-		};
+		}
 	}
-	return false;
+	return false
 }
 
-function readIni(ini_path) {
-	if (fs.existsSync(ini_path)) {
-		return ini.parse(fs.readFileSync(ini_path, "utf-8"));
+function readBucketData(bucketPath) {
+	var bucketJson = path.join(bucketPath, '.bucket.json')
+	if (fs.existsSync(bucketJson)) {
+		return JSON.parse(fs.readFileSync(bucketJson, 'utf-8'))
 	}
-	return {};
+	return {}
 }
 
-function readBucketData(bucket_path) {
-	var bucket_json = path.join(bucket_path, '.bucket.json');
-	var rack_old = path.join(bucket_path, '.rack.ini');
-	if (fs.existsSync(rack_old)) {
-		var data = readIni(rack_old);
-		fs.unlinkSync(rack_old);
-		fs.writeFileSync(bucket_json, JSON.stringify(data));
-		return data;
+function readFolderData(folderPath) {
+	var folderJson = path.join(folderPath, '.folder.json')
+	if (fs.existsSync(folderJson)) {
+		return JSON.parse(fs.readFileSync(folderJson, 'utf-8'))
 	}
-
-	return JSON.parse(fs.readFileSync(bucket_json, "utf-8"));
-}
-
-function readFolderData(folder_path) {
-	var folder_json = path.join(folder_path, '.folder.json');
-	var folder_old = path.join(folder_path, '.folder');
-
-	if (fs.existsSync(folder_old)) {
-		var data = {
-			"ordering" : parseInt(fs.readFileSync(folder_old, "utf-8"))
-		};
-		fs.unlinkSync(folder_old);
-		fs.writeFileSync(folder_json, JSON.stringify(data));
-		return data;
-	}
-
-	return JSON.parse(fs.readFileSync(folder_json, "utf-8"));
+	return {}
 }
 
 export default {
 
 	async initDB(library) {
-		models.setBaseLibraryPath(library);
-		var db = await sqlite.open(path.join(library,'epiphany.db'));
+		models.setBaseLibraryPath(library)
+		var db = await sqlite.open(path.join(library, 'epiphany.db'))
 		await db.run('CREATE TABLE IF NOT EXISTS notes '+
 			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, name TEXT, photo TEXT, summary TEXT, ' +
-			'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))');
+			'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))')
 
 		//var diff = new Date().getTime() - 16070400000
 		//await db.run('DELETE FROM notes WHERE updated_at < ?', diff);
 
-		return db;
+		return db
 	},
 
 	readRacks(library) {
-		var valid_racks = [];
+		var validRacks = []
 		if (fs.existsSync(library)) {
-			var racks = fs.readdirSync(library);
+			var racks = fs.readdirSync(library)
 			for (var ri = 0; ri < racks.length; ri++) {
-				var rack = racks[ri];
-				var rackPath = path.join(library, rack);
+				var rack = racks[ri]
+				var rackPath = path.join(library, rack)
 
-				if (fs.existsSync(rackPath) && (rack.charAt(0) != "." || rack == ".coon_trash")) {
-					var rackStat = fs.statSync(rackPath);
+				if (fs.existsSync(rackPath) && (rack.charAt(0) !== '.' || rack === '.coon_trash')) {
+					var rackStat = fs.statSync(rackPath)
 					if (rackStat.isDirectory()) {
-						var rack_data = {};
+						var rackData = {}
 						try {
-							rack_data = readBucketData(rackPath);
-						} catch(err) {
-							rack_data = {};
+							rackData = readBucketData(rackPath)
+						} catch (err) {
+							rackData = {}
 						}
 
-						if (rack == "_quick_notes") {
-							rack_data.ordering = 0;
+						if (rack === '_quick_notes') {
+							rackData.ordering = 0
 						}
 
-						valid_racks.push({
-							_type        : 'rack',
-							name         : rack,
-							hidden       : rack == ".coon_trash",
-							trash_bin    : rack == ".coon_trash",
-							quick_notes  : rack == "_quick_notes",
-							hide_label   : rack_data.hidelabel,
-							ordering     : isNaN(rack_data.ordering) ? racks.length+ri+1 : parseInt(rack_data.ordering),
-							icon         : rack_data.icon || '',
-							path         : rackPath
-						});
+						validRacks.push({
+							_type      : 'rack',
+							name       : rack,
+							hidden     : rack === '.coon_trash',
+							trash_bin  : rack === '.coon_trash',
+							quick_notes: rack === '_quick_notes',
+							hide_label : rackData.hidelabel,
+							ordering   : isNaN(rackData.ordering) ? racks.length + ri + 1 : parseInt(rackData.ordering),
+							icon       : rackData.icon || '',
+							path       : rackPath
+						})
 					}
 				}
 			}
 		}
-		return valid_racks;
+		return validRacks
 	},
-	readFoldersByParent(parent_folder) {
+	readFoldersByParent(parentFolder) {
 		try {
-			var valid_folders = [];
-			var folders = fs.readdirSync(parent_folder);
+			var validFolders = []
+			var folders = fs.readdirSync(parentFolder)
 			folders = folders.filter(function(obj) {
-				return obj.charAt(0) != ".";
-			});
+				return obj.charAt(0) !== '.'
+			})
 			for (var fi = 0; fi < folders.length; fi++) {
-				var folderPath = path.join(parent_folder, folders[fi]);
-				var folderStat = fs.statSync(folderPath);
+				var folderPath = path.join(parentFolder, folders[fi])
+				var folderStat = fs.statSync(folderPath)
 				if (folderStat.isDirectory()) {
-					var folder_data = {};
+					var folderData = {}
 					try {
-						folder_data = readFolderData(folderPath);
-					} catch(err) {
-						folder_data = {};
+						folderData = readFolderData(folderPath)
+					} catch (err) {
+						folderData = {}
 					}
-					valid_folders.push({
+					validFolders.push({
 						name    : folders[fi],
-						ordering: folder_data.ordering ? parseInt(folder_data.ordering) : fi+1,
+						ordering: folderData.ordering ? parseInt(folderData.ordering) : fi+1,
 						path    : folderPath,
 						folders : this.readFoldersByParent(folderPath)
-					});
+					})
 				}
 			}
-			return valid_folders;
-		} catch(err) {
+			return validFolders
+		} catch (err) {
 			log.error(err.message)
-			return [];
+			return []
 		}
 	},
 	async readNotesByFolder(library, folder, db) {
-		if (!fs.existsSync(folder)) return [];
+		if (!fs.existsSync(folder)) return []
 
-		var valid_notes = [];
-		var notes = fs.readdirSync(folder);
-		var note;
+		var validNotes = []
+		var notes = fs.readdirSync(folder)
+		var note
 
 		for (note of notes) {
-			var notePath = path.join(folder, note);
+			var notePath = path.join(folder, note)
 			var noteCache = await this.findNoteInDB(db, library, notePath)
 			if (noteCache) {
-				valid_notes.push(noteCache);
+				validNotes.push(noteCache)
 
-			} else if (fs.existsSync(notePath) && note.charAt(0) != ".") {
-				var newNote = this.readNewNote(notePath);
-				//var newNote = await this.insertNoteInDB(db, library, notePath)
-				if (newNote) valid_notes.push(newNote);
+			} else if (fs.existsSync(notePath) && note.charAt(0) !== '.') {
+				var newNote = this.readNewNote(notePath)
+				if (newNote) validNotes.push(newNote)
 			}
 		}
-		return valid_notes;
+		return validNotes
 	},
 	async readImagesByFolder(folder) {
-		if (!fs.existsSync(folder)) return [];
+		if (!fs.existsSync(folder)) return []
 
-		var valid_images = [];
-		var images = fs.readdirSync(folder);
+		var validImages = []
+		var images = fs.readdirSync(folder)
 		images.forEach((img) => {
-			var imgPath = path.join(folder, img);
-			if (fs.existsSync(imgPath) && img.charAt(0) != ".") {
-				var imgData = isValidImagePath(imgPath);
+			var imgPath = path.join(folder, img)
+			if (fs.existsSync(imgPath) && img.charAt(0) !== '.') {
+				var imgData = isValidImagePath(imgPath)
 				if (imgData) {
-					valid_images.push({
+					validImages.push({
 						path: imgPath,
 						name: img
-					});
+					})
 				}
 			}
-		});
-		return valid_images;
+		})
+		return validImages
 	},
 	readNote(notePath, noteData, withBody) {
-		var note = path.basename(notePath, noteData.ext);
+		var note = path.basename(notePath, noteData.ext)
 		var body = null
-		var created_at = noteData.stat && noteData.stat.birthtime ? noteData.stat.birthtime.valueOf() : null;
-		var updated_at = noteData.stat && noteData.stat.mtime ? noteData.stat.mtime.valueOf() : null;
-		if (withBody) body = fs.readFileSync(notePath).toString();
-		switch(noteData.ext) {
+		var createdAt = noteData.stat && noteData.stat.birthtime ? noteData.stat.birthtime.valueOf() : null
+		var updatedAt = noteData.stat && noteData.stat.mtime ? noteData.stat.mtime.valueOf() : null
+		if (withBody) body = fs.readFileSync(notePath).toString()
+		switch (noteData.ext) {
 			case '.mdencrypted':
 				return {
 					type      : 'encrypted',
 					name      : note,
 					body      : body,
 					path      : notePath,
-					created_at: created_at,
-					updated_at: updated_at,
+					created_at: createdAt,
+					updated_at: updatedAt,
 					extension : noteData.ext
-				};
+				}
 			case '.opml':
 				return {
 					type      : 'outline',
 					name      : note,
 					body      : body,
 					path      : notePath,
-					created_at: created_at,
-					updated_at: updated_at,
+					created_at: createdAt,
+					updated_at: updatedAt,
 					extension : noteData.ext
-				};
+				}
 			default:
 				return {
 					type      : 'note',
 					name      : note,
 					body      : body,
 					path      : notePath,
-					created_at: created_at,
-					updated_at: updated_at,
+					created_at: createdAt,
+					updated_at: updatedAt,
 					extension : noteData.ext
-				};
+				}
 		}
 	},
 	isNoteFile(filePath) {
-		if (!filePath) return false;
-		return isValidNotePath(filePath);
+		if (!filePath) return false
+		return isValidNotePath(filePath)
 	},
 	readNewNote(notePath) {
-		var noteData = isValidNotePath(notePath);
+		var noteData = isValidNotePath(notePath)
 		if (noteData) {
 			return this.readNote(notePath, noteData, false)
 		}
-		return null;
+		return null
 	},
 	async insertNoteInDB(db, finalNote) {
 		let relativePath = finalNote.path
@@ -285,11 +258,11 @@ export default {
 		if (data) {
 			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== photoPath) {
 				await db.run('UPDATE notes SET (name, summary, photo, created_at, updated_at) = (?, ?, ?, ?, ?) WHERE path = ?',
-					[finalNote.name, finalNote.summary, photoPath, finalNote.created_at, finalNote.updated_at, relativePath]);
+					[finalNote.name, finalNote.summary, photoPath, finalNote.created_at, finalNote.updated_at, relativePath])
 			}
 		} else {
 			await db.run('INSERT INTO notes (name, summary, photo, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-				[finalNote.name, finalNote.summary, photoPath, finalNote.path, finalNote.created_at, finalNote.updated_at]);
+				[finalNote.name, finalNote.summary, photoPath, finalNote.path, finalNote.created_at, finalNote.updated_at])
 		}
 	},
 	async findNoteInDB(db, library, notePath) {
@@ -300,16 +273,18 @@ export default {
 			}
 			var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', relativePath)
 			if (data) {
-				var extension = path.extname(notePath);
-				var type;
+				var extension = path.extname(notePath)
+				var type
 
-				switch(extension) {
+				switch (extension) {
 					case '.mdencrypted':
-						type = 'encrypted';
+						type = 'encrypted'
+						break
 					case '.opml':
-						type = 'outline';
+						type = 'outline'
+						break
 					default:
-						type = 'note';
+						type = 'note'
 				}
 
 				return {
@@ -323,10 +298,10 @@ export default {
 					extension : extension
 				}
 			}
-		} catch(err) {
+		} catch (err) {
 			log.error(err.message)
 		}
 
-		return null;
+		return null
 	}
-};
+}

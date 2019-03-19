@@ -1,77 +1,75 @@
-import { remote } from "electron";
+import fs from 'fs'
+import path from 'path'
 
-import fs from "fs";
-import path from "path";
-
-import util_file from "../utils/file";
-import elosenv from "../utils/elosenv";
+import utilFile from '../utils/file'
+import elosenv from '../utils/elosenv'
 
 class Library {
 	constructor (path) {
 		if (path) {
-			this._path = path;
+			this._path = path
 		} else {
-			this._path = '';
+			this._path = ''
 		}
 	}
 
 	get baseLibraryPath() {
-		return this._path;
+		return this._path
 	}
 
 	set baseLibraryPath(value) {
-		this._path = value;
+		this._path = value
 	}
 
 	doesLibraryExists() {
-		if (this._path) return fs.existsSync(this._path);
-		return false;
+		if (this._path) return fs.existsSync(this._path)
+		return false
 	}
 
 	initialLibrary() {
 
 		function homeLibrary() {
-			var p;
+			var p
 			if (elosenv.isDarwin()) {
-				p = path.join(elosenv.documentsPath(), "library");
+				p = path.join(elosenv.documentsPath(), 'library')
 			} else {
-				p = path.join(elosenv.homePath(), "library");
+				p = path.join(elosenv.homePath(), 'library')
 			}
-			return p;
+			return p
 		}
 
-		var p = path.join(elosenv.workingDirectory(), "library");
+		var p = path.join(elosenv.workingDirectory(), 'library')
 		try {
-			if (p.indexOf("/node_modules/electron/") >= 0) p = homeLibrary();
-			if (!fs.existsSync(p)) fs.mkdirSync(p);
-			fs.accessSync(p, fs.W_OK | fs.R_OK);
+			if (p.indexOf('/node_modules/electron/') >= 0) p = homeLibrary()
+			if (!fs.existsSync(p)) fs.mkdirSync(p)
+			fs.accessSync(p, fs.W_OK | fs.R_OK)
 		} catch (e) {
-			elosenv.console.warn(e.message);
-			p = homeLibrary();
+			elosenv.console.warn(e.message)
+			p = homeLibrary()
 			try {
-				if (!fs.existsSync(p)) fs.mkdirSync(p);
-				fs.accessSync(p, fs.W_OK | fs.R_OK);
+				if (!fs.existsSync(p)) fs.mkdirSync(p)
+				fs.accessSync(p, fs.W_OK | fs.R_OK)
 			} catch (e) {
-				p = null;
-				elosenv.console.warn(e.message);
+				p = null
+				elosenv.console.warn(e.message)
 			}
 		}
-		return p;
+		return p
 	}
 
 	static moveLibrary(source, target) {
 		if (fs.existsSync(target) && fs.lstatSync(target).isDirectory()) {
-			var files = fs.readdirSync(target);
-			if (files.length > 0) return false;
+			var files = fs.readdirSync(target)
+			if (files.length > 0) return false
 		}
 
-		util_file.moveFolderRecursiveSync(
+		utilFile.moveFolderRecursiveSync(
 			source,
 			path.dirname(target),
 			path.basename(target)
-		);
-		return true;
+		)
+		return true
 	}
 }
 
-export default Library;
+export default Library

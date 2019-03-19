@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs'
+import path from 'path'
 
 /**
  * @function makeInitialNotes
@@ -7,7 +7,7 @@ import path from "path";
  * @return {Array} Array with the new Note
  */
 function makeInitialNotes(folderPath) {
-	var notePath = path.join(folderPath, 'Welcome.md');
+	var notePath = path.join(folderPath, 'Welcome.md')
 	var noteBody = '# Welcome to Epiphany\n\n' +
 		'* Phenomenon User Interface\n' +
 		'* Beautiful highlight, comfortable completing\n\n' +
@@ -18,10 +18,10 @@ function makeInitialNotes(folderPath) {
 		'* Beautiful inline code highlight\n' +
 		'* Comfy completing by syntax\n' +
 		'* Pasting images\n' +
-		'* Exporting notes';
+		'* Exporting notes'
 
-	fs.writeFileSync(notePath, noteBody);
-	return [notePath];
+	fs.writeFileSync(notePath, noteBody)
+	return [notePath]
 }
 
 /**
@@ -31,13 +31,13 @@ function makeInitialNotes(folderPath) {
  */
 function makeInitialFolders(rackpath) {
 
-	var folder1Path = path.join(rackpath, 'Todo');
-	if (!fs.existsSync(folder1Path)) fs.mkdirSync(folder1Path);
+	var folder1Path = path.join(rackpath, 'Todo')
+	if (!fs.existsSync(folder1Path)) fs.mkdirSync(folder1Path)
 
-	var folder2Path = path.join(rackpath, 'Meeting');
-	if (!fs.existsSync(folder2Path)) fs.mkdirSync(folder2Path);
+	var folder2Path = path.join(rackpath, 'Meeting')
+	if (!fs.existsSync(folder2Path)) fs.mkdirSync(folder2Path)
 
-	return [folder1Path, folder2Path];
+	return [folder1Path, folder2Path]
 }
 
 /**
@@ -46,17 +46,17 @@ function makeInitialFolders(rackpath) {
  * @return {Object} {description}
  */
 function makeInitialRacks(library) {
-	var newRackPath = path.join(library, 'Work');
-	if (!fs.existsSync(newRackPath)) fs.mkdirSync(newRackPath);
+	var newRackPath = path.join(library, 'Work')
+	if (!fs.existsSync(newRackPath)) fs.mkdirSync(newRackPath)
 
-	var folderPaths = makeInitialFolders(newRackPath);
-	var notePaths = makeInitialNotes(folderPaths[0]);
+	var folderPaths = makeInitialFolders(newRackPath)
+	var notePaths = makeInitialNotes(folderPaths[0])
 
 	return {
 		notes  : notePaths,
 		folders: folderPaths,
 		rack   : newRackPath
-	};
+	}
 }
 
 /**
@@ -65,7 +65,7 @@ function makeInitialRacks(library) {
  * @return {Object} New data array
  */
 function initialSetup(library) {
-	return makeInitialRacks(library);
+	return makeInitialRacks(library)
 }
 
 export default {
@@ -73,4 +73,4 @@ export default {
 	makeInitialFolders: makeInitialFolders,
 	makeInitialRacks  : makeInitialRacks,
 	initialSetup      : initialSetup
-};
+}

@@ -1,26 +1,26 @@
-import moment from "moment";
-import arr from "../utils/arr";
+import moment from 'moment'
+import arr from '../utils/arr'
 
-const TODAY_TEXT = 'Today';
-const YESTERDAY_TEXT = 'Yesterday';
-const WEEK_AGO_TEXT = 'A Week Ago';
+const TODAY_TEXT = 'Today'
+const YESTERDAY_TEXT = 'Yesterday'
+const WEEK_AGO_TEXT = 'A Week Ago'
 
 export default function(Vue) {
 	Vue.filter('dateSeparated', function(notes, property) {
-		if (notes.length == 0) {
+		if (notes.length === 0) {
 			return [{
 				dateStr: 'No notes, let\'s write',
 				notes  : []
-			}];
+			}]
 		}
-		if (property == 'title') {
+		if (property === 'title') {
 			return [{
 				dateStr: '',
 				notes  : arr.sortBy(notes.slice(), property, true)
-			}];
+			}]
 		}
-		var now = moment();
-		var sorted = arr.sortBy(notes.slice(), property);
+		var now = moment()
+		var sorted = arr.sortBy(notes.slice(), property)
 
 		/**
 		 * @function getDateDiff
@@ -29,9 +29,9 @@ export default function(Vue) {
 		 * @return {Number} difference number in days
 		 */
 		function getDateDiff(to, from) {
-			var t = moment([to.year(), to.month(), to.date()]);
-			var f = moment([from.year(), from.month(), from.date()]);
-			return t.diff(f, 'days');
+			var t = moment([to.year(), to.month(), to.date()])
+			var f = moment([from.year(), from.month(), from.date()])
+			return t.diff(f, 'days')
 		}
 
 		/**
@@ -40,38 +40,38 @@ export default function(Vue) {
 		 * @return {String} Formatted string
 		 */
 		function getDateStr(d) {
-			var diff = getDateDiff(now, d);
-			if (diff == 0) {
-				return TODAY_TEXT;
-			} else if (diff == 1) {
-				return YESTERDAY_TEXT;
-			} else if (diff == 7) {
-				return WEEK_AGO_TEXT + ' (' + d.format('MMM DD') + ')';
+			var diff = getDateDiff(now, d)
+			if (diff === 0) {
+				return TODAY_TEXT
+			} else if (diff === 1) {
+				return YESTERDAY_TEXT
+			} else if (diff === 7) {
+				return WEEK_AGO_TEXT + ' (' + d.format('MMM DD') + ')'
 			}
-			return d.format('ddd, MMM DD');
+			return d.format('ddd, MMM DD')
 		}
 
-		var ret = [];
-		var lastDate = null;
+		var ret = []
+		var lastDate = null
 		sorted.forEach((note) => {
 			if (!lastDate) {
 				lastDate = {
 					dateStr: getDateStr(note[property]),
 					date   : note[property],
 					notes  : [note]
-				};
+				}
 			} else if (getDateDiff(lastDate.date, note[property]) > 0) {
-				ret.push(lastDate);
+				ret.push(lastDate)
 				lastDate = {
 					dateStr: getDateStr(note[property]),
 					date   : note[property],
 					notes  : [note]
-				};
+				}
 			} else {
-				lastDate.notes.push(note);
+				lastDate.notes.push(note)
 			}
-		});
-		ret.push(lastDate);
-		return ret;
-	});
+		})
+		ret.push(lastDate)
+		return ret
+	})
 };

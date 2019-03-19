@@ -25,4 +25,4 @@ function generateOnClickAttribute (url) {
 	return "appVue.openImg('"+url+"'); return false;"
 }
 
-module.exports = markdownitLinkifyImages;
+module.exports = markdownitLinkifyImages

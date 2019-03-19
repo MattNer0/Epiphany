@@ -1,6 +1,6 @@
-require('es6-promise').polyfill();
+require('es6-promise').polyfill()
 
-const webpack = require('webpack');
+const webpack = require('webpack')
 
 var webpackPlugins = [
 	new webpack.DefinePlugin({
@@ -19,19 +19,19 @@ var webpackPlugins = [
 		'datauri'
 	]),
 	new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-];
+]
 
 module.exports = {
 	module: {
 		rules: [
 			{
 				test: /\.pug$/,
-				use: 'pug-plain-loader'
+				use : 'pug-plain-loader'
 			}, {
-				test: /\.html$/,
-				loader: 'html-loader',
+				test   : /\.html$/,
+				loader : 'html-loader',
 				options: {
-					'attrs' : false
+					attrs: false
 				}
 			}
 		]
@@ -40,4 +40,4 @@ module.exports = {
 		sqlite: 'commonjs sqlite'
 	},
 	plugins: webpackPlugins
-};
+}

@@ -28,15 +28,15 @@
 				strong       : 'piled-strong',
 				strikethrough: 'piled-strikethrough'
 			}
-		};
+		}
 
 		for (var attr in modeConfig) {
-			markdownConfig[attr] = modeConfig[attr];
+			markdownConfig[attr] = modeConfig[attr]
 		}
-		markdownConfig.name = 'gfm';
-		return CodeMirror.getMode(config, markdownConfig);
+		markdownConfig.name = 'gfm'
+		return CodeMirror.getMode(config, markdownConfig)
 
-	}, 'gfm');
+	}, 'gfm')
 
-	CodeMirror.defineMIME('text/x-piledmd', 'piledmd');
-})(require('codemirror'), require('codemirror/addon/mode/overlay'), require('codemirror/mode/markdown/markdown'));
+	CodeMirror.defineMIME('text/x-piledmd', 'piledmd')
+})(require('codemirror'), require('codemirror/addon/mode/overlay'), require('codemirror/mode/markdown/markdown'))
