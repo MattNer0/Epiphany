@@ -11,25 +11,23 @@
 </template>
 
 <script>
-
-	export default {
-		name: 'bucketsSpecial',
-		props: {
-			'buckets'             : Array,
-			'selectedBucket'      : Object,
-			'isFullScreen'        : Boolean,
-			'toggleFullScreen'    : Function,
-			'showHistory'         : Boolean,
-			'showSearch'          : Boolean
+export default {
+	name : 'bucketsSpecial',
+	props: {
+		'buckets'         : Array,
+		'selectedBucket'  : Object,
+		'isFullScreen'    : Boolean,
+		'toggleFullScreen': Function,
+		'showHistory'     : Boolean,
+		'showSearch'      : Boolean
+	},
+	methods: {
+		openHistory() {
+			this.$root.openHistory()
 		},
-		methods: {
-			openHistory() {
-				this.$root.openHistory();
-			},
-			openSearch() {
-				this.$root.openSearch();
-			}
+		openSearch() {
+			this.$root.openSearch()
 		}
 	}
-
+}
 </script>

@@ -8,13 +8,13 @@
 </template>
 
 <script>
-	export default {
-		name: 'flashmessage',
-		props: ['messages'],
-		methods: {
-			openUrl(url) {
-				require('electron').shell.openExternal('' + url + '');
-			}
+export default {
+	name   : 'flashmessage',
+	props  : ['messages'],
+	methods: {
+		openUrl(url) {
+			require('electron').shell.openExternal('' + url + '')
 		}
 	}
+}
 </script>

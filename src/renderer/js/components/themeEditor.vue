@@ -4,25 +4,25 @@
 </template>
 
 <script>
-	import component_themeField from './themeField.vue';
+import componentThemeField from './themeField.vue'
 
-	export default {
-		name: 'themeEditor',
-		props: {
-			'theme': Object
-		},
-		components: {
-			'themeField' : component_themeField
-		},
-		computed: {
-			themeKeys() {
-				return this.theme !== null ? Object.keys(this.theme).sort() : [];
-			}
-		},
-		methods: {
-			setValue(csskey, new_value) {
-				this.$root.editTheme[csskey] = new_value;
-			}
+export default {
+	name : 'themeEditor',
+	props: {
+		'theme': Object
+	},
+	components: {
+		'themeField': componentThemeField
+	},
+	computed: {
+		themeKeys() {
+			return this.theme !== null ? Object.keys(this.theme).sort() : []
+		}
+	},
+	methods: {
+		setValue(csskey, newValue) {
+			this.$root.editTheme[csskey] = newValue
 		}
 	}
+}
 </script>

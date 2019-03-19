@@ -16,18 +16,18 @@
 </template>
 
 <script>
-	export default {
-		name: 'noteMenu',
-		data() {
-			return {
-				'row': 0,
-				'column': 0,
-				'selection': 0,
-				'wordscount': 0,
-				'linebreaks': 0
-			};
-		},
-		methods: {
+export default {
+	name: 'noteMenu',
+	data() {
+		return {
+			'row'       : 0,
+			'column'    : 0,
+			'selection' : 0,
+			'wordscount': 0,
+			'linebreaks': 0
 		}
+	},
+	methods: {
 	}
+}
 </script>

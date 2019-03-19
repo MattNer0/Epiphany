@@ -1,7 +1,5 @@
 <template lang="pug">
 	.my-shelf-folders
-		//-.my-shelf-folder-bucket(@contextmenu.prevent.stop="")
-			| {{ bucket.name }}
 		.my-shelf-folder.my-all(
 			v-if="bucket.folders.length > 1 && bucket.allnotes.length > 0",
 			@contextmenu.prevent.stop="",
@@ -11,10 +9,10 @@
 					i.coon-list
 					|  All
 					span.my-shelf-folder-badge(v-if="search", v-show="bucket.searchnotes(search).length > 0")
-						| {{ bucket.searchnotes(search).length }} 
+						| {{ bucket.searchnotes(search).length }}
 						i.coon-file
 					span.my-shelf-folder-badge(v-else)
-						| {{ bucket.allnotes.length }} 
+						| {{ bucket.allnotes.length }}
 						i.coon-file
 
 		.my-shelf-folder.my-favorites(
@@ -26,32 +24,30 @@
 					i.coon-star
 					|  Favorites
 					span.my-shelf-folder-badge(v-if="search", v-show="bucket.searchstarrednotes(search).length > 0")
-						| {{ bucket.searchstarrednotes(search).length }} 
+						| {{ bucket.searchstarrednotes(search).length }}
 						i.coon-file
 					span.my-shelf-folder-badge(v-else)
-						| {{ bucket.starrednotes.length }} 
+						| {{ bucket.starrednotes.length }}
 						i.coon-file
 </template>
 
 <script>
-
-	export default {
-		name: 'foldersSpecial',
-		props: {
-			'bucket'              : Object,
-			'showAll'             : Boolean,
-			'showFavorites'       : Boolean,
-			'draggingFolder'      : Object,
-			'search'              : String
+export default {
+	name : 'foldersSpecial',
+	props: {
+		'bucket'        : Object,
+		'showAll'       : Boolean,
+		'showFavorites' : Boolean,
+		'draggingFolder': Object,
+		'search'        : String
+	},
+	methods: {
+		selectAll(bucket) {
+			this.$root.showAllRack(bucket)
 		},
-		methods: {
-			selectAll(bucket) {
-				this.$root.showAllRack(bucket);
-			},
-			selectFavorites(bucket) {
-				this.$root.showFavoritesRack(bucket);
-			}
+		selectFavorites(bucket) {
+			this.$root.showFavoritesRack(bucket)
 		}
 	}
-
+}
 </script>

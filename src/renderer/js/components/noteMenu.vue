@@ -89,7 +89,7 @@
 							i.coon-check-circle(v-if="fontsize == 24")
 							i.coon-circle.faded(v-else)
 							|  24
-			
+
 			li.right-align(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isToolbarEnabled }")
 				div: dropdown(:visible="properties_visible", :position="position_right", v-on:clickout="properties_visible = false")
 					span.link(@click="properties_visible = !properties_visible")
@@ -99,26 +99,26 @@
 						.properties-dialog(@click="close_properties")
 							table
 								tr
-									td: strong Path: 
+									td: strong Path:&nbsp;
 									td.right: span(style="white-space: pre;") {{ note.relativePathNoFileName }}
 							hr
 							table
 								tr
-									td: strong Line Count: 
+									td: strong Line Count:&nbsp;
 									td.right: span {{ note.properties.lineCount }}
 								tr
-									td: strong Word Count: 
+									td: strong Word Count:&nbsp;
 									td.right: span {{ note.properties.wordCount }}
 								tr
-									td: strong Char Count: 
+									td: strong Char Count:&nbsp;
 									td.right: span {{ note.properties.charCount }}
 							hr
 							table
 								tr
-									td: strong Modified: 
+									td: strong Modified:&nbsp;
 									td.right: span {{ note.updatedAt.format('MMM DD, YYYY') }}
 								tr
-									td: strong Created: 
+									td: strong Created:&nbsp;
 									td.right: span {{ note.createdAt.format('MMM DD, YYYY') }}
 							hr
 							form.new-metadata-form(@submit="newMetadata")
@@ -158,253 +158,252 @@
 </template>
 
 <script>
-	import { remote } from "electron";
-	import myDropdown from 'vue-my-dropdown';
+import myDropdown from 'vue-my-dropdown'
 
-	export default {
-		name: 'noteMenu',
-		props: {
-			'note'             : Object,
-			'isFullScreen'     : Boolean,
-			'isPreview'        : Boolean,
-			'isToolbarEnabled' : Boolean,
-			'isNoteSelected'   : Boolean,
-			'isOutlineSelected': Boolean,
-			"useMonospace"     : Boolean,
-			'fontsize'         : Number,
-			'togglePreview'    : Function,
-			'sendFlashMessage' : Function
-		},
-		data() {
-			return {
-				'fontsize_visible': false,
-				'fontstyle_visible': false,
-				'properties_visible': false,
-				'headings_visible': false,
-				'table_visible': false,
-				'table_max_row': 10,
-				'table_max_column': 10,
-				'table_hover_row': 0,
-				'table_hover_column': 0,
-				'position_left': [ "left", "top", "left", "top" ],
-				'position_right': [ "right", "top", "right", "top" ]
-			};
-		},
-		computed: {
-			noteHeadings() {
+export default {
+	name : 'noteMenu',
+	props: {
+		'note'             : Object,
+		'isFullScreen'     : Boolean,
+		'isPreview'        : Boolean,
+		'isToolbarEnabled' : Boolean,
+		'isNoteSelected'   : Boolean,
+		'isOutlineSelected': Boolean,
+		'useMonospace'     : Boolean,
+		'fontsize'         : Number,
+		'togglePreview'    : Function,
+		'sendFlashMessage' : Function
+	},
+	data() {
+		return {
+			'fontsize_visible'  : false,
+			'fontstyle_visible' : false,
+			'properties_visible': false,
+			'headings_visible'  : false,
+			'table_visible'     : false,
+			'table_max_row'     : 10,
+			'table_max_column'  : 10,
+			'table_hover_row'   : 0,
+			'table_hover_column': 0,
+			'position_left'     : [ 'left', 'top', 'left', 'top' ],
+			'position_right'    : [ 'right', 'top', 'right', 'top' ]
+		}
+	},
+	computed: {
+		noteHeadings() {
 
-				function getNodeText(oDiv) {
-					var firstText = "";
-					var whitespace = /^\s*$/;
-					for (var i = 0; i < oDiv.childNodes.length; i++) {
-						var curNode = oDiv.childNodes[i];
-						if (curNode.nodeType === Node.TEXT_NODE && !(whitespace.test(curNode.nodeValue))) {
-							firstText = curNode.nodeValue;
-							break;
-						}
+			function getNodeText(oDiv) {
+				var firstText = ''
+				var whitespace = /^\s*$/
+				for (var i = 0; i < oDiv.childNodes.length; i++) {
+					var curNode = oDiv.childNodes[i]
+					if (curNode.nodeType === Node.TEXT_NODE && !(whitespace.test(curNode.nodeValue))) {
+						firstText = curNode.nodeValue
+						break
 					}
-					return firstText;
 				}
-
-				if (!this.isPreview) return [];
-				var note_heading = [];
-				var headings = document.querySelectorAll(".my-editor-preview .epiphany-heading");
-				for (var i=0; i<headings.length; i++) {
-					var node = headings[i];
-					note_heading.push({
-						id   : node.getAttribute("name"),
-						text : getNodeText(node.parentNode),
-						level: parseInt(node.parentNode.tagName.replace(/h/i,""))
-					});
-				}
-				return note_heading;
+				return firstText
 			}
-		},
-		components: {
-			'dropdown': myDropdown
-		},
-		methods: {
-			codeMirror() {
-				return this.$root.codeMirror;
-			},
-			close_properties() {
-				this.properties_visible = false;
-			},
-			close_table() {
-				this.table_visible = false;
-				this.tableClean();
-			},
-			close_headings() {
-				this.headings_visible = false;
-			},
-			tableClean() {
-				for (var i=0;i<this.table_max_row;i++) {
-					for (var j=0;j<this.table_max_column;j++) {
-						this.$refs.tablesizetd[i*this.table_max_row+j].classList.remove("selected");
-					}
-				}
-				this.table_hover_row = 0;
-				this.table_hover_column = 0;
-			},
-			tableSelect(row, column) {
-				this.table_visible = false;
 
-				var markdown_table = []
-				for (var i=0;i<row;i++) {
-					var column_table = [];
-					for (var j=0;j<column;j++) {
-						column_table.push('....');
-					}
-					markdown_table.push(column_table);
-				}
-
-				var table = require('markdown-table');
-				var cm = this.codeMirror();
-				var cursor = cm.getCursor();
-
-				if(cursor.ch == 0){
-					if(cm.doc.getLine(cursor.line).length > 0){
-						cm.doc.replaceRange( table(markdown_table)+'\n', cursor);
-					} else {
-						cm.doc.replaceRange( table(markdown_table), cursor);
-					}
-				} else {
-					cursor.ch = cm.doc.getLine(cursor.line).length;
-					cm.doc.replaceRange( '\n'+table(markdown_table), cursor);
-					cursor.line += 1;
-				}
-				
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch: 0
-				});
-				cm.focus();
-			},
-			tableHover(row, column) {
-				this.tableClean();
-				for (var i=0;i<row;i++) {
-					for (var j=0;j<column;j++) {
-						this.$refs.tablesizetd[i*this.table_max_row+j].classList.add('selected');
-					}
-				}
-				this.table_hover_row = row;
-				this.table_hover_column = column;
-			},
-			openShare() {
-				this.$root.open_share_url();
-			},
-			menu_fontsize(size) {
-				this.$parent.fontsize = size;
-				this.fontsize_visible = false;
-			},
-			menu_fontstyle(style) {
-				switch(style) {
-					case "normal":
-						this.$parent.useMonospace = false;
-						break;
-					case "monospace":
-						this.$parent.useMonospace = true;
-						break;
-				}
-				this.fontstyle_visible = false;
-			},
-			menu_image() {
-				if (this.table_visible) {
-					this.close_table();
-					return;
-				}
-
-				var cm = this.codeMirror();
-				var cursor = cm.getCursor();
-
-				if(cursor.ch == 0){
-					if(cm.doc.getLine(cursor.line).length > 0){
-						cm.doc.replaceRange( "![]()\n", cursor);
-					} else {
-						cm.doc.replaceRange( "![]()", cursor);
-					}
-				} else {
-					cursor.ch = cm.doc.getLine(cursor.line).length;
-					cm.doc.replaceRange( "\n![]()", cursor);
-					cursor.line += 1;
-				}
-				
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch: 4
-				});
-				cm.focus();
-			},
-			menu_codeBlock() {
-				if (this.table_visible) {
-					this.close_table();
-					return;
-				}
-
-				var cm = this.codeMirror();
-				var cursor = cm.getCursor();
-
-				if(cursor.ch == 0){
-					if(cm.doc.getLine(cursor.line).length > 0){
-						cm.doc.replaceRange( "```\n\n```\n", cursor);
-					} else {
-						cm.doc.replaceRange( "```\n\n```", cursor);
-					}
-				} else {
-					cursor.ch = cm.doc.getLine(cursor.line).length;
-					cm.doc.replaceRange( "\n```\n\n```", cursor);
-					cursor.line += 1;
-				}
-				
-				
-				cm.doc.setCursor({
-					line: cursor.line+1,
-					ch: 0
-				});
-				cm.focus();
-			},
-			menu_checkMark() {
-				if (this.table_visible) {
-					this.close_table();
-					return;
-				}
-
-				var cm = this.codeMirror();
-				var cursor = cm.getCursor();
-				
-				if(cursor.ch == 0){
-					if(cm.doc.getLine(cursor.line).length > 0){
-						cm.doc.replaceRange( "* [ ] \n", cursor);
-					} else {
-						cm.doc.replaceRange( "* [ ] ", cursor);
-					}
-				} else {
-					cursor.ch = cm.doc.getLine(cursor.line).length;
-					cm.doc.replaceRange( "\n* [ ] ", cursor);
-					cursor.line += 1;
-				}
-				
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch: cursor.ch+5
-				});
-				cm.focus();
-			},
-			newMetadata(e) {
-				e.preventDefault();
-				this.properties_visible = false;
-				this.note.setMetadata(this.$refs.keyinput.value, this.$refs.valueinput.value);
-				this.note.saveModel();
-				this.sendFlashMessage(2000, 'info', 'New metadata added');
-				this.$refs.valueinput.value = '';
-				this.$refs.keyinput.value = '';
-				this.properties_visible = true;
-			},
-			jumpTo(anchor) {
-				var editor = document.querySelector('.my-editor-preview');
-				var pos = document.querySelector('.my-editor-preview #'+anchor);
-				editor.scrollTop = Math.max(0, pos.offsetTop - pos.clientHeight - 10);
+			if (!this.isPreview) return []
+			var noteHeading = []
+			var headings = document.querySelectorAll('.my-editor-preview .epiphany-heading')
+			for (var i=0; i<headings.length; i++) {
+				var node = headings[i]
+				noteHeading.push({
+					id   : node.getAttribute('name'),
+					text : getNodeText(node.parentNode),
+					level: parseInt(node.parentNode.tagName.replace(/h/i, ''))
+				})
 			}
+			return noteHeading
+		}
+	},
+	components: {
+		'dropdown': myDropdown
+	},
+	methods: {
+		codeMirror() {
+			return this.$root.codeMirror
+		},
+		close_properties() {
+			this.properties_visible = false
+		},
+		close_table() {
+			this.table_visible = false
+			this.tableClean()
+		},
+		close_headings() {
+			this.headings_visible = false
+		},
+		tableClean() {
+			for (var i=0; i<this.table_max_row; i++) {
+				for (var j=0; j<this.table_max_column; j++) {
+					this.$refs.tablesizetd[i*this.table_max_row+j].classList.remove('selected')
+				}
+			}
+			this.table_hover_row = 0
+			this.table_hover_column = 0
+		},
+		tableSelect(row, column) {
+			this.table_visible = false
+
+			var markdownTable = []
+			for (var i=0; i<row; i++) {
+				var columnTable = []
+				for (var j=0; j<column; j++) {
+					columnTable.push('....')
+				}
+				markdownTable.push(columnTable)
+			}
+
+			var table = require('markdown-table')
+			var cm = this.codeMirror()
+			var cursor = cm.getCursor()
+
+			if (cursor.ch === 0) {
+				if (cm.doc.getLine(cursor.line).length > 0) {
+					cm.doc.replaceRange(table(markdownTable)+'\n', cursor)
+				} else {
+					cm.doc.replaceRange(table(markdownTable), cursor)
+				}
+			} else {
+				cursor.ch = cm.doc.getLine(cursor.line).length
+				cm.doc.replaceRange('\n'+table(markdownTable), cursor)
+				cursor.line += 1
+			}
+
+			cm.doc.setCursor({
+				line: cursor.line,
+				ch  : 0
+			})
+			cm.focus()
+		},
+		tableHover(row, column) {
+			this.tableClean()
+			for (var i=0; i<row; i++) {
+				for (var j=0; j<column; j++) {
+					this.$refs.tablesizetd[i*this.table_max_row+j].classList.add('selected')
+				}
+			}
+			this.table_hover_row = row
+			this.table_hover_column = column
+		},
+		openShare() {
+			this.$root.open_share_url()
+		},
+		menu_fontsize(size) {
+			this.$parent.fontsize = size
+			this.fontsize_visible = false
+		},
+		menu_fontstyle(style) {
+			switch (style) {
+				case 'normal':
+					this.$parent.useMonospace = false
+					break
+				case 'monospace':
+					this.$parent.useMonospace = true
+					break
+			}
+			this.fontstyle_visible = false
+		},
+		menu_image() {
+			if (this.table_visible) {
+				this.close_table()
+				return
+			}
+
+			var cm = this.codeMirror()
+			var cursor = cm.getCursor()
+
+			if (cursor.ch === 0) {
+				if (cm.doc.getLine(cursor.line).length > 0) {
+					cm.doc.replaceRange('![]()\n', cursor)
+				} else {
+					cm.doc.replaceRange('![]()', cursor)
+				}
+			} else {
+				cursor.ch = cm.doc.getLine(cursor.line).length
+				cm.doc.replaceRange('\n![]()', cursor)
+				cursor.line += 1
+			}
+
+			cm.doc.setCursor({
+				line: cursor.line,
+				ch  : 4
+			})
+			cm.focus()
+		},
+		menu_codeBlock() {
+			if (this.table_visible) {
+				this.close_table()
+				return
+			}
+
+			var cm = this.codeMirror()
+			var cursor = cm.getCursor()
+
+			if (cursor.ch === 0) {
+				if (cm.doc.getLine(cursor.line).length > 0) {
+					cm.doc.replaceRange('```\n\n```\n', cursor)
+				} else {
+					cm.doc.replaceRange('```\n\n```', cursor)
+				}
+			} else {
+				cursor.ch = cm.doc.getLine(cursor.line).length
+				cm.doc.replaceRange('\n```\n\n```', cursor)
+				cursor.line += 1
+			}
+
+
+			cm.doc.setCursor({
+				line: cursor.line+1,
+				ch  : 0
+			})
+			cm.focus()
+		},
+		menu_checkMark() {
+			if (this.table_visible) {
+				this.close_table()
+				return
+			}
+
+			var cm = this.codeMirror()
+			var cursor = cm.getCursor()
+
+			if (cursor.ch === 0) {
+				if (cm.doc.getLine(cursor.line).length > 0) {
+					cm.doc.replaceRange('* [ ] \n', cursor)
+				} else {
+					cm.doc.replaceRange('* [ ] ', cursor)
+				}
+			} else {
+				cursor.ch = cm.doc.getLine(cursor.line).length
+				cm.doc.replaceRange('\n* [ ] ', cursor)
+				cursor.line += 1
+			}
+
+			cm.doc.setCursor({
+				line: cursor.line,
+				ch  : cursor.ch+5
+			})
+			cm.focus()
+		},
+		newMetadata(e) {
+			e.preventDefault()
+			this.properties_visible = false
+			this.note.setMetadata(this.$refs.keyinput.value, this.$refs.valueinput.value)
+			this.note.saveModel()
+			this.sendFlashMessage(2000, 'info', 'New metadata added')
+			this.$refs.valueinput.value = ''
+			this.$refs.keyinput.value = ''
+			this.properties_visible = true
+		},
+		jumpTo(anchor) {
+			var editor = document.querySelector('.my-editor-preview')
+			var pos = document.querySelector('.my-editor-preview #'+anchor)
+			editor.scrollTop = Math.max(0, pos.offsetTop - pos.clientHeight - 10)
 		}
 	}
+}
 </script>

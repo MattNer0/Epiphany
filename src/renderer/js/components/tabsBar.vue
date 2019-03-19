@@ -11,32 +11,30 @@
 </template>
 
 <script>
-	import models from "../models";
-
-	export default {
-		name: 'tabsBar',
-		props: {
-			'currentNote'    : Object,
-			'tabsArray'      : Array,
+export default {
+	name : 'tabsBar',
+	props: {
+		'currentNote': Object,
+		'tabsArray'  : Array
+	},
+	computed: {
+	},
+	methods: {
+		selectNote(note) {
+			this.$root.changeNote(note)
 		},
-		computed: {
-		},
-		methods: {
-			selectNote(note) {
-				this.$root.changeNote(note);
-			},
-			removeTab(note, index) {
-				if (note == this.currentNote) {
-					if (index > 0) {
-						this.$root.changeNote(this.tabsArray[index-1]);
-					} else if(this.tabsArray.length > 1) {
-						this.$root.changeNote(this.tabsArray[index+1]);
-					} else {
-						this.$root.changeNote(null);
-					}
+		removeTab(note, index) {
+			if (note === this.currentNote) {
+				if (index > 0) {
+					this.$root.changeNote(this.tabsArray[index-1])
+				} else if (this.tabsArray.length > 1) {
+					this.$root.changeNote(this.tabsArray[index+1])
+				} else {
+					this.$root.changeNote(null)
 				}
-				this.$root.noteTabs.splice(index, 1);
 			}
+			this.$root.noteTabs.splice(index, 1)
 		}
 	}
+}
 </script>

@@ -8,16 +8,16 @@
 </template>
 
 <script>
-	export default {
-		name: 'themeMenu',
-		props: {
-			'theme': Object,
-			'isToolbarEnabled'  : Boolean
-		},
-		methods: {
-			menu_save() {
-				this.$root.setCustomTheme(this.theme);
-			},
+export default {
+	name : 'themeMenu',
+	props: {
+		'theme'           : Object,
+		'isToolbarEnabled': Boolean
+	},
+	methods: {
+		menu_save() {
+			this.$root.setCustomTheme(this.theme)
 		}
 	}
+}
 </script>

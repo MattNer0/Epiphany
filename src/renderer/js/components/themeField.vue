@@ -8,31 +8,31 @@
 </template>
 
 <script>
-	export default {
-		name: 'themeEditor',
-		props: {
-			'csskey': String,
-			'value': String
-		},
-		data() {
+export default {
+	name : 'themeEditor',
+	props: {
+		'csskey': String,
+		'value' : String
+	},
+	data() {
+		return {
+			myvalue: ''
+		}
+	},
+	mounted() {
+		this.myvalue = this.value
+	},
+	computed: {
+		background_style() {
 			return {
-				myvalue: ""
-			};
-		},
-		mounted() {
-			this.myvalue = this.value;
-		},
-		computed: {
-			background_style() {
-				return {
-					backgroundColor: this.myvalue
-				};
-			}
-		},
-		watch: {
-			myvalue() {
-				this.$parent.setValue(this.csskey, this.myvalue);
+				backgroundColor: this.myvalue
 			}
 		}
+	},
+	watch: {
+		myvalue() {
+			this.$parent.setValue(this.csskey, this.myvalue)
+		}
 	}
+}
 </script>

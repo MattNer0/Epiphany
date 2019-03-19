@@ -35,112 +35,112 @@
 </template>
 
 <script>
-	import component_nodeOutline from './nodeOutline.vue';
+import componentNodeOutline from './nodeOutline.vue'
 
-	export default {
-		name: 'outline',
-		props: {
-			'outlineNote': Object
+export default {
+	name : 'outline',
+	props: {
+		'outlineNote': Object
+	},
+	data() {
+		return {
+			'zoomedin'   : false,
+			'breadcrumbs': [],
+			'lastCrumb'  : null
+		}
+	},
+	computed: {
+		outlineNode() {
+			return this.outlineNote
+		}
+	},
+	components: {
+		'node': componentNodeOutline
+	},
+	mounted() {
+		for (var i=0; i<this.$children.length; i++) {
+			this.$children[i].openNestedUl()
+		}
+	},
+	methods: {
+		getOutlineNodeOffset(child, mod) {
+			var i = this.outlineNote.nodes.indexOf(child)
+			if (!mod) mod = 0
+			return this.outlineNote.nodes[i+mod]
 		},
-		data() {
-			return {
-				'zoomedin': false,
-				'breadcrumbs': [],
-				'lastCrumb' : null
-			};
+		previousOutlineNode(child) {
+			return this.getOutlineNodeOffset(child, -1)
 		},
-		computed: {
-			outlineNode() {
-				return this.outlineNote;
-			}
+		getElementNodeOffset(child, mod) {
+			var i = this.outlineNote.nodes.indexOf(child)
+			if (!mod) mod = 0
+			return this.$children[i+mod]
 		},
-		components: {
-			'node' : component_nodeOutline
+		previousElementNode(child) {
+			return this.getElementNodeOffset(child, -1)
 		},
-		mounted() {
+		//--------------------------------------
+		focusChildren(child, mod, selection) {
+			if (!child) return
+			return this.getElementNodeOffset(child, mod).focusInput(selection)
+		},
+		zoomIn(nodesArray) {
+			this.zoomedin = true
+			this.lastCrumb = nodesArray.pop()
+			nodesArray.unshift(this)
+			this.breadcrumbs = nodesArray
+			this.$nextTick(() => {
+				this.$refs.crumb.focus()
+			})
+		},
+		newNodeTail() {
+			var n = this.outlineNote.newEmptyNode()
+
+			this.$nextTick(() => {
+				var el = this.getElementNodeOffset(n)
+				el.focusInput()
+			})
+		},
+		zoomThisNode() {
+			this.zoomedin = false
+			this.breadcrumbs = []
+			this.lastCrumb = null
 			for (var i=0; i<this.$children.length; i++) {
-				this.$children[i].openNestedUl();
+				this.$children[i].unzoomNode()
 			}
-		},
-		methods: {
-			getOutlineNodeOffset(child, mod) {
-				var i = this.outlineNote.nodes.indexOf(child);
-				if (!mod) mod = 0;
-				return this.outlineNote.nodes[i+mod];
-			},
-			previousOutlineNode(child) {
-				return this.getOutlineNodeOffset(child, -1);
-			},
-			getElementNodeOffset(child, mod) {
-				var i = this.outlineNote.nodes.indexOf(child);
-				if (!mod) mod = 0;
-				return this.$children[i+mod];
-			},
-			previousElementNode(child) {
-				return this.getElementNodeOffset(child, -1);
-			},
-			//--------------------------------------
-			focusChildren(child, mod, selection) {
-				if (!child) return;
-				return this.getElementNodeOffset(child, mod).focusInput(selection);
-			},
-			zoomIn(nodes_array) {
-				this.zoomedin = true;
-				this.lastCrumb = nodes_array.pop();
-				nodes_array.unshift(this);
-				this.breadcrumbs = nodes_array;
-				this.$nextTick(() => {
-					this.$refs.crumb.focus();
-				});
-			},
-			newNodeTail() {
-				var n = this.outlineNote.newEmptyNode();
 
-				this.$nextTick(() => {
-					var el = this.getElementNodeOffset(n);
-					el.focusInput();
-				});
-			},
-			zoomThisNode() {
-				this.zoomedin = false;
-				this.breadcrumbs = [];
-				this.lastCrumb = null;
-				for (var i=0; i<this.$children.length; i++) {
-					this.$children[i].unzoomNode();
-				}
-
-				this.$nextTick(() => {
-					var nodeElement = document.querySelectorAll('.my-editor-outline > div > input')[0];
-					nodeElement.focus();
-					nodeElement.setSelectionRange(0,0);
-				});
-			},
-			zoomBack() {
-				this.zoomThisNode();
-			},
-			zoomBackCrumb() {
-				if (this.lastCrumb) this.lastCrumb.zoomBack();
-			},
-			openCrumb(element) {
-				element.zoomThisNode();
-			},
-			switchToTextArea() {
-				if (this.lastCrumb) this.lastCrumb.switchToTextArea();
-			},
-			jumpNextNode(event) {
-				var input = event.target;
-				if (input.selectionStart == input.value.length) {
-					event.preventDefault();
-					var nodeElement = document.querySelectorAll('.visible-node > input')[0];
-					nodeElement.focus();
-					nodeElement.setSelectionRange(0,0);
-				}
-			}
+			this.$nextTick(() => {
+				var nodeElement = document.querySelectorAll('.my-editor-outline > div > input')[0]
+				nodeElement.focus()
+				nodeElement.setSelectionRange(0, 0)
+			})
 		},
-		watch: {
-			'outlineNote.title': function() {
-				if (this.outlineNote) this.$root.saveNote();
+		zoomBack() {
+			this.zoomThisNode()
+		},
+		zoomBackCrumb() {
+			if (this.lastCrumb) this.lastCrumb.zoomBack()
+		},
+		openCrumb(element) {
+			element.zoomThisNode()
+		},
+		switchToTextArea() {
+			if (this.lastCrumb) this.lastCrumb.switchToTextArea()
+		},
+		jumpNextNode(event) {
+			var input = event.target
+			if (input.selectionStart === input.value.length) {
+				event.preventDefault()
+				var nodeElement = document.querySelectorAll('.visible-node > input')[0]
+				nodeElement.focus()
+				nodeElement.setSelectionRange(0, 0)
 			}
 		}
+	},
+	watch: {
+		'outlineNote.title': function() {
+			if (this.outlineNote) this.$root.saveNote()
+		}
 	}
+}
 </script>
