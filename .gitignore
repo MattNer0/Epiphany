@@ -4,3 +4,6 @@ dist/
 node_modules/
 releases/
 thumbs.db
+
+.vscode/
+.idea/

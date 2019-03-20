@@ -140,7 +140,7 @@ function createBackgroundWindow() {
 		windowOptions: {
 			skipTaskbar   : true,
 			webPreferences: {
-				devTools        : isDevelopment,
+				devTools        : false,
 				nodeIntegration : true,
 				contextIsolation: false
 			}
@@ -164,7 +164,7 @@ function createBrowserWindow(callback) {
 		windowOptions: {
 			skipTaskbar   : true,
 			webPreferences: {
-				devTools        : isDevelopment,
+				devTools        : false,
 				nodeIntegration : true,
 				contextIsolation: false
 			}
@@ -195,6 +195,7 @@ function createPopupWindow(width, height, callback) {
 		darkTheme     : true,
 		frame         : false,
 		webPreferences: {
+			devTools        : false,
 			nodeIntegration : true,
 			contextIsolation: false
 		}

@@ -2,14 +2,14 @@
 	.my-shelf-buckets(:class="{ 'draggingRack' : draggingBucket, 'draggingFolder' : draggingFolder }")
 		.my-shelf-rack(v-for="bucket in bucketsWithFolders"
 			:class="classBucket(bucket)"
-			:draggable="editingFolder === null && !bucket.trash_bin ? 'true' : 'false'"
+			:draggable="editingFolder === null && !bucket.trash_bin && !bucket.quick_notes"
 			@dragstart.stop="rackDragStart($event, bucket)"
 			@dragend.stop="rackDragEnd()"
 			@dragover="rackDragOver($event, bucket)"
 			@dragleave.stop="rackDragLeave(bucket)"
 			@drop.stop="dropToRack($event, bucket)"
 			@contextmenu.prevent.stop="bucketMenu(bucket)")
-			.rack-object(:class="{ 'dragging' : draggingBucket == bucket }", @click="selectBucket(bucket)")
+			.rack-object(:class="{ 'dragging' : draggingBucket === bucket }", @click="selectBucket(bucket)")
 				template(v-if="bucket.icon")
 					i.rack-icon(:class="'coon-'+bucket.icon")
 					a {{ bucket.quick_notes ? 'Quick Notes' : bucket.name }}
@@ -18,7 +18,7 @@
 					a {{ bucket.name }}
 
 			folders(
-				v-if="!bucket.quick_notes"
+				v-if="!bucket.quick_notes && bucket.folders"
 				:parent-folder="bucket"
 				:selected-note="selectedNote"
 				:selected-folder="selectedFolder"

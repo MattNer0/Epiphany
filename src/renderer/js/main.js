@@ -297,48 +297,50 @@ export default function() {
 			function loadByParent(obj, rack, parent) {
 				var folder
 				if (parent) {
-					folder = parent.folders.filter((f) => {
+					folder = parent.folders.find((f) => {
 						return f.path === obj.folder
-					})[0]
+					})
 				} else if (rack) {
-					folder = rack.folders.filter((f) => {
+					folder = rack.folders.find((f) => {
 						return f.path === obj.folder
-					})[0]
+					})
 				}
 
-				var notes = []
-				obj.notes.forEach((n) => {
-					n.rack = rack
-					n.folder = folder
-					switch (n.type) {
-						case 'encrypted':
-							notes.push(new models.EncryptedNote(n))
-							break
-						case 'outline':
-							notes.push(new models.Outline(n))
-							break
-						default:
-							notes.push(new models.Note(n))
-							break
-					}
-				})
-
-				var images = []
-				obj.images.forEach((img) => {
-					img.rack = rack
-					img.folder = folder
-					images.push(new models.Image(img))
-				})
-
-				folder.notes = notes
-				folder.images = images
-				self.notes = notes.concat(self.notes)
-				self.images = images.concat(self.images)
-
-				if (obj.subnotes && obj.subnotes.length > 0) {
-					obj.subnotes.forEach((r) => {
-						loadByParent(r, rack, folder)
+				if (folder) {
+					var notes = []
+					obj.notes.forEach((n) => {
+						n.rack = rack
+						n.folder = folder
+						switch (n.type) {
+							case 'encrypted':
+								notes.push(new models.EncryptedNote(n))
+								break
+							case 'outline':
+								notes.push(new models.Outline(n))
+								break
+							default:
+								notes.push(new models.Note(n))
+								break
+						}
 					})
+
+					var images = []
+					obj.images.forEach((img) => {
+						img.rack = rack
+						img.folder = folder
+						images.push(new models.Image(img))
+					})
+
+					folder.notes = notes
+					folder.images = images
+					self.notes = notes.concat(self.notes)
+					self.images = images.concat(self.images)
+
+					if (obj.subnotes && obj.subnotes.length > 0) {
+						obj.subnotes.forEach((r) => {
+							loadByParent(r, rack, folder)
+						})
+					}
 				}
 			}
 
@@ -455,9 +457,9 @@ export default function() {
 			},
 			findRackByPath(rackPath) {
 				try {
-					return this.racks.filter((rk) => {
+					return this.racks.find((rk) => {
 						return rk.path === rackPath
-					})[0]
+					})
 				} catch (e) {
 					elosenv.console.warn('Couldn\'t find rack by path "' + rackPath + '"')
 					return null
@@ -465,9 +467,9 @@ export default function() {
 			},
 			findFolderByPath(rack, folderPath) {
 				try {
-					var folder = rack.folders.filter((f) => {
+					var folder = rack.folders.find((f) => {
 						return f.path === folderPath
-					})[0]
+					})
 					if (folder) return folder
 					var rp = path.relative(rack.path, folderPath)
 					rp = rp.split(path.sep)
