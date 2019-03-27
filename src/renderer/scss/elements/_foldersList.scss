@@ -261,6 +261,10 @@
 	background-color: transparent !important;
 }
 
+.rack-object.no-results {
+	display: none;
+}
+
 .folder-object.no-results {
 	opacity: 0.5;
 }

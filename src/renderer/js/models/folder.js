@@ -107,7 +107,7 @@ class Folder extends Model {
 	}
 
 	searchnotes(search) {
-		return searcher.searchNotes(search, this.allnotes)
+		return this.name.indexOf(search) >= 0 || searcher.searchNotes(search, this.allnotes)
 	}
 
 	set parent(f) {

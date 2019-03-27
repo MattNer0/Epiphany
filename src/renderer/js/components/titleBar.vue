@@ -18,14 +18,19 @@
 					li(@click="close_sidebar", v-else)
 						i.coon-sidebar
 						|  Close Sidebar
+					li(v-bind:class="{ 'open-search' : focusSearch || query, 'close-search': !focusSearch && !query }")
+						label
+							i.coon-search
+							input(type="text", placeholder="Search", v-model="query" @focus="onSearchFocus", @blur="onSearchBlur")
+							i.coon-x-circle(v-show="query", @click="clearSearch")
 
-			.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
-				.system-icon(@click="win_min", v-if="!windowTitle")
-					i.coon-underscore
-				.system-icon(@click="win_max", v-if="!windowTitle")
-					i.coon-square
-				.system-icon.close-icon(@click="win_close")
-					i.coon-x
+				.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
+					.system-icon(@click="win_min", v-if="!windowTitle")
+						i.coon-underscore
+					.system-icon(@click="win_max", v-if="!windowTitle")
+						i.coon-square
+					.system-icon.close-icon(@click="win_close")
+						i.coon-x
 </template>
 
 <script>
@@ -52,8 +57,10 @@ export default {
 	},
 	data: function() {
 		return {
-			'isLinux' : elosenv.isLinux(),
-			'isDarwin': elosenv.isDarwin()
+			'isLinux'    : elosenv.isLinux(),
+			'isDarwin'   : elosenv.isDarwin(),
+			'focusSearch': false,
+			'query'      : ''
 		}
 	},
 	methods: {
@@ -88,6 +95,16 @@ export default {
 		},
 		close_sidebar() {
 			this.$root.setFullScreen(true)
+		},
+		onSearchFocus() {
+			this.focusSearch = true
+		},
+		onSearchBlur() {
+			this.focusSearch = false
+		},
+		clearSearch() {
+			this.focusSearch = false
+			this.query = ''
 		},
 		newBucket() {
 			var bucket = new models.Rack({
@@ -288,6 +305,11 @@ export default {
 			}))
 
 			menu.popup(this.popup_position(event))
+		}
+	},
+	watch: {
+		query() {
+			this.$root.search = this.query
 		}
 	}
 }

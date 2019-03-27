@@ -2,6 +2,14 @@ import fs from 'fs'
 import path from 'path'
 import url from 'url'
 import http from 'http'
+import https from 'https'
+
+function decideProtocol(url) {
+	if (url.indexOf('https') === 0) {
+		return https
+	}
+	return http
+}
 
 export default {
 	getFileDataFromUrl(fileUrl) {
@@ -23,7 +31,7 @@ export default {
 		})
 	},
 	getBase64Image(sourceUrl, callback) {
-		http.get(sourceUrl, (res) => {
+		decideProtocol(sourceUrl).get(sourceUrl, (res) => {
 			res.setEncoding('binary')
 			var body = ''
 			res.on('data', (chunk) => {
@@ -39,7 +47,7 @@ export default {
 		if (!targetFolder || !filename) return
 
 		var file = path.join(targetFolder, filename)
-		http.get(sourceUrl, (res) => {
+		decideProtocol(sourceUrl).get(sourceUrl, (res) => {
 			var imagedata = ''
 			if (('' + res.statusCode).match(/^2\d\d$/)) {
 				res.setEncoding('binary')

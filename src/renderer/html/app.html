@@ -17,8 +17,7 @@
 					<div class="my-shelf">
 						<buckets-special
 							:buckets="racks"
-							:show-history="showHistory"
-							:show-search="showSearch">
+							:show-history="showHistory">
 						</buckets-special>
 						<buckets
 							:buckets="racks"
@@ -39,48 +38,25 @@
 					</div>
 				</div>
 				<handler-stack
-					v-show="loadedRack || showSearch"
+					v-show="loadedRack"
 					:sidebar-drag="sidebarDrag"
 					:sidebar-drag-end="sidebarDragEnd"
 					ref="refHandleStack">
 				</handler-stack>
-				<div v-show="showSearch" class="cell-container search-container" ref="sidebarSearch">
-					<div class="my-shelf">
-						<div class="my-shelf-rack">
-							<search-bar
-								:search="search"
-								:show-search="showSearch">
-							</search-bar>
-							<folders
-								v-if="searchRack"
-								:parent-folder="searchRack"
-								:selected-note="selectedNote"
-								:selected-folder="selectedFolder"
-								:dragging-folder="draggingFolder"
-								:dragging-note="draggingNote"
-								:change-bucket="changeRack"
-								:change-folder="changeFolder"
-								:editing-folder="editingFolder"
-								:search="search">
-							</folders>
-						</div>
-					</div>
-				</div>
 				<div v-show="selectedFolder || showAll || showFavorites || showHistory" class="cell-container" ref="sidebarNotes">
-					<div class="my-shelf-banner" v-show="selectedFolder && !showSearch">Notes
+					<div class="my-shelf-banner" v-show="selectedFolder">Notes
 						<add-note
 							:selected-folder="selectedFolder"
 							:selected-rack="selectedRack">
 						</add-note>
 					</div>
-					<div class="my-shelf-notes" :class="{ 'expand-notes': showAll || showFavorites || showHistory || showSearch }" ref="refNotes">
+					<div class="my-shelf-notes" :class="{ 'expand-notes': showAll || showFavorites || showHistory }" ref="refNotes">
 						<notes
-							v-show="selectedRack || showHistory || showSearch"
+							v-show="selectedRack || showHistory"
 							:notes="filteredNotes"
 							:toggle-full-screen="toggleFullScreen"
 							:original-notes="notes"
 							:show-history="showHistory"
-							:show-search="showSearch"
 							:selected-note="selectedNote"
 							:selected-rack="selectedRack"
 							:selected-folder="selectedFolder"

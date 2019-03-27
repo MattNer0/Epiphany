@@ -9,7 +9,7 @@
 			@dragleave.stop="rackDragLeave(bucket)"
 			@drop.stop="dropToRack($event, bucket)"
 			@contextmenu.prevent.stop="bucketMenu(bucket)")
-			.rack-object(:class="{ 'dragging' : draggingBucket === bucket }", @click="selectBucket(bucket)")
+			.rack-object(v-bind:class="classBucketObject(bucket)", @click="selectBucket(bucket)")
 				template(v-if="bucket.icon")
 					i.rack-icon(:class="'coon-'+bucket.icon")
 					a {{ bucket.quick_notes ? 'Quick Notes' : bucket.name }}
@@ -18,7 +18,7 @@
 					a {{ bucket.name }}
 
 			folders(
-				v-if="!bucket.quick_notes && bucket.folders"
+				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchnotes(search).length > 0)"
 				:parent-folder="bucket"
 				:selected-note="selectedNote"
 				:selected-folder="selectedFolder"
@@ -94,6 +94,12 @@ export default {
 					'sortUpper'      : bucket.sortUpper,
 					'sortLower'      : bucket.sortLower
 				}
+			}
+		},
+		classBucketObject(bucket) {
+			return {
+				'dragging'  : this.draggingBucket === bucket,
+				'no-results': !this.draggingBucket && !this.draggingNote && this.search && bucket.searchnotes(this.search).length === 0
 			}
 		},
 		// Dragging

@@ -64,9 +64,6 @@ function styleObject(obj) {
 						backgroundColor: obj['fixed-sidebar-background']
 					}
 				},
-				'& .search-container': {
-					borderRight: '0.3em solid '+obj['resize-panel-handler']
-				},
 				'& .resize-handler': {
 					background: obj['resize-panel-handler']
 				},

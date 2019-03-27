@@ -64,8 +64,7 @@ export default {
 		'toggleFullScreen' : Function,
 		'changeNote'       : Function,
 		'setDraggingNote'  : Function,
-		'showHistory'      : Boolean,
-		'showSearch'       : Boolean
+		'showHistory'      : Boolean
 	},
 	data() {
 		return {
@@ -186,16 +185,6 @@ export default {
 
 			if (this.showHistory) {
 				menu.append(new MenuItem({ label: 'Open and Close History',
-					click: () => {
-						this.$root.changeRack(note.rack, true)
-						this.selectNote(note)
-						this.$root.isFullScreen = false
-					} }))
-				menu.append(new MenuItem({ type: 'separator' }))
-			}
-
-			if (this.showSearch) {
-				menu.append(new MenuItem({ label: 'Open and Close Search',
 					click: () => {
 						this.$root.changeRack(note.rack, true)
 						this.selectNote(note)

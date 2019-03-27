@@ -40,7 +40,6 @@ import componentNotes from './components/notes.vue'
 import componentAddNote from './components/addNote.vue'
 import componentTitleBar from './components/titleBar.vue'
 import componentTabsBar from './components/tabsBar.vue'
-import componentSearchBar from './components/searchBar.vue'
 import componentThemeEditor from './components/themeEditor.vue'
 import componentThemeMenu from './components/themeMenu.vue'
 
@@ -91,7 +90,6 @@ export default function() {
 			timeoutNoteChange : false,
 			editTheme         : null,
 			showHistory       : false,
-			showSearch        : false,
 			showAll           : false,
 			showFavorites     : false,
 			noteTabs          : [],
@@ -121,7 +119,6 @@ export default function() {
 			'modal'         : componentModal,
 			'addNote'       : componentAddNote,
 			'titleBar'      : componentTitleBar,
-			'searchBar'     : componentSearchBar,
 			'noteMenu'      : componentNoteMenu,
 			'noteFooter'    : componentNoteFooter,
 			'handlerStack'  : componentHandlerStack,
@@ -141,7 +138,7 @@ export default function() {
 			filteredNotes() {
 				if (this.selectedFolder) {
 					var notes = searcher.searchNotes(this.search, this.selectedFolder.notes)
-					if (this.showSearch && notes.length === 0) this.changeFolder(null)
+					if (this.search && notes.length === 0) this.changeFolder(null)
 					return notes
 				} else if (this.selectedRack && this.showAll) {
 					return searcher.searchNotes(this.search, this.selectedRack.allnotes)
@@ -532,22 +529,10 @@ export default function() {
 			},
 			openHistory() {
 				this.changeRack(null)
-				this.showSearch = false
 				this.showHistory = !this.showHistory
-			},
-			openSearch() {
-				this.changeRack(null)
-				this.showHistory = false
-				this.showSearch = !this.showSearch
-
-				this.$nextTick(() => {
-					var searchInput = document.getElementById('search-bar')
-					searchInput.focus()
-				})
 			},
 			closeOthers() {
 				this.changeRack(null)
-				this.showSearch = false
 				this.showHistory = false
 			},
 			changeRack(rack, fromSidebar) {
@@ -568,7 +553,6 @@ export default function() {
 					})
 					this.selectedRack = rack
 					this.showHistory = false
-					this.showSearch = false
 					this.changeFolder(newNoteFolder[0])
 
 				} else if (this.selectedNote && this.selectedNote.rack === rack) {
@@ -576,7 +560,6 @@ export default function() {
 						this.selectedRack = rack
 
 						this.showHistory = false
-						this.showSearch = false
 					}
 					this.changeFolder(this.selectedNote.folder)
 				} else if (rack === null || rack instanceof models.Rack) {
@@ -584,7 +567,6 @@ export default function() {
 					this.editingFolder = null
 
 					this.showHistory = false
-					this.showSearch = false
 
 					if (!sameRack) {
 						this.selectedFolder = null
@@ -604,7 +586,7 @@ export default function() {
 				if ((this.selectedFolder === null && folder) || (this.selectedFolder && folder === null)) this.update_editor_size()
 				this.editingFolder = null
 
-				if (folder && !this.showSearch && !this.showHistory) this.selectedRack = folder.rack
+				if (folder && !this.showHistory) this.selectedRack = folder.rack
 				this.selectedFolder = folder
 				this.showAll = false
 				this.showFavorites = false
@@ -613,7 +595,6 @@ export default function() {
 				this.selectedFolder = null
 				this.editingFolder = null
 				this.showHistory = false
-				this.showSearch = false
 				this.showAll = true
 				this.showFavorites = false
 
@@ -623,7 +604,6 @@ export default function() {
 				this.selectedFolder = null
 				this.editingFolder = null
 				this.showHistory = false
-				this.showSearch = false
 				this.showAll = false
 				this.showFavorites = true
 
@@ -656,7 +636,7 @@ export default function() {
 					this.selectedNote = null
 					return
 				} else if (note === this.selectedNote) {
-					if (this.selectedRack === null && !this.showSearch) this.changeFolder(note.folder)
+					if (this.selectedRack === null) this.changeFolder(note.folder)
 					else if (!this.isFullScreen && fromSidebar) {
 						this.setFullScreen(true)
 					}
@@ -918,7 +898,6 @@ export default function() {
 				}
 
 				this.showHistory = false
-				this.showSearch = false
 
 				if (!this.quick_notes_bucket) {
 					this.quick_notes_bucket = new models.Rack({
