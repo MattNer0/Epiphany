@@ -3,7 +3,6 @@
 import path from 'path'
 import fs from 'fs'
 import { app, screen, protocol, ipcMain } from 'electron'
-import log from 'electron-log'
 import { makeRendererWindow, makeBackgroundRendererWindow, windowName } from '../common/window'
 import trayIcon from './tray'
 
@@ -118,10 +117,6 @@ function createMainWindow() {
 		mainWindow = null
 	})
 
-	window.on('blur', () => {
-		log.debug('blur')
-	})
-
 	window.webContents.on('devtools-opened', () => {
 		window.focus()
 		setImmediate(() => {
@@ -195,7 +190,7 @@ function createPopupWindow(width, height, callback) {
 		darkTheme     : true,
 		frame         : false,
 		webPreferences: {
-			devTools        : false,
+			devTools        : isDevelopment,
 			nodeIntegration : true,
 			contextIsolation: false
 		}
@@ -228,6 +223,10 @@ function createPopupWindow(width, height, callback) {
 		windowOptions: conf,
 		callback     : callback
 	})
+
+	if (isDevelopment) {
+		window.webContents.openDevTools()
+	}
 
 	window.on('closed', () => {
 		popupWindow = null

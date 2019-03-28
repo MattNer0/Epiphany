@@ -66,26 +66,10 @@
 	}
 
 	.address-bar {
-		padding: 0.1em;
-		text-align: center;
+		padding: 0.2em 0.6em;
+		display: inline-block;
+		font-weight: bold;
 		-webkit-user-select: none;
-
-		span {
-			font-weight: bold;
-		}
-
-		.coon-chevron-right {
-			margin-top: 0.2em;
-			display: inline-block;
-		}
-
-		span:first-child > i {
-			margin-right: 0.2em;
-			margin-top: -0.1em;
-			display: inline-block;
-			vertical-align: middle;
-			font-size: 120%;
-		}
 	}
 
 	.menu-bar {

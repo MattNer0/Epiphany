@@ -18,7 +18,7 @@
 					a {{ bucket.name }}
 
 			folders(
-				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
+				v-if="!draggingBucket && !bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
 				:parent-folder="bucket"
 				:selected-note="selectedNote"
 				:selected-folder="selectedFolder"

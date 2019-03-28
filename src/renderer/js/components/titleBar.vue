@@ -1,28 +1,28 @@
 <template lang="pug">
 	.title-bar-container
 		.title-bar
-			.address-bar(v-if="windowTitle")
-				span {{ windowTitle }}
-			.menu-bar(v-else-if="showMenuBar")
-				nav: ul
-					li.icon
-					li(@click="file_menu") File
-					li(@click="view_menu") View
-					li(@click="tools_menu") Tools
-					li(@click="quick_note")
-						i.coon-plus
-						|  New Quick Note
-					li(@click="open_sidebar", v-if="isFullScreen")
-						i.coon-sidebar
-						|  Open Sidebar
-					li(@click="close_sidebar", v-else)
-						i.coon-sidebar
-						|  Close Sidebar
-					li(v-bind:class="{ 'open-search' : focusSearch || query, 'close-search': !focusSearch && !query }")
-						label
-							i.coon-search
-							input(type="text", placeholder="Search", v-model="query" @focus="onSearchFocus", @blur="onSearchBlur")
-							i.coon-x-circle(v-show="query", @click="clearSearch")
+			.menu-bar
+				span.address-bar(v-if="windowTitle") {{ windowTitle }}
+				nav(v-else-if="showMenuBar")
+					ul
+						li.icon
+						li(@click="file_menu") File
+						li(@click="view_menu") View
+						li(@click="tools_menu") Tools
+						li(@click="quick_note")
+							i.coon-plus
+							|  New Quick Note
+						li(@click="open_sidebar", v-if="isFullScreen")
+							i.coon-sidebar
+							|  Open Sidebar
+						li(@click="close_sidebar", v-else)
+							i.coon-sidebar
+							|  Close Sidebar
+						li(v-bind:class="{ 'open-search' : focusSearch || query, 'close-search': !focusSearch && !query }")
+							label
+								i.coon-search
+								input(type="text", placeholder="Search", v-model="query" @focus="onSearchFocus", @blur="onSearchBlur")
+								i.coon-x-circle(v-show="query", @click="clearSearch")
 
 				.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
 					.system-icon(@click="win_min", v-if="!windowTitle")
