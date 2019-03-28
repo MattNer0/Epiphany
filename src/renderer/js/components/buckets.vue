@@ -18,7 +18,7 @@
 					a {{ bucket.name }}
 
 			folders(
-				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchnotes(search).length > 0)"
+				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
 				:parent-folder="bucket"
 				:selected-note="selectedNote"
 				:selected-folder="selectedFolder"
@@ -99,8 +99,11 @@ export default {
 		classBucketObject(bucket) {
 			return {
 				'dragging'  : this.draggingBucket === bucket,
-				'no-results': !this.draggingBucket && !this.draggingNote && this.search && bucket.searchnotes(this.search).length === 0
+				'no-results': !this.draggingBucket && !this.draggingNote && this.noSearchMatch(bucket)
 			}
+		},
+		noSearchMatch(bucket) {
+			return this.search && !bucket.searchMatchName(this.search) && bucket.searchnotes(this.search).length === 0
 		},
 		// Dragging
 		rackDragStart(event, bucket) {
@@ -208,24 +211,6 @@ export default {
 		},
 		bucketMenu(bucket) {
 			var menu = new Menu()
-
-			if (this.selectedBucket === bucket) {
-				menu.append(new MenuItem({
-					label: 'Deselect bucket',
-					click: () => {
-						this.changeBucket(null)
-					}
-				}))
-				menu.append(new MenuItem({ type: 'separator' }))
-			} else {
-				menu.append(new MenuItem({
-					label: 'Select bucket',
-					click: () => {
-						this.changeBucket(bucket, true)
-					}
-				}))
-				menu.append(new MenuItem({ type: 'separator' }))
-			}
 
 			menu.append(new MenuItem({
 				label: 'Add new bucket',

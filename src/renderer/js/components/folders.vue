@@ -18,7 +18,7 @@
 						| {{ folder.name }}
 					template(v-else)
 						| No Title
-					span.my-shelf-folder-badge(v-if="search", v-show="folder.searchnotes(search).length > 0")
+					span.my-shelf-folder-badge(v-if="search", v-show="folder.searchMatchName(search) || folder.searchnotes(search).length > 0")
 						| {{ folder.searchnotes(search).length }}
 						i.coon-file
 					span.my-shelf-folder-badge(v-else, v-show="folder.notes.length > 0")
@@ -107,8 +107,11 @@ export default {
 		classFolderObject(folder) {
 			return {
 				'dragging'  : this.draggingFolder === folder,
-				'no-results': !this.draggingFolder && !this.draggingNote && this.search && folder.searchnotes(this.search).length === 0
+				'no-results': !this.draggingFolder && !this.draggingNote && this.noSearchMatch(folder)
 			}
+		},
+		noSearchMatch(folder) {
+			return this.search && !folder.searchMatchName(this.search) && folder.searchnotes(this.search).length === 0
 		},
 		isRack(folder) {
 			return folder instanceof models.Rack

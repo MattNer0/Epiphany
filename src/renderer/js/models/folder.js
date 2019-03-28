@@ -9,8 +9,8 @@ class Folder extends Model {
 	constructor(data) {
 		super(data)
 
-		this.name = data.name.replace(/^\d+\. /, '') || ''
 		this.ordering = data.ordering || 0
+		this.name = data.name || 'Folder' + this.ordering
 
 		this.rack = data.rack
 		this.parentFolder = data.parentFolder
@@ -106,8 +106,12 @@ class Folder extends Model {
 		return foldersImages
 	}
 
+	searchMatchName(search) {
+		return this.parent.searchMatchName(search) || this.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+	}
+
 	searchnotes(search) {
-		return this.name.indexOf(search) >= 0 || searcher.searchNotes(search, this.allnotes)
+		return searcher.searchNotes(search, this.allnotes)
 	}
 
 	set parent(f) {

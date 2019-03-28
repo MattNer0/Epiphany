@@ -137,7 +137,12 @@ export default function() {
 			 */
 			filteredNotes() {
 				if (this.selectedFolder) {
-					var notes = searcher.searchNotes(this.search, this.selectedFolder.notes)
+					let notes
+					if (this.selectedFolder.searchMatchName(this.search)) {
+						notes = searcher.searchNotes('', this.selectedFolder.notes)
+					} else {
+						notes = searcher.searchNotes(this.search, this.selectedFolder.notes)
+					}
 					if (this.search && notes.length === 0) this.changeFolder(null)
 					return notes
 				} else if (this.selectedRack && this.showAll) {

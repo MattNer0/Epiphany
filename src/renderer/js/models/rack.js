@@ -16,10 +16,9 @@ class Rack extends Model {
 	constructor(data) {
 		super(data)
 
-		this.name = data.name.replace(/^\d+\. /, '') || ''
-		this.previousName = this.name
-
 		this.ordering = data.ordering || 0
+		this.name = data.name || 'Bucket' + this.ordering
+		this.previousName = this.name
 
 		this._path = data.path
 
@@ -91,6 +90,11 @@ class Rack extends Model {
 			}
 		})
 		return foldersImages
+	}
+
+	searchMatchName(search) {
+		let lowerSearch = search.toLowerCase()
+		return this.name.toLowerCase() === lowerSearch || this.name.toLowerCase().indexOf(lowerSearch) === 0
 	}
 
 	searchnotes(search) {

@@ -309,7 +309,7 @@ export default {
 	},
 	watch: {
 		query() {
-			this.$root.search = this.query
+			this.$root.search = this.query.length > 2 ? this.query : ''
 		}
 	}
 }

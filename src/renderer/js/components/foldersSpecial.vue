@@ -8,7 +8,7 @@
 				a.my-shelf-folder-name
 					i.coon-list
 					|  All
-					span.my-shelf-folder-badge(v-if="search", v-show="bucket.searchnotes(search).length > 0")
+					span.my-shelf-folder-badge(v-if="search", v-show="bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0")
 						| {{ bucket.searchnotes(search).length }}
 						i.coon-file
 					span.my-shelf-folder-badge(v-else)
@@ -23,7 +23,7 @@
 				a.my-shelf-folder-name
 					i.coon-star
 					|  Favorites
-					span.my-shelf-folder-badge(v-if="search", v-show="bucket.searchstarrednotes(search).length > 0")
+					span.my-shelf-folder-badge(v-if="search", v-show="bucket.searchMatchName(search) || bucket.searchstarrednotes(search).length > 0")
 						| {{ bucket.searchstarrednotes(search).length }}
 						i.coon-file
 					span.my-shelf-folder-badge(v-else)
