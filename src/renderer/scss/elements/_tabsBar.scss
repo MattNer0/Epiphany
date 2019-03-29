@@ -84,7 +84,7 @@
 
 .tabs-open {
 	.my-editor-preview {
-		height: calc( 100vh - #{ $title-bar-height * 3 } - 0.5em );
+		height: calc( 100vh - #{ $title-bar-height * 2 + $note-bar-height * 2 } - 0.4em );
 	}
 	.main-note-container {
 		margin-top: 0;

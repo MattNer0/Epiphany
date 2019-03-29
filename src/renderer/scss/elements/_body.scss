@@ -82,11 +82,11 @@
 	}
 
 	.tabs-open .main-note-container {
-		height: calc( 100vh - #{ $title-bar-height * 2 } - 0.5em );
+		height: calc( 100vh - #{ $title-bar-height * 2 + $note-bar-height * 2 } - 0.4em );
 	}
 
 	.full-note.tabs-open .main-note-container {
-		height: calc( 100vh - #{ $title-bar-height * 2 } );
+		height: calc( 100vh - #{ $title-bar-height * 2 + $note-bar-height * 2 } );
 	}
 
 	.my-shelf-folders-outer {
