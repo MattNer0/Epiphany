@@ -2,7 +2,7 @@
 	.my-shelf-buckets(:class="{ 'draggingRack' : draggingBucket, 'draggingFolder' : draggingFolder }")
 		.my-shelf-rack(v-for="bucket in bucketsWithFolders"
 			:class="classBucket(bucket)"
-			:draggable="editingFolder === null && !bucket.trash_bin && !bucket.quick_notes"
+			:draggable="editingFolder === null && !bucket.quick_notes"
 			@dragstart.stop="rackDragStart($event, bucket)"
 			@dragend.stop="rackDragEnd()"
 			@dragover="rackDragOver($event, bucket)"
@@ -65,8 +65,7 @@ export default {
 		'changeBucket'  : Function,
 		'changeFolder'  : Function,
 		'editingFolder' : String,
-		'search'        : String,
-		'showHidden'    : Boolean
+		'search'        : String
 	},
 	directives: {
 		focus(element) {
@@ -90,7 +89,6 @@ export default {
 				return {
 					'isShelfSelected': (this.selectedBucket === bucket && !this.isDraggingNote && !this.isFullScreen) || bucket.dragHover,
 					'noCursor'       : !bucket.quick_notes,
-					'hiddenBucket'   : bucket.hidden && !this.showHidden,
 					'sortUpper'      : bucket.sortUpper,
 					'sortLower'      : bucket.sortLower
 				}
@@ -219,7 +217,7 @@ export default {
 				}
 			}))
 
-			if (!bucket.trash_bin && !bucket.quick_notes) {
+			if (!bucket.quick_notes) {
 				menu.append(new MenuItem({ type: 'separator' }))
 				menu.append(new MenuItem({
 					label: 'Rename bucket',
@@ -257,17 +255,15 @@ export default {
 				}
 			}
 
-			if (!bucket.trash_bin) {
-				menu.append(new MenuItem({ type: 'separator' }))
-				menu.append(new MenuItem({
-					label: 'Delete bucket',
-					click: () => {
-						if (confirm('Delete bucket "' + bucket.name + '" and its content?')) {
-							this.$root.removeRack(bucket)
-						}
+			menu.append(new MenuItem({ type: 'separator' }))
+			menu.append(new MenuItem({
+				label: 'Delete bucket',
+				click: () => {
+					if (confirm('Delete bucket "' + bucket.name + '" and its content?')) {
+						this.$root.removeRack(bucket)
 					}
-				}))
-			}
+				}
+			}))
 
 			menu.popup(remote.getCurrentWindow())
 		}

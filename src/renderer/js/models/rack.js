@@ -27,8 +27,6 @@ class Rack extends Model {
 		this.sortLower = false
 
 		this._icon = data.icon
-		this._hidden = data.hidden
-		this.trash_bin = data.trash_bin
 		this.quick_notes = data.quick_notes
 
 		this._openFolder = false
@@ -105,10 +103,6 @@ class Rack extends Model {
 		return searcher.searchNotes(search, this.starrednotes)
 	}
 
-	get hidden() {
-		return this._hidden
-	}
-
 	get relativePath() {
 		return this.path.replace(Library.baseLibraryPath+'/', '')
 	}
@@ -138,8 +132,7 @@ class Rack extends Model {
 	}
 
 	get icon() {
-		if (this.trash_bin) return 'trash-2'
-		else if (this.quick_notes) return 'file-text'
+		if (this.quick_notes) return 'file-text'
 		return this._icon
 	}
 

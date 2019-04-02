@@ -74,12 +74,10 @@ export default function() {
 			isFullWidthNote   : settings.getSmart('fullWidthNote', true),
 			keepHistory       : settings.getSmart('keepHistory', true),
 			currentTheme      : settings.getJSON('theme', 'dark'),
-			showHidden        : false,
 			useMonospace      : settings.getSmart('useMonospace', false),
 			reduceToTray      : settings.getSmart('reduceToTray', true),
 			preview           : '',
 			racks             : [],
-			trash_bucket      : null,
 			quick_notes_bucket: null,
 			notes             : [],
 			images            : [],
@@ -271,9 +269,7 @@ export default function() {
 				this.racks = arr.sortBy(racks.slice(), 'ordering', true)
 
 				this.racks.forEach((r, i) => {
-					if (r.trash_bin) {
-						self.trash_bucket = r
-					} else if (r.quick_notes) {
+					if (r.quick_notes) {
 						self.quick_notes_bucket = r
 					}
 				})
@@ -363,7 +359,7 @@ export default function() {
 
 				if (self.keepHistory && self.notes.length > 1) {
 					self.notesHistory = arr.sortBy(self.notes.filter((obj) => {
-						return !obj.isEncrypted && !obj.rack.trash_bin
+						return !obj.isEncrypted
 					}), 'updatedAt').slice(0, 10)
 				}
 
@@ -854,37 +850,10 @@ export default function() {
 				}
 
 				if (note.remove()) {
-
-					if (!this.trash_bucket) {
-						this.trash_bucket = new models.Rack({
-							name: '.coon_trash',
-							path: path.join(
-								settingsBaseLibraryPath,
-								'.coon_trash'
-							),
-							hidden   : true,
-							trash_bin: true,
-							ordering : this.racks.length + 1
-						})
-						this.addRack(this.trash_bucket, true)
-					}
-
-					var newFolder = this.trash_bucket.hasFolder(note.folder.name)
-					if (!newFolder) {
-						newFolder = new models.Folder({
-							name        : note.folder.name,
-							rack        : this.trash_bucket,
-							parentFolder: undefined,
-							ordering    : 0
-						})
-						this.addFolderToRack(this.trash_bucket, newFolder)
-					}
-
-					note.rack = this.trash_bucket
-					note.folder = newFolder
-					newFolder.notes.unshift(note)
-					note.title = note.title + '_' + note.updatedAt.format('YYYY-MM-DD HH:mm:ss')
-					note.saveModel()
+					ipcRenderer.send('delete-note', {
+						library: models.getBaseLibraryPath(),
+						path   : note.path
+					})
 				}
 			},
 			newQuickNote() {
@@ -1454,11 +1423,6 @@ export default function() {
 					this.$nextTick(() => {
 						this.$refs.refCodeMirror.refreshCM()
 					})
-				}
-			},
-			showHidden() {
-				if (!this.showHidden && this.selectedRack !== null && this.selectedRack.hidden) {
-					this.changeRack(null)
 				}
 			},
 			keepHistory() {

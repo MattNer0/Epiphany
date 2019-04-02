@@ -276,6 +276,7 @@ app.on('ready', () => {
 	ipcMain.on('download-files', (event, payload) => backgroundWindow.webContents.send('download-files', payload))
 	ipcMain.on('load-racks', (event, payload) => backgroundWindow.webContents.send('load-racks', payload))
 	ipcMain.on('cache-note', (event, payload) => backgroundWindow.webContents.send('cache-note', payload))
+	ipcMain.on('delete-note', (event, payload) => backgroundWindow.webContents.send('delete-note', payload))
 	ipcMain.on('load-page', (event, payload) => {
 		if (backgroundBrowserWindow) {
 			backgroundBrowserWindow.webContents.send('load-page', payload)

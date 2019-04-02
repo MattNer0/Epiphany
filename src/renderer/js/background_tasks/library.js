@@ -96,7 +96,7 @@ export default {
 				var rack = racks[ri]
 				var rackPath = path.join(library, rack)
 
-				if (fs.existsSync(rackPath) && (rack.charAt(0) !== '.' || rack === '.coon_trash')) {
+				if (fs.existsSync(rackPath) && rack.charAt(0) !== '.') {
 					var rackStat = fs.statSync(rackPath)
 					if (rackStat.isDirectory()) {
 						var rackData = {}
@@ -113,8 +113,6 @@ export default {
 						validRacks.push({
 							_type      : 'rack',
 							name       : rack,
-							hidden     : rack === '.coon_trash',
-							trash_bin  : rack === '.coon_trash',
 							quick_notes: rack === '_quick_notes',
 							hide_label : rackData.hidelabel,
 							ordering   : isNaN(rackData.ordering) ? racks.length + ri + 1 : parseInt(rackData.ordering),
@@ -263,6 +261,17 @@ export default {
 		} else {
 			await db.run('INSERT INTO notes (name, summary, photo, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
 				[finalNote.name, finalNote.summary, photoPath, finalNote.path, finalNote.created_at, finalNote.updated_at])
+		}
+	},
+	async deleteNoteFromDB(db, library, notePath) {
+		try {
+			let relativePath = path.relative(library, notePath)
+			if (path.sep === '\\') {
+				relativePath = relativePath.split(path.sep).join('/')
+			}
+			await db.run('DELETE FROM notes WHERE path = ?', relativePath)
+		} catch (err) {
+			log.error(err.message)
 		}
 	},
 	async findNoteInDB(db, library, notePath) {

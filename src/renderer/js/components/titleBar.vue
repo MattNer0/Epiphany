@@ -51,7 +51,6 @@ export default {
 		'notesDisplayOrder': String,
 		'isToolbarEnabled' : Boolean,
 		'isFullWidthNote'  : Boolean,
-		'showHidden'       : Boolean,
 		'currentTheme'     : String,
 		'windowTitle'      : String
 	},
@@ -229,18 +228,6 @@ export default {
 			}))
 			return sortSubmenu
 		},
-		buckets_submenu() {
-			var bucketsSubmenu = new Menu()
-			bucketsSubmenu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Show Bin Bucket',
-				checked: this.showHidden,
-				click  : () => {
-					this.$root.showHidden = !this.showHidden
-				}
-			}))
-			return bucketsSubmenu
-		},
 		notes_submenu() {
 			var notesSubmenu = new Menu()
 			notesSubmenu.append(new MenuItem({
@@ -270,10 +257,6 @@ export default {
 				submenu: this.sort_submenu()
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label  : 'Buckets',
-				submenu: this.buckets_submenu()
-			}))
 			menu.append(new MenuItem({
 				label  : 'Notes',
 				submenu: this.notes_submenu()

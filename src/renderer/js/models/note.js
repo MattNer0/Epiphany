@@ -29,7 +29,6 @@ class Note extends Model {
 		this.folder = data.folder
 		this.doc = null
 		this._removed = false
-		this._trashed = false
 		this._metadata = {}
 
 		if (data.photo) {
@@ -42,10 +41,6 @@ class Note extends Model {
 
 		if (data.updated_at && (typeof data.updated_at === 'number' || data.updated_at instanceof Date)) {
 			this._metadata.updatedAt = moment(data.updated_at).format('YYYY-MM-DD HH:mm:ss')
-		}
-
-		if (data.rack && data.rack.trash_bin) {
-			this._trashed = true
 		}
 
 		if (data.summary) {
@@ -169,7 +164,7 @@ class Note extends Model {
 	}
 
 	get path() {
-		if (this._path && fs.existsSync(this._path)) {
+		if (this._path && (this._removed || fs.existsSync(this._path))) {
 			return this._path
 		}
 		var newPath = path.join(
@@ -195,9 +190,6 @@ class Note extends Model {
 	}
 
 	get documentFilename() {
-		if (this._trashed) {
-			return utilFile.cleanFileName(this._name)
-		}
 		return this.title ? utilFile.cleanFileName(this.title) : ''
 	}
 
@@ -641,16 +633,16 @@ class Note extends Model {
 	}
 
 	remove() {
-		if (this._trashed) {
-			utilFile.deleteFile(this._path)
-			this._removed = true
+		if (this._removed) {
 			return false
 		} else {
-			// move to trash bin
+			// move images to trash bin
 			var imgDir = this.imagePath
 			if (imgDir) utilFile.deleteFolderRecursive(imgDir)
-			this._trashed = true
-			this._removed = false
+			utilFile.deleteFile(this._path)
+			this._body = ''
+			this._summary = ''
+			this._removed = true
 			return true
 		}
 	}

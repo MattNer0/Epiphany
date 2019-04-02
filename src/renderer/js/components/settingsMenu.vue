@@ -19,18 +19,6 @@
 		.my-shelf-folder: hr
 
 		.my-shelf-folder-span
-			| Buckets
-
-		.my-shelf-folder-indent
-			.my-shelf-folder(@contextmenu.prevent.stop=""): .folder-object(@click="toggleHidden")
-				a.my-shelf-folder-name
-					i.coon-check-square(v-if="showHidden")
-					i.coon-square(v-else)
-					|  Show Hidden Bucket
-
-		.my-shelf-folder: hr
-
-		.my-shelf-folder-span
 			| Notes
 
 		.my-shelf-folder-indent
@@ -132,7 +120,6 @@ export default {
 	props: {
 		'isToolbarEnabled'  : Boolean,
 		'isFullWidthNote'   : Boolean,
-		'showHidden'        : Boolean,
 		'reduceToTray'      : Boolean,
 		'notesDisplayOrder' : String,
 		'toggleToolbar'     : Function,
@@ -162,9 +149,6 @@ export default {
 			this.$nextTick(() => {
 				this.$root.save_editor_size()
 			})
-		},
-		toggleHidden() {
-			this.$root.showHidden = !this.showHidden
 		},
 		toggleReduceToTray() {
 			this.$root.reduceToTray = !this.reduceToTray

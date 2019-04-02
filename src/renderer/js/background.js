@@ -113,5 +113,18 @@ export default function() {
 				log.error(err.message)
 			})
 		})
+
+		ipcRenderer.on('delete-note', (event, data) => {
+			if (!data.path || !data.library) {
+				log.error('delete-note: path missing')
+				return
+			}
+
+			libraryHelper.initDB(data.library).then((db) => {
+				return libraryHelper.deleteNoteFromDB(db, data.library, data.path)
+			}).catch((err) => {
+				log.error(err.message)
+			})
+		})
 	}
 }
