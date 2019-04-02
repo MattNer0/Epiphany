@@ -2,10 +2,23 @@
 	padding: 0 0.1em;
 }
 
-.my-shelf-buckets {
-	.my-shelf-rack {
-		margin: 0.5em 0;
+.my-shelf-buckets .my-shelf-rack {
+	margin: 0.3em 0;
+
+	> .my-shelf-folders {
+		margin-left: 0.6em;
+		padding-left: 0.2em;
+		border-left: 1px solid;
+		display: none;
 	}
+
+	&.openFolder > .my-shelf-folders {
+		display: block;
+	}
+}
+
+.my-shelf-buckets .my-shelf-rack:first-child {
+	margin-top: 0.6em;
 }
 
 .my-shelf-buckets:nth-child(2) {
@@ -159,7 +172,6 @@
 }
 
 .rack-object {
-	font-weight: bold;
 	margin: 0;
 	padding: 0.3em 0.2em;
 	border-radius: $folder-list-border-radius;
@@ -185,7 +197,7 @@
 	a {
 		display: block;
 		box-sizing: border-box;
-		font-size: 150%;
+		font-size: 120%;
 		line-height: 1em;
 		vertical-align: middle;
 		padding: 0;
@@ -362,6 +374,21 @@
 	}
 
 	> .folder-object {
+		i.down {
+			transform: rotate(90deg);
+		}
+	}
+}
+
+.my-shelf-rack {
+	.rack-object {
+		i.down {
+			transition: all .4s;
+			transform: rotate(0deg);
+		}
+	}
+
+	&.openFolder > .rack-object {
 		i.down {
 			transform: rotate(90deg);
 		}

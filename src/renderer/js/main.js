@@ -593,6 +593,7 @@ export default function() {
 				this.showFavorites = false
 			},
 			showAllRack(rack) {
+				this.selectedRack = rack
 				this.selectedFolder = null
 				this.editingFolder = null
 				this.showHistory = false
@@ -602,6 +603,7 @@ export default function() {
 				this.update_editor_size()
 			},
 			showFavoritesRack(rack) {
+				this.selectedRack = rack
 				this.selectedFolder = null
 				this.editingFolder = null
 				this.showHistory = false
@@ -726,7 +728,7 @@ export default function() {
 			 */
 			addRack(rack) {
 				var racks = arr.sortBy(this.racks.slice(), 'ordering', true)
-				racks.unshift(rack)
+				racks.push(rack)
 				racks.forEach((r, i) => {
 					r.ordering = i
 					r.saveModel()

@@ -14,11 +14,21 @@
 					i.rack-icon(:class="'coon-'+bucket.icon")
 					a {{ bucket.quick_notes ? 'Quick Notes' : bucket.name }}
 				template(v-else)
-					i.rack-icon.coon-archive
+					i.rack-icon.coon-play-right.down(@click.prevent.stop="bucket.openFolder = !bucket.openFolder")
 					a {{ bucket.name }}
 
+			folders-special(
+				v-if="!bucket.quick_notes && bucket.folders"
+				:bucket="bucket"
+				:show-all="showAll"
+				:show-favorites="showFavorites"
+				:selected-bucket="selectedBucket === bucket"
+				:dragging-folder="draggingFolder"
+				:search="search"
+				)
+
 			folders(
-				v-if="!draggingBucket && !bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
+				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
 				:parent-folder="bucket"
 				:selected-note="selectedNote"
 				:selected-folder="selectedFolder"
@@ -30,10 +40,11 @@
 				:from-bucket="true"
 				:search="search")
 
-		.my-shelf-rack(v-tooltip="{ 'content': 'New bucket', 'placement': 'left', 'boundariesElement': 'body' }")
+		.my-shelf-rack
 			.rack-object.bucket-special(@click="newBucket()")
-				span
-					i.rack-icon.coon-plus
+				i.rack-icon.coon-plus
+				a New bucket
+
 </template>
 
 <script>
@@ -61,6 +72,8 @@ export default {
 		'draggingBucket': Object,
 		'draggingFolder': Object,
 		'draggingNote'  : Object,
+		'showAll'       : Boolean,
+		'showFavorites' : Boolean,
 		'isFullScreen'  : Boolean,
 		'changeBucket'  : Function,
 		'changeFolder'  : Function,
@@ -87,8 +100,9 @@ export default {
 		classBucket(bucket) {
 			if (bucket) {
 				return {
-					'isShelfSelected': (this.selectedBucket === bucket && !this.isDraggingNote && !this.isFullScreen) || bucket.dragHover,
-					'noCursor'       : !bucket.quick_notes,
+					'isShelfSelected': (this.selectedBucket === bucket && bucket.quick_notes && !this.isDraggingNote && !this.isFullScreen) || bucket.dragHover,
+					//'noCursor'       : !bucket.quick_notes,
+					'openFolder'     : bucket.openFolder,
 					'sortUpper'      : bucket.sortUpper,
 					'sortLower'      : bucket.sortLower
 				}
@@ -197,12 +211,17 @@ export default {
 			}
 		},
 		selectBucket(bucket) {
-			this.$root.changeRack(bucket, true)
+			if (this.selectedBucket === bucket) {
+				bucket.openFolder = !bucket.openFolder
+			} else {
+				this.$root.changeRack(bucket, true)
+				bucket.openFolder = true
+			}
 		},
 		newBucket() {
 			var bucket = new models.Rack({
 				name    : '',
-				ordering: 0
+				ordering: this.buckets.length
 			})
 			this.$root.addRack(bucket)
 			this.$root.setEditingRack(bucket)

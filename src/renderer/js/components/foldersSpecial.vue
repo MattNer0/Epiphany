@@ -3,7 +3,7 @@
 		.my-shelf-folder.my-all(
 			v-if="bucket.folders.length > 1 && bucket.allnotes.length > 0",
 			@contextmenu.prevent.stop="",
-			:class="{ 'isShelfSelected': showAll }")
+			:class="{ 'isShelfSelected': showAll && selectedBucket }")
 			.folder-object(@click="selectAll(bucket)", :class="{ 'dragging' : draggingFolder }")
 				a.my-shelf-folder-name
 					i.coon-list
@@ -18,7 +18,7 @@
 		.my-shelf-folder.my-favorites(
 			@contextmenu.prevent.stop="",
 			v-if="bucket.folders.length > 0 && bucket.starrednotes.length > 0"
-			:class="{ 'isShelfSelected': showFavorites }")
+			:class="{ 'isShelfSelected': showFavorites && selectedBucket }")
 			.folder-object(@click="selectFavorites(bucket)", :class="{ 'dragging' : draggingFolder }")
 				a.my-shelf-folder-name
 					i.coon-star
@@ -36,6 +36,7 @@ export default {
 	name : 'foldersSpecial',
 	props: {
 		'bucket'        : Object,
+		'selectedBucket': Boolean,
 		'showAll'       : Boolean,
 		'showFavorites' : Boolean,
 		'draggingFolder': Object,

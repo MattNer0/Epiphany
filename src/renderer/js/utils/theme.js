@@ -200,8 +200,8 @@ function styleObject(obj) {
 			'.my-shelf-folder-badge:before': {
 				backgroundColor: obj['folder-badge-background']
 			},
-			'.my-shelf-rack.openFolder > .my-shelf-folders:last-child': {
-				borderBottom: '1px solid '+obj['folder-separator']
+			'.my-shelf-rack.openFolder > .my-shelf-folders': {
+				borderColor: obj['folder-separator']
 			},
 			'.new-folder': {
 				'& .my-shelf-folder': {
