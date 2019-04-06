@@ -660,17 +660,19 @@ export default function() {
 					this.selectedNote = null
 					return
 				} else if (note === this.selectedNote) {
-					if (this.selectedRack === null) this.changeFolder(note.folder)
+					if (this.selectedRack === null && !this.showHistory) this.changeFolder(note.folder)
 					else if (!this.isFullScreen && fromSidebar) {
 						this.setFullScreen(true)
 					}
 					return
 				}
 
-				if (note.folder && note.folder instanceof models.Folder) {
-					note.folder.parent.openFolder = true
-					if (this.selectedFolder !== note.folder) {
-						this.changeFolder(note.folder, true)
+				if (!this.showHistory && !this.showAll && !this.showFavorites) {
+					if (note.folder && note.folder instanceof models.Folder) {
+						note.folder.parent.openFolder = true
+						if (this.selectedFolder !== note.folder) {
+							this.changeFolder(note.folder, true)
+						}
 					}
 				}
 
