@@ -114,6 +114,19 @@ export default function() {
 			})
 		})
 
+		ipcRenderer.on('cache-notes', (event, data) => {
+			if (!data.library) {
+				log.error('cache-notes: library missing')
+				return
+			}
+
+			libraryHelper.initDB(data.library).then((db) => {
+				return libraryHelper.insertNotesInDB(db, data)
+			}).catch((err) => {
+				log.error(err.message)
+			})
+		})
+
 		ipcRenderer.on('delete-note', (event, data) => {
 			if (!data.path || !data.library) {
 				log.error('delete-note: path missing')

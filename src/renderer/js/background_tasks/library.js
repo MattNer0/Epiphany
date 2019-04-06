@@ -79,7 +79,8 @@ export default {
 		models.setBaseLibraryPath(library)
 		var db = await sqlite.open(path.join(library, 'epiphany.db'))
 		await db.run('CREATE TABLE IF NOT EXISTS notes '+
-			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, name TEXT, photo TEXT, summary TEXT, ' +
+			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
+			'name TEXT, photo TEXT, summary TEXT, favorite INTEGER, ' +
 			'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))')
 
 		//var diff = new Date().getTime() - 16070400000
@@ -245,6 +246,11 @@ export default {
 		}
 		return null
 	},
+	async insertNotesInDB(db, requestData) {
+		for (let i=0; i<requestData.notes.length; i++) {
+			await this.insertNoteInDB(db, requestData.notes[i])
+		}
+	},
 	async insertNoteInDB(db, finalNote) {
 		let relativePath = finalNote.path
 		let photoPath = finalNote.photo
@@ -255,12 +261,26 @@ export default {
 		var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', relativePath)
 		if (data) {
 			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== photoPath) {
-				await db.run('UPDATE notes SET (name, summary, photo, created_at, updated_at) = (?, ?, ?, ?, ?) WHERE path = ?',
-					[finalNote.name, finalNote.summary, photoPath, finalNote.created_at, finalNote.updated_at, relativePath])
+				await db.run('UPDATE notes SET (name, summary, photo, favorite, created_at, updated_at) = (?, ?, ?, ?, ?, ?) WHERE path = ?', [
+					finalNote.name,
+					finalNote.summary,
+					photoPath,
+					finalNote.favorite ? 1 : 0,
+					finalNote.created_at,
+					finalNote.updated_at,
+					relativePath
+				])
 			}
 		} else {
-			await db.run('INSERT INTO notes (name, summary, photo, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-				[finalNote.name, finalNote.summary, photoPath, finalNote.path, finalNote.created_at, finalNote.updated_at])
+			await db.run('INSERT INTO notes (name, summary, photo, favorite, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [
+				finalNote.name,
+				finalNote.summary,
+				photoPath,
+				finalNote.favorite ? 1 : 0,
+				finalNote.path,
+				finalNote.created_at,
+				finalNote.updated_at
+			])
 		}
 	},
 	async deleteNoteFromDB(db, library, notePath) {
@@ -300,6 +320,7 @@ export default {
 					type      : type,
 					name      : data.name,
 					summary   : data.summary,
+					favorite  : data.favorite,
 					path      : path.join(library, data.path),
 					photo     : data.photo ? path.join(library, data.photo) : null,
 					created_at: data.created_at,

@@ -591,6 +591,27 @@ export default function() {
 				this.selectedFolder = folder
 				this.showAll = false
 				this.showFavorites = false
+
+				if (folder.notes && folder.notes.length > 0) {
+					var loadedCount = 0
+					var noteObjects = []
+					for (let i=0; i < folder.notes.length && loadedCount < 5; i++) {
+						let note = folder.notes[i]
+						if (!note.loaded) {
+							loadedCount += 1
+							if (note.loadBody()) {
+								noteObjects.push(note.getObjectDB(models.getBaseLibraryPath()))
+							}
+						}
+					}
+
+					if (noteObjects.length > 0) {
+						ipcRenderer.send('cache-notes', {
+							library: models.getBaseLibraryPath(),
+							notes  : noteObjects
+						})
+					}
+				}
 			},
 			showAllRack(rack) {
 				this.selectedRack = rack
@@ -673,7 +694,7 @@ export default function() {
 				if (note instanceof models.Outline) {
 					this.selectedNote = note
 				} else {
-					if (!note.body) {
+					if (!note.loaded) {
 						if (note.loadBody()) {
 							ipcRenderer.send('cache-note', note.getObjectDB(models.getBaseLibraryPath()))
 						}

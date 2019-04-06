@@ -43,6 +43,10 @@ class Note extends Model {
 			this._metadata.updatedAt = moment(data.updated_at).format('YYYY-MM-DD HH:mm:ss')
 		}
 
+		if (data.favorite) {
+			this._metadata.starred = 'true'
+		}
+
 		if (data.summary) {
 			this._summary = data.summary
 		} else {
@@ -82,6 +86,10 @@ class Note extends Model {
 
 	set starred(value) {
 		this.setMetadata('starred', String(value).toLowerCase())
+	}
+
+	get loaded() {
+		return this._loadedBody
 	}
 
 	get data() {
@@ -503,6 +511,7 @@ class Note extends Model {
 			name      : this.title,
 			photo     : photoPath ? path.relative(library, photoPath) : null,
 			summary   : this.bodyWithoutTitle.replace(/\n+/g, '\n').slice(0, 500),
+			favorite  : this.starred,
 			path      : path.relative(library, this._path),
 			created_at: this.createdAt.valueOf(),
 			updated_at: this.updatedAt.valueOf(),
