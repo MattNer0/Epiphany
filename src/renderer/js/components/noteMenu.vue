@@ -97,10 +97,13 @@
 						|  Properties
 					.dialog(slot="dropdown")
 						.properties-dialog(@click="close_properties")
-							table
+							table.file-properties
 								tr
 									td: strong Path:&nbsp;
-									td.right: span(style="white-space: pre;") {{ note.relativePathNoFileName }}
+									td.right: span {{ note.relativePathNoFileName }}
+								tr
+									td: strong Filename:&nbsp;
+									td.right: span {{ note.documentFilename + note.extension }}
 							hr
 							table
 								tr

@@ -17,6 +17,7 @@
 		a {
 			display: block;
 			cursor: pointer;
+			text-align: left;
 		}
 
 		a.h {
@@ -41,15 +42,40 @@
 		}
 	}
 
+	.file-properties {
+		span {
+			max-width: 160px;
+		}
+	}
+
+	.table-dialog {
+		table + span {
+			line-height: 1.4;
+		}
+	}
+
 	.properties-dialog, .table-dialog {
 		table {
 			width: 100%;
 			min-width: 14em;
 
+			td {
+				text-align: left;
+				vertical-align: middle;
+
+				span {
+					display: inline-block;
+					text-align: inherit;
+					line-height: 1.4;
+				}
+			}
+
 			td.right {
 				text-align: right;
 			}
 		}
+
+		
 
 		table.select-table-size {
 			opacity: 0.6;
@@ -186,6 +212,9 @@
 					}
 				}
 			}
+		}
+		.fontsize-dialog li a > i {
+			display: inline-block !important;
 		}
 		.main-note-container {
 			height: calc( 100vh - #{ $title-bar-height + $note-bar-height-md + $note-bar-height } - 0.4em );
