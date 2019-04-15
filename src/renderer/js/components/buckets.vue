@@ -23,17 +23,12 @@
 				:show-all="showAll"
 				:show-favorites="showFavorites"
 				:selected-bucket="selectedBucket === bucket"
-				:dragging-folder="draggingFolder"
 				:search="search"
 				)
 
 			folders(
 				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
 				:parent-folder="bucket"
-				:selected-note="selectedNote"
-				:selected-folder="selectedFolder"
-				:dragging-folder="draggingFolder"
-				:dragging-note="draggingNote"
 				:change-bucket="changeBucket"
 				:change-folder="changeFolder"
 				:editing-folder="editingFolder"
@@ -65,20 +60,13 @@ export default {
 		'foldersSpecial': componentFoldersSpecial
 	},
 	props: {
-		'buckets'       : Array,
-		'selectedBucket': Object,
-		'selectedFolder': Object,
-		'selectedNote'  : Object,
-		'draggingBucket': Object,
-		'draggingFolder': Object,
-		'draggingNote'  : Object,
-		'showAll'       : Boolean,
-		'showFavorites' : Boolean,
-		'isFullScreen'  : Boolean,
-		'changeBucket'  : Function,
-		'changeFolder'  : Function,
-		'editingFolder' : String,
-		'search'        : String
+		'showAll'      : Boolean,
+		'showFavorites': Boolean,
+		'isFullScreen' : Boolean,
+		'changeBucket' : Function,
+		'changeFolder' : Function,
+		'editingFolder': String,
+		'search'       : String
 	},
 	directives: {
 		focus(element) {
@@ -89,6 +77,27 @@ export default {
 		}
 	},
 	computed: {
+		buckets() {
+			return this.$store.state.buckets
+		},
+		selectedBucket() {
+			return this.$store.state.selectedBucket
+		},
+		selectedFolder() {
+			return this.$store.state.selectedFolder
+		},
+		selectedNote() {
+			return this.$store.state.selectedNote
+		},
+		draggingBucket() {
+			return this.$store.state.draggingBucket
+		},
+		draggingFolder() {
+			return this.$store.state.draggingFolder
+		},
+		draggingNote() {
+			return this.$store.state.draggingNote
+		},
 		bucketsWithFolders() {
 			// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 			return this.buckets.sort(function(a, b) {
@@ -185,7 +194,7 @@ export default {
 				})
 				rack.folders = folders
 				rack.dragHover = false
-				this.$root.setDraggingFolder()
+				this.$store.commit('dragging')
 			} else if (this.draggingBucket && this.draggingBucket !== rack) {
 				console.log('Dropping Rack')
 				var newBuckets = arr.sortBy(this.buckets.slice(), 'ordering', true)

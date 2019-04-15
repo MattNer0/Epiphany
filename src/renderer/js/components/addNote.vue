@@ -9,11 +9,7 @@ import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
 export default {
-	name : 'addNote',
-	props: {
-		selectedRack  : Object,
-		selectedFolder: Object
-	},
+	name   : 'addNote',
 	methods: {
 		open_note_menu() {
 			var menu = new Menu()

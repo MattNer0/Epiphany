@@ -1,7 +1,7 @@
 {
     "name": "epiphany-journal",
     "productName": "Epiphany",
-    "version": "0.1.20",
+    "version": "0.1.21",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -49,6 +49,7 @@
         "vue-password": "^1.2.0",
         "vue-resource": "^1.5.1",
         "vue-template-compiler": "^2.6.10",
+        "vuex": "^3.1.0",
         "xmldoc": "1.1.0"
     },
     "devDependencies": {

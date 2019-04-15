@@ -9,8 +9,11 @@ import traymenu from './utils/trayMenu'
 import titleMenu from './utils/titleMenu'
 
 import Vue from 'vue'
-
 import VTooltip from 'v-tooltip'
+
+Vue.use(VTooltip)
+
+import Store from './store'
 
 import models from './models'
 import preview from './preview'
@@ -48,8 +51,6 @@ export default function() {
 	settings.init()
 	settings.loadWindowSize()
 
-	Vue.use(VTooltip)
-
 	// not to accept image dropping and so on.
 	// electron will show local images without this.
 	document.addEventListener('dragover', (e) => {
@@ -65,6 +66,7 @@ export default function() {
 
 	var appVue = new Vue({
 		el      : '#app',
+		store   : Store,
 		template: require('../html/app.html'),
 		data    : {
 			loadedRack        : false,
@@ -77,14 +79,10 @@ export default function() {
 			useMonospace      : settings.getSmart('useMonospace', false),
 			reduceToTray      : settings.getSmart('reduceToTray', true),
 			preview           : '',
-			racks             : [],
 			quick_notes_bucket: null,
 			notes             : [],
 			images            : [],
 			notesHistory      : [],
-			selectedRack      : null,
-			selectedFolder    : null,
-			selectedNote      : null,
 			timeoutNoteChange : false,
 			editTheme         : null,
 			showHistory       : false,
@@ -93,9 +91,6 @@ export default function() {
 			noteTabs          : [],
 			editingBucket     : null,
 			editingFolder     : null,
-			draggingRack      : null,
-			draggingFolder    : null,
-			draggingNote      : null,
 			search            : '',
 			allDragHover      : false,
 			messages          : [],
@@ -128,6 +123,33 @@ export default function() {
 			'themeMenu'     : componentThemeMenu
 		},
 		computed: {
+			racks() {
+				return this.$store.state.buckets
+			},
+			selectedRack: {
+				get() {
+					return this.$store.state.selectedBucket
+				},
+				set(bucket) {
+					this.$store.commit('selectBucket', bucket)
+				}
+			},
+			selectedFolder: {
+				get() {
+					return this.$store.state.selectedFolder
+				},
+				set(folder) {
+					this.$store.commit('selectFolder', folder)
+				}
+			},
+			selectedNote: {
+				get() {
+					return this.$store.state.selectedNote
+				},
+				set(note) {
+					this.$store.commit('selectNote', note)
+				}
+			},
 			/**
 			 * filters notes based on search terms
 			 * @function filteredNotes
@@ -187,7 +209,7 @@ export default function() {
 				return this.isNoteSelected || this.isOutlineSelected || this.isThemeSelected
 			},
 			showFolderNotesList() {
-				return !this.draggingFolder && (this.selectedFolder || this.showAll || this.showFavorites)
+				return !this.$store.state.draggingFolder && (this.selectedFolder || this.showAll || this.showFavorites)
 			},
 			mainCellClass() {
 				var classes = [ 'font' + this.fontsize ]
@@ -261,19 +283,10 @@ export default function() {
 			ipcRenderer.on('loaded-racks', (event, data) => {
 				if (!data || !data.racks) return
 
-				var racks = []
-				data.racks.forEach((r) => {
-					racks.push(new models.Rack(r))
-				})
+				this.$store.dispatch('loadedRacks', data.racks)
+				console.log(this.$store.state)
 
-				this.racks = arr.sortBy(racks.slice(), 'ordering', true)
-
-				this.racks.forEach((r, i) => {
-					if (r.quick_notes) {
-						self.quick_notes_bucket = r
-					}
-				})
-
+				self.quick_notes_bucket = this.$store.getters.quickNotesBucket
 				this.loadedRack = true
 			})
 
@@ -281,7 +294,7 @@ export default function() {
 				if (!data) return
 
 				data.forEach((r) => {
-					var rack = this.findRackByPath(r.rack)
+					var rack = this.$store.getters.findBucketByPath(r.rack)
 					var folders = []
 					r.folders.forEach((f) => {
 						f.rack = rack
@@ -348,7 +361,7 @@ export default function() {
 				var rack
 				data.forEach((r) => {
 					if (!rack || rack.path !== r.rack) {
-						rack = self.findRackByPath(r.rack)
+						rack = this.$store.getters.findBucketByPath(r.rack)
 					}
 					loadByParent(r, rack)
 				})
@@ -453,16 +466,6 @@ export default function() {
 					return note.data.path === notePath
 				})
 			},
-			findRackByPath(rackPath) {
-				try {
-					return this.racks.find((rk) => {
-						return rk.path === rackPath
-					})
-				} catch (e) {
-					elosenv.console.warn('Couldn\'t find rack by path "' + rackPath + '"')
-					return null
-				}
-			},
 			findFolderByPath(rack, folderPath) {
 				try {
 					var folder = rack.folders.find((f) => {
@@ -538,43 +541,28 @@ export default function() {
 			},
 			changeRack(rack, fromSidebar) {
 				var shouldUpdateSize = false
-				var sameRack = false
 
 				if (this.selectedRack === null && rack) shouldUpdateSize = true
 				else if (this.selectedFolder !== null && rack) shouldUpdateSize = true
 
-				if (this.selectedRack === rack && rack !== null) {
-					sameRack = true
-					shouldUpdateSize = true
-				}
-
 				if (rack !== null && this.quick_notes_bucket === rack) {
-					var newNoteFolder = this.quick_notes_bucket.folders.filter((obj) => {
+					var newNoteFolder = this.quick_notes_bucket.folders.find((obj) => {
 						return obj.name === 'New Notes'
 					})
 					this.selectedRack = rack
 					this.showHistory = false
-					this.changeFolder(newNoteFolder[0])
-
-				} else if (this.selectedNote && this.selectedNote.rack === rack) {
-					if (fromSidebar && rack instanceof models.Rack) {
-						this.selectedRack = rack
-
-						this.showHistory = false
+					if (newNoteFolder) {
+						this.changeFolder(newNoteFolder)
+					} else {
+						this.newQuickNoteBucket()
 					}
-					this.changeFolder(this.selectedNote.folder)
+
 				} else if (rack === null || rack instanceof models.Rack) {
 					this.selectedRack = rack
+					if (rack === null) this.selectedFolder = null
 					this.editingFolder = null
-
-					this.showHistory = false
-
-					if (!sameRack) {
-						this.selectedFolder = null
-						this.showAll = false
-						this.showFavorites = false
-					}
-				} else {
+					if (fromSidebar) this.showHistory = false
+				} else if (rack instanceof models.Folder) {
 					this.changeFolder(rack)
 				}
 
@@ -587,6 +575,9 @@ export default function() {
 				if ((this.selectedFolder === null && folder) || (this.selectedFolder && folder === null)) this.update_editor_size()
 				this.editingFolder = null
 
+				if (!weak) {
+					this.showHistory = false
+				}
 				if (folder && !this.showHistory) this.selectedRack = folder.rack
 				this.selectedFolder = folder
 				this.showAll = false
@@ -734,31 +725,6 @@ export default function() {
 				}
 			},
 			/**
-			 * event called when a note is dragged.
-			 * @function setDraggingNote
-			 * @param  {Object}  note  Note being dragged
-			 * @return {Void} Function doesn't return anything
-			 */
-			setDraggingNote(note) {
-				this.draggingNote = note
-			},
-			/**
-			 * adds a new rack to the working directory.
-			 * The new rack is placed on top of the list.
-			 * @function addRack
-			 * @param  {Object}  rack    The new rack
-			 * @return {Void} Function doesn't return anything
-			 */
-			addRack(rack) {
-				var racks = arr.sortBy(this.racks.slice(), 'ordering', true)
-				racks.push(rack)
-				racks.forEach((r, i) => {
-					r.ordering = i
-					r.saveModel()
-				})
-				this.racks = racks
-			},
-			/**
 			 * @description removes the Rack (and its contents) from the current working directory.
 			 * @param  {Object}  rack    The rack
 			 * @return {Void} Function doesn't return anything
@@ -779,9 +745,8 @@ export default function() {
 				}
 
 				rack.remove(this.notes)
-				arr.remove(this.racks, (r) => {
-					return r === rack
-				})
+				this.$store.dispatch('removeBucket', rack)
+
 				// we need to close the current selected note if it was from the removed rack.
 				if (this.isNoteSelected && this.selectedNote.rack === rack) {
 					this.selectedNote = null
@@ -812,20 +777,6 @@ export default function() {
 					this.editingFolder = folder.uid
 				} else {
 					this.editingFolder = null
-				}
-			},
-			setDraggingRack(rack) {
-				if (rack) {
-					this.draggingRack = rack
-				} else {
-					this.draggingRack = null
-				}
-			},
-			setDraggingFolder(folder) {
-				if (folder) {
-					this.draggingFolder = folder
-				} else {
-					this.draggingFolder = null
 				}
 			},
 			/**
@@ -881,9 +832,8 @@ export default function() {
 					})
 				}
 			},
-			newQuickNote() {
+			newQuickNoteBucket() {
 				var self = this
-
 				function newFolder() {
 					var folder = new models.Folder({
 						name        : 'New Notes',
@@ -896,8 +846,6 @@ export default function() {
 					self.changeFolder(folder)
 				}
 
-				this.showHistory = false
-
 				if (!this.quick_notes_bucket) {
 					this.quick_notes_bucket = new models.Rack({
 						name: '_quick_notes',
@@ -908,7 +856,7 @@ export default function() {
 						quick_notes: true,
 						ordering   : 0
 					})
-					this.addRack(this.quick_notes_bucket)
+					this.$store.dispatch('addNewBucket', this.quick_notes_bucket)
 					newFolder()
 
 				} else if (this.quick_notes_bucket.folders.length === 0) {
@@ -928,7 +876,10 @@ export default function() {
 						this.changeFolder(rightFolder)
 					}
 				}
-
+			},
+			newQuickNote() {
+				this.showHistory = false
+				this.newQuickNoteBucket()
 				this.addNote()
 
 				this.$nextTick(() => {
@@ -1174,7 +1125,7 @@ export default function() {
 							name    : '',
 							ordering: 0
 						})
-						this.addRack(backet)
+						this.$store.dispatch('addNewBucket', backet)
 						this.setEditingRack(backet)
 					}
 				}))

@@ -39,8 +39,12 @@ export default {
 		'selectedBucket': Boolean,
 		'showAll'       : Boolean,
 		'showFavorites' : Boolean,
-		'draggingFolder': Object,
 		'search'        : String
+	},
+	computed: {
+		draggingFolder() {
+			return this.$store.state.draggingFolder
+		}
 	},
 	methods: {
 		selectAll(bucket) {

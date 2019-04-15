@@ -72,7 +72,6 @@ function countLineBreaks(text) {
 export default {
 	name : 'codemirror',
 	props: {
-		'note'         : Object,
 		'isFullScreen' : Boolean,
 		'isPreview'    : Boolean,
 		'useMonospace' : Boolean,
@@ -86,6 +85,11 @@ export default {
 	},
 	mounted() {
 		this.newCodemirrorInstance()
+	},
+	computed: {
+		note() {
+			return this.$store.state.selectedNote
+		}
 	},
 	methods: {
 		newCodemirrorInstance() {

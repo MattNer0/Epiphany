@@ -15,17 +15,9 @@
 				<div v-show="loadedRack" class="cell-container" ref="sidebarFolders">
 					<div class="my-shelf">
 						<buckets-special
-							:buckets="racks"
 							:show-history="showHistory">
 						</buckets-special>
 						<buckets
-							:buckets="racks"
-							:selected-bucket="selectedRack"
-							:selected-folder="selectedFolder"
-							:selected-note="selectedNote"
-							:dragging-bucket="draggingRack"
-							:dragging-folder="draggingFolder"
-							:dragging-note="draggingNote"
 							:show-all="showAll"
 							:show-favorites="showFavorites"
 							:change-bucket="changeRack"
@@ -45,10 +37,7 @@
 				</handler-stack>
 				<div v-show="selectedFolder || showAll || showFavorites || showHistory" class="cell-container" ref="sidebarNotes">
 					<div class="my-shelf-banner" v-show="selectedFolder">Notes
-						<add-note
-							:selected-folder="selectedFolder"
-							:selected-rack="selectedRack">
-						</add-note>
+						<add-note />
 					</div>
 					<div class="my-shelf-notes" :class="{ 'expand-notes': showAll || showFavorites || showHistory }" ref="refNotes">
 						<notes
@@ -57,12 +46,7 @@
 							:toggle-full-screen="toggleFullScreen"
 							:original-notes="notes"
 							:show-history="showHistory"
-							:selected-note="selectedNote"
-							:selected-rack="selectedRack"
-							:selected-folder="selectedFolder"
-							:dragging-note="draggingNote"
 							:change-note="changeNote"
-							:set-dragging-note="setDraggingNote"
 							:notes-display-order="notesDisplayOrder">
 						</notes>
 					</div>
@@ -75,13 +59,9 @@
 				</handler-notes>
 			</div>
 			<div class="cell-container main-cell-container" :class="mainCellClass">
-				<tabs-bar
-					:current-note="selectedNote"
-					:tabs-array="noteTabs"
-				></tabs-bar>
+				<tabs-bar :tabs-array="noteTabs"></tabs-bar>
 				<note-menu
 					v-if="isNoteSelected || isOutlineSelected"
-					:note="selectedNote"
 					:is-full-screen="isFullScreen"
 					:is-toolbar-enabled="isToolbarEnabled"
 					:is-note-selected="isNoteSelected"
@@ -99,10 +79,7 @@
 				</theme-menu>
 				<div v-if="showNoteContainer" class="main-note-container">
 					<div class="my-editor" ref="myEditor">
-						<outline
-							v-if="isOutlineSelected"
-							:outline-note="selectedNote">
-						</outline>
+						<outline v-if="isOutlineSelected"></outline>
 						<theme-editor
 							v-else-if="isThemeSelected"
 							:theme="editTheme">
@@ -110,7 +87,6 @@
 						<template v-else>
 							<codemirror
 								v-show="!isPreview && isNoteSelected"
-								:note="selectedNote"
 								:is-full-screen="isFullScreen"
 								:is-preview="isPreview"
 								:toggle-preview="togglePreview"

@@ -2,8 +2,8 @@
 	.my-editor-preview.my-editor-outline
 		div(:class="{ 'focus-outline': zoomedin }")
 			.breadcrumbs(v-if="breadcrumbs.length > 0")
-				.crumb(v-for="crumb in breadcrumbs", :key="crumb.outlineNode.uid", @click.prevent.stop="openCrumb(crumb)")
-					| {{ crumb.outlineNode.title }}
+				.crumb(v-for="crumb in breadcrumbs", :key="crumb.outlineNote.uid", @click.prevent.stop="openCrumb(crumb)")
+					| {{ crumb.outlineNote.title }}
 				.crumb
 			input.h1(
 				v-model="outlineNote.title",
@@ -11,7 +11,7 @@
 				@keydown.arrow-down.exact="jumpNextNode"
 			)
 			input.h2(
-				v-model="lastCrumb.outlineNode.title",
+				v-model="lastCrumb.outlineNote.title",
 				v-if="lastCrumb",
 				v-show="breadcrumbs.length > 0",
 				@keydown.shift.enter.exact.prevent="switchToTextArea",
@@ -38,10 +38,7 @@
 import componentNodeOutline from './nodeOutline.vue'
 
 export default {
-	name : 'outline',
-	props: {
-		'outlineNote': Object
-	},
+	name: 'outline',
 	data() {
 		return {
 			'zoomedin'   : false,
@@ -50,8 +47,8 @@ export default {
 		}
 	},
 	computed: {
-		outlineNode() {
-			return this.outlineNote
+		outlineNote() {
+			return this.$store.state.selectedNote
 		}
 	},
 	components: {

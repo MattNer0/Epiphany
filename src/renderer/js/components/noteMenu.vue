@@ -166,7 +166,6 @@ import myDropdown from 'vue-my-dropdown'
 export default {
 	name : 'noteMenu',
 	props: {
-		'note'             : Object,
 		'isFullScreen'     : Boolean,
 		'isPreview'        : Boolean,
 		'isToolbarEnabled' : Boolean,
@@ -193,6 +192,9 @@ export default {
 		}
 	},
 	computed: {
+		note() {
+			return this.$store.state.selectedNote
+		},
 		noteHeadings() {
 
 			function getNodeText(oDiv) {

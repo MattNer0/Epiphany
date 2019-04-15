@@ -9,84 +9,64 @@
 			@dragleave="folderDragLeave(folder)"
 			@drop="dropToFolder($event, parentFolder, folder)"
 			@contextmenu.prevent.stop="folderMenu(parentFolder, folder)")
-			.folder-object(
-				:class="classFolderObject(folder)",
-				@click="selectFolder(folder)")
-				i.coon-play-right.down(@click.prevent.stop="folder.openFolder = !folder.openFolder")
-				a.my-shelf-folder-name.no-name(v-if="editingFolder != folder.uid")
-					template(v-if="folder.name")
-						| {{ folder.name }}
-					template(v-else)
-						| No Title
-					span.my-shelf-folder-badge(v-if="search", v-show="folder.searchMatchName(search) || folder.searchnotes(search).length > 0")
-						| {{ folder.searchnotes(search).length }}
-						i.coon-file
-					span.my-shelf-folder-badge(v-else, v-show="folder.notes.length > 0")
-						| {{ folder.notes.length }}
-						i.coon-file
-					span.my-shelf-folder-badge(v-show="folder.images.length > 0")
-						| {{ folder.images.length }}
-						i.coon-image
-					span.my-shelf-folder-badge(v-show="folder.folders.length > 0")
-						| {{ folder.folders.length }}
-						i.coon-folder
-				input(v-if="editingFolder == folder.uid"
-					v-model="folder.name"
-					v-focus="editingFolder == folder.uid"
-					@blur="doneFolderEdit(folder)"
-					@keyup.enter="doneFolderEdit(folder)"
-					@keyup.esc="doneFolderEdit(folder)"
-					type="text")
+			folder(
+				:folder="folder"
+				:change-bucket="changeBucket"
+				:change-folder="changeFolder"
+				:editing-folder="editingFolder"
+				:search="search"
+				:from-bucket="fromBucket")
 
 			folders(v-if="folder.folders",
 					:parent-folder="folder"
-					:selected-folder="selectedFolder"
-					:dragging-note="draggingNote"
 					:change-bucket="changeBucket"
 					:change-folder="changeFolder"
 					:editing-folder="editingFolder"
-					:dragging-folder="draggingFolder"
 					:search="search")
 
 </template>
 
 <script>
 import { remote } from 'electron'
-import Vue from 'vue'
 import arr from '../utils/arr'
 import dragging from '../utils/dragging'
 import models from '../models'
+
+import componentFolder from './folder.vue'
 
 const { Menu, MenuItem } = remote
 
 export default {
 	name : 'folders',
 	props: {
-		'parentFolder'  : Object,
-		'selectedNote'  : Object,
-		'selectedFolder': Object,
-		'draggingNote'  : Object,
-		'draggingFolder': Object,
-		'changeBucket'  : Function,
-		'changeFolder'  : Function,
-		'editingFolder' : String,
-		'search'        : String,
-		'fromBucket'    : Boolean
+		'parentFolder' : Object,
+		'changeBucket' : Function,
+		'changeFolder' : Function,
+		'editingFolder': String,
+		'search'       : String,
+		'fromBucket'   : Boolean
+	},
+	components: {
+		'folder': componentFolder
 	},
 	data() {
 		return {
 			draggingFolderParent: null
 		}
 	},
-	directives: {
-		focus(element) {
-			if (!element) return
-			Vue.nextTick(() => {
-				element.focus()
-			})
-		}
-	},
 	computed: {
+		selectedFolder() {
+			return this.$store.state.selectedFolder
+		},
+		selectedNote() {
+			return this.$store.state.selectedNote
+		},
+		draggingFolder() {
+			return this.$store.state.draggingFolder
+		},
+		draggingNote() {
+			return this.$store.state.draggingNote
+		},
 		isDraggingNote() {
 			return !!this.draggingNote
 		}
@@ -104,22 +84,8 @@ export default {
 				'sortInside'     : folder.sortLower && folder.sortUpper
 			}
 		},
-		classFolderObject(folder) {
-			return {
-				'dragging'  : this.draggingFolder === folder,
-				'no-results': !this.draggingFolder && !this.draggingNote && this.noSearchMatch(folder)
-			}
-		},
-		noSearchMatch(folder) {
-			return this.search && !folder.searchMatchName(this.search) && folder.searchnotes(this.search).length === 0
-		},
 		isRack(folder) {
 			return folder instanceof models.Rack
-		},
-		doneFolderEdit(folder) {
-			if (!this.editingFolder) { return }
-			folder.saveModel()
-			this.changeFolder(folder)
 		},
 		selectFolder(folder) {
 			if (this.selectedFolder === folder) {
@@ -152,12 +118,12 @@ export default {
 		},
 		folderDragStart(event, parent, folder) {
 			event.dataTransfer.setDragImage(event.target, 8, 0)
-			this.$root.setDraggingFolder(folder)
+			this.$store.commit('dragging', folder)
 			this.draggingFolderParent = parent
 		},
 		folderDragEnd() {
 			this.$root.folderDragEnded(this.draggingFolderParent, this.draggingFolder)
-			this.$root.setDraggingFolder()
+			this.$store.commit('dragging')
 			this.draggingFolderParent = null
 		},
 		folderDragOver(event, folder) {
@@ -261,7 +227,7 @@ export default {
 
 				folder.sortUpper = false
 				folder.sortLower = false
-				this.$root.setDraggingFolder()
+				this.$store.commit('dragging')
 			}
 		},
 		folderMenu(bucket, folder) {

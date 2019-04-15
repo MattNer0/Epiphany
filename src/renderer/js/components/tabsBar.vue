@@ -14,10 +14,12 @@
 export default {
 	name : 'tabsBar',
 	props: {
-		'currentNote': Object,
-		'tabsArray'  : Array
+		'tabsArray': Array
 	},
 	computed: {
+		currentNote() {
+			return this.$store.state.selectedNote
+		}
 	},
 	methods: {
 		selectNote(note) {

@@ -57,13 +57,8 @@ export default {
 		'notesDisplayOrder': String,
 		'notes'            : Array,
 		'originalNotes'    : Array,
-		'selectedNote'     : Object,
-		'selectedRack'     : Object,
-		'selectedFolder'   : Object,
-		'draggingNote'     : Object,
 		'toggleFullScreen' : Function,
 		'changeNote'       : Function,
-		'setDraggingNote'  : Function,
 		'showHistory'      : Boolean
 	},
 	data() {
@@ -73,6 +68,18 @@ export default {
 		}
 	},
 	computed: {
+		selectedRack() {
+			return this.$store.state.selectedBucket
+		},
+		selectedFolder() {
+			return this.$store.state.selectedFolder
+		},
+		selectedNote() {
+			return this.$store.state.selectedNote
+		},
+		draggingNote() {
+			return this.$store.state.draggingNote
+		},
 		notesFiltered() {
 			var dateSeparated = Vue.filter('dateSeparated')
 			return dateSeparated(this.notes.slice(), this.notesDisplayOrder)
@@ -118,10 +125,10 @@ export default {
 		// Dragging
 		noteDragStart(event, note) {
 			event.dataTransfer.setDragImage(event.target, 0, 0)
-			this.setDraggingNote(note)
+			this.$store.commit('dragging', note)
 		},
 		noteDragEnd() {
-			this.setDraggingNote(null)
+			this.$store.commit('dragging')
 		},
 		copyNoteBody(note) {
 			clipboard.writeText(note.bodyWithDataURL)

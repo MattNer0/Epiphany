@@ -10,8 +10,12 @@
 export default {
 	name : 'bucketsSpecial',
 	props: {
-		'buckets'    : Array,
 		'showHistory': Boolean
+	},
+	computed: {
+		buckets() {
+			return this.$store.state.buckets
+		}
 	},
 	methods: {
 		openHistory() {
