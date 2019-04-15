@@ -3,6 +3,7 @@ import path from 'path'
 import searcher from '../searcher'
 import jsonDataFile from '../utils/jsonDataFile'
 import utilFile from '../utils/file'
+import arr from '../utils/arr'
 import Model from './baseModel'
 
 class Folder extends Model {
@@ -31,6 +32,8 @@ class Folder extends Model {
 				fObj.parentFolder = this
 				this.folders.push(new Folder(fObj))
 			}
+
+			this.folders = arr.sortBy(this.folders.slice(), 'ordering', true)
 		}
 		this._notes = []
 		this._images = []

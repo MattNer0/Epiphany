@@ -284,7 +284,6 @@ export default function() {
 				if (!data || !data.racks) return
 
 				this.$store.dispatch('loadedRacks', data.racks)
-				console.log(this.$store.state)
 
 				self.quick_notes_bucket = this.$store.getters.quickNotesBucket
 				this.loadedRack = true

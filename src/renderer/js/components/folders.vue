@@ -214,7 +214,7 @@ export default {
 				}
 
 				foldersTo.forEach((f, i) => {
-					f.ordering = i
+					f.ordering = i + 1
 					f.saveModel()
 				})
 
