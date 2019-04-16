@@ -56,8 +56,6 @@ export default {
 	props: {
 		'notesDisplayOrder': String,
 		'notes'            : Array,
-		'originalNotes'    : Array,
-		'toggleFullScreen' : Function,
 		'changeNote'       : Function,
 		'showHistory'      : Boolean
 	},
@@ -92,7 +90,7 @@ export default {
 		selectNoteAndWide(note) {
 			if (this.selectedNote !== note) {
 				this.changeNote(note, false, true)
-				this.toggleFullScreen()
+				window.bus.$emit('toggle-fullscreen')
 			} else {
 				this.changeNote(note, false, true)
 			}
@@ -132,27 +130,47 @@ export default {
 		},
 		copyNoteBody(note) {
 			clipboard.writeText(note.bodyWithDataURL)
-			this.$root.sendFlashMessage(1000, 'info', 'Copied Markdown to clipboard')
+			window.bus.$emit('flash-message', {
+				time : 1000,
+				level: 'info',
+				text : 'Copied Markdown to clipboard'
+			})
 		},
 		copyNoteHTML(note) {
 			clipboard.writeText(preview.render(note.body, Vue))
-			this.$root.sendFlashMessage(1000, 'info', 'Copied HTML to clipboard')
+			window.bus.$emit('flash-message', {
+				time : 1000,
+				level: 'info',
+				text : 'Copied HTML to clipboard'
+			})
 		},
 		copyOutlinePLain(note) {
 			if (note.isOutline) {
 				clipboard.writeText(note.bodyWithoutMetadata)
-				this.$root.sendFlashMessage(1000, 'info', 'Copied Text Plain to clipboard')
+				window.bus.$emit('flash-message', {
+					time : 1000,
+					level: 'info',
+					text : 'Copied Plain Text to clipboard'
+				})
 			}
 		},
 		copyOutlineOPML(note) {
 			if (note.isOutline) {
 				clipboard.writeText(note.compileOutlineBody())
-				this.$root.sendFlashMessage(1000, 'info', 'Copied Text Plain to clipboard')
+				window.bus.$emit('flash-message', {
+					time : 1000,
+					level: 'info',
+					text : 'Copied OPML to clipboard'
+				})
 			}
 		},
 		copyNotePath(note) {
 			clipboard.writeText('coon://library/'+encodeURIComponent(note.relativePath))
-			this.$root.sendFlashMessage(1000, 'info', 'Copied Note Path to clipboard')
+			window.bus.$emit('flash-message', {
+				time : 1000,
+				level: 'info',
+				text : 'Copied Note Path to clipboard'
+			})
 		},
 		exportNoteDiag(note) {
 			var filename = fileUtils.safeName(note.title) + '.md'
@@ -174,7 +192,11 @@ export default {
 					fs.writeSync(fd, note.bodyWithDataURL)
 				}
 			} catch (e) {
-				this.$root.sendFlashMessage(5000, 'error', 'Skipped: File "' + filename + '" already exists')
+				window.bus.$emit('flash-message', {
+					time : 5000,
+					level: 'error',
+					text : 'File "' + filename + '" already exists, skipped'
+				})
 			}
 			fs.closeSync(fd)
 		},

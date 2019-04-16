@@ -20,8 +20,6 @@
 						<buckets
 							:show-all="showAll"
 							:show-favorites="showFavorites"
-							:change-bucket="changeRack"
-							:change-folder="changeFolder"
 							:editing-folder="editingFolder"
 							:is-full-screen="isFullScreen"
 							:search="search"
@@ -43,8 +41,6 @@
 						<notes
 							v-show="selectedRack || showHistory"
 							:notes="filteredNotes"
-							:toggle-full-screen="toggleFullScreen"
-							:original-notes="notes"
 							:show-history="showHistory"
 							:change-note="changeNote"
 							:notes-display-order="notesDisplayOrder">
@@ -68,9 +64,7 @@
 					:is-outline-selected="isOutlineSelected"
 					:is-preview="isPreview"
 					:use-monospace="useMonospace"
-					:fontsize="fontsize"
-					:toggle-preview="togglePreview"
-					:send-flash-message="sendFlashMessage">
+					:fontsize="fontsize">
 				</note-menu>
 				<theme-menu
 					v-else-if="isThemeSelected"
@@ -89,7 +83,6 @@
 								v-show="!isPreview && isNoteSelected"
 								:is-full-screen="isFullScreen"
 								:is-preview="isPreview"
-								:toggle-preview="togglePreview"
 								:search="search"
 								:use-monospace="useMonospace"
 								ref="refCodeMirror">

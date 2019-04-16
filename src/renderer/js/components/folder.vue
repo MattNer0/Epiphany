@@ -23,9 +23,9 @@
 		input(v-if="editingFolder == folder.uid"
 			v-model="folder.name"
 			v-focus="editingFolder == folder.uid"
-			@blur="doneFolderEdit(folder)"
-			@keyup.enter="doneFolderEdit(folder)"
-			@keyup.esc="doneFolderEdit(folder)"
+			@blur="doneFolderEdit"
+			@keyup.enter="doneFolderEdit"
+			@keyup.esc="doneFolderEdit"
 			type="text")
 
 </template>
@@ -39,8 +39,6 @@ export default {
 	name : 'folder',
 	props: {
 		'folder'       : Object,
-		'changeBucket' : Function,
-		'changeFolder' : Function,
 		'editingFolder': String,
 		'search'       : String,
 		'fromBucket'   : Boolean
@@ -85,10 +83,10 @@ export default {
 		}
 	},
 	methods: {
-		doneFolderEdit(folder) {
+		doneFolderEdit() {
 			if (!this.editingFolder) { return }
-			folder.saveModel()
-			this.changeFolder(folder)
+			this.folder.saveModel()
+			window.bus.$emit('change-folder', { folder: this.folder })
 		},
 		selectFolder() {
 			if (this.selectedFolder === this.folder) {
@@ -97,7 +95,7 @@ export default {
 				if (this.fromBucket) {
 					this.$root.closeOthers()
 				}
-				this.changeFolder(this.folder)
+				window.bus.$emit('change-folder', { folder: this.folder })
 				if (!this.folder.openFolder) {
 					this.folder.openFolder = true
 				}

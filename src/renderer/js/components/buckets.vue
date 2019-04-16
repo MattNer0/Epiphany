@@ -29,8 +29,6 @@
 			folders(
 				v-if="!bucket.quick_notes && bucket.folders && (!search || bucket.searchMatchName(search) || bucket.searchnotes(search).length > 0)"
 				:parent-folder="bucket"
-				:change-bucket="changeBucket"
-				:change-folder="changeFolder"
 				:editing-folder="editingFolder"
 				:from-bucket="true"
 				:search="search")
@@ -63,8 +61,6 @@ export default {
 		'showAll'      : Boolean,
 		'showFavorites': Boolean,
 		'isFullScreen' : Boolean,
-		'changeBucket' : Function,
-		'changeFolder' : Function,
 		'editingFolder': String,
 		'search'       : String
 	},
@@ -133,7 +129,9 @@ export default {
 		},
 		rackDragEnd() {
 			this.$root.setDraggingRack()
-			this.changeBucket(null)
+			window.bus.$emit('change-bucket', {
+				bucket: null
+			})
 		},
 		rackDragOver(event, bucket) {
 			event.preventDefault()
@@ -223,7 +221,10 @@ export default {
 			if (this.selectedBucket === bucket) {
 				bucket.openFolder = !bucket.openFolder
 			} else {
-				this.$root.changeRack(bucket, true)
+				window.bus.$emit('change-bucket', {
+					bucket : bucket,
+					sidebar: true
+				})
 				bucket.openFolder = true
 			}
 		},

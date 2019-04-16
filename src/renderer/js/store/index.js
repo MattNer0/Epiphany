@@ -14,7 +14,9 @@ export default new Vuex.Store({
 		draggingBucket: null,
 		draggingFolder: null,
 		draggingNote  : null,
-		buckets       : []
+		buckets       : [],
+		images        : [],
+		notes         : []
 	},
 	getters: {
 		quickNotesBucket: state => {
@@ -22,11 +24,25 @@ export default new Vuex.Store({
 		},
 		findBucketByPath: state => (path) => {
 			return state.buckets.find(r => r.path === path)
+		},
+		findNoteByPath: state => (path) => {
+			return state.notes.find(note => note.data.path === path)
+		},
+		notesHistory: state => {
+			return arr.sortBy(state.notes.filter((n) => {
+				return !n.isEncrypted
+			}), 'updatedAt').slice(0, 10)
 		}
 	},
 	mutations: {
 		saveBuckets (state, buckets) {
 			state.buckets = buckets
+		},
+		saveNotes (state, notes) {
+			state.notes = notes
+		},
+		saveImages (state, images) {
+			state.images = images
 		},
 		selectBucket (state, bucket) {
 			state.selectedBucket = bucket
@@ -79,6 +95,21 @@ export default new Vuex.Store({
 				r.saveModel()
 			})
 			commit('saveBuckets', racksArray)
+		},
+		addImages ({ state, commit }, images) {
+			commit('saveImages', images.concat(state.images))
+		},
+		addNotes ({ state, commit }, notes) {
+			commit('saveNotes', notes.concat(state.notes))
+		},
+		addNewNote ({ state, commit }, note) {
+			var notesArray = state.notes.slice()
+			notesArray.unshift(note)
+			commit('saveNotes', notesArray)
+		},
+		removeNote ({ state, commit }, note) {
+			var notesArray = state.notes.filter(n => n !== note)
+			commit('saveNotes', notesArray)
 		}
 	}
 })

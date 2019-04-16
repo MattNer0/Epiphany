@@ -48,6 +48,8 @@ import componentThemeMenu from './components/themeMenu.vue'
 
 export default function() {
 
+	window.bus = new Vue()
+
 	settings.init()
 	settings.loadWindowSize()
 
@@ -80,9 +82,6 @@ export default function() {
 			reduceToTray      : settings.getSmart('reduceToTray', true),
 			preview           : '',
 			quick_notes_bucket: null,
-			notes             : [],
-			images            : [],
-			notesHistory      : [],
 			timeoutNoteChange : false,
 			editTheme         : null,
 			showHistory       : false,
@@ -126,6 +125,12 @@ export default function() {
 			racks() {
 				return this.$store.state.buckets
 			},
+			notes() {
+				return this.$store.state.notes
+			},
+			images() {
+				return this.$store.state.images
+			},
 			selectedRack: {
 				get() {
 					return this.$store.state.selectedBucket
@@ -150,6 +155,9 @@ export default function() {
 					this.$store.commit('selectNote', note)
 				}
 			},
+			notesHistory() {
+				return this.$store.getters.notesHistory
+			},
 			/**
 			 * filters notes based on search terms
 			 * @function filteredNotes
@@ -163,7 +171,7 @@ export default function() {
 					} else {
 						notes = searcher.searchNotes(this.search, this.selectedFolder.notes)
 					}
-					if (this.search && notes.length === 0) this.changeFolder(null)
+					if (this.search && notes.length === 0) this.changeFolder({ folder: null })
 					return notes
 				} else if (this.selectedRack && this.showAll) {
 					return searcher.searchNotes(this.search, this.selectedRack.allnotes)
@@ -343,8 +351,8 @@ export default function() {
 
 					folder.notes = notes
 					folder.images = images
-					self.notes = notes.concat(self.notes)
-					self.images = images.concat(self.images)
+					self.$store.dispatch('addNotes', notes)
+					self.$store.dispatch('addImages', images)
 
 					if (obj.subnotes && obj.subnotes.length > 0) {
 						obj.subnotes.forEach((r) => {
@@ -369,12 +377,6 @@ export default function() {
 			ipcRenderer.on('loaded-all-notes', (event, data) => {
 				if (!data) return
 
-				if (self.keepHistory && self.notes.length > 1) {
-					self.notesHistory = arr.sortBy(self.notes.filter((obj) => {
-						return !obj.isEncrypted
-					}), 'updatedAt').slice(0, 10)
-				}
-
 				traymenu.init()
 				titleMenu.init()
 
@@ -384,7 +386,7 @@ export default function() {
 				} else if (remote.getGlobal('argv')) {
 					var argv = remote.getGlobal('argv')
 					if (argv.length > 1 && path.extname(argv[1]) === '.md' && fs.existsSync(argv[1])) {
-						var openedNote = self.findNoteByPath(argv[1])
+						var openedNote = self.$store.getters.findNoteByPath(argv[1])
 						if (openedNote) {
 							this.changeNote(openedNote)
 						} else {
@@ -395,7 +397,11 @@ export default function() {
 			})
 
 			ipcRenderer.on('load-page-fail', (event, data) => {
-				self.sendFlashMessage(5000, 'error', 'Load Failed')
+				self.sendFlashMessage({
+					time : 5000,
+					level: 'error',
+					text : 'Load Failed'
+				})
 			})
 
 			ipcRenderer.on('load-page-finish', (event, data) => {
@@ -410,9 +416,17 @@ export default function() {
 								newNote.setMetadata('Web', data.url)
 							}
 							newNote.body = data.markdown
-							self.sendFlashMessage(1000, 'info', 'New Note From Url')
+							self.sendFlashMessage({
+								time : 1000,
+								level: 'info',
+								text : 'New Note From Url'
+							})
 						} else {
-							self.sendFlashMessage(5000, 'error', 'Conversion Failed')
+							self.sendFlashMessage({
+								time : 5000,
+								level: 'error',
+								text : 'Conversion Failed'
+							})
 						}
 						break
 					default:
@@ -422,14 +436,18 @@ export default function() {
 
 			ipcRenderer.on('download-files-failed', (event, data) => {
 				if (!data.replaced || data.replaced.length === 0) return
-				var noteObj = self.findNoteByPath(data.note)
+				var noteObj = self.$store.getters.findNoteByPath(data.note)
 				if (noteObj) {
 					for (var i=0; i<data.replaced.length; i++) {
 						var subStr = data.replaced[i]
 						noteObj.body = noteObj.body.replace(subStr.new, subStr.original)
 					}
 				}
-				self.sendFlashMessage(5000, 'error', data.error)
+				self.sendFlashMessage({
+					time : 5000,
+					level: 'error',
+					text : data.error
+				})
 			})
 
 			ipcRenderer.on('bucket-rename', (event, data) => {
@@ -437,7 +455,12 @@ export default function() {
 					if (data.name) {
 						self.editingBucket.name = data.name
 						self.editingBucket.saveModel()
-						if (self.selectedBucket !== self.editingBucket) self.changeRack(self.editingBucket, true)
+						if (self.selectedBucket !== self.editingBucket) {
+							self.changeBucket({
+								bucket : self.editingBucket,
+								sidebar: true
+							})
+						}
 						self.editingBucket = null
 					} else if (self.editingBucket.name.length === 0) {
 						if (self.editingBucket.folders.length > 0) {
@@ -457,14 +480,14 @@ export default function() {
 					document.getElementById('main-editor').classList.add('blur')
 				}
 			})
+
+			window.bus.$on('change-bucket', eventData => this.changeBucket(eventData))
+			window.bus.$on('change-folder', eventData => this.changeFolder(eventData))
+			window.bus.$on('toggle-fullscreen', eventData => this.toggleFullScreen(eventData))
+			window.bus.$on('toggle-preview', eventData => this.togglePreview(eventData))
+			window.bus.$on('flash-message', eventData => this.sendFlashMessage(eventData))
 		},
 		methods: {
-			findNoteByPath(notePath) {
-				if (!notePath) return undefined
-				return this.notes.find((note) => {
-					return note.data.path === notePath
-				})
-			},
 			findFolderByPath(rack, folderPath) {
 				try {
 					var folder = rack.folders.find((f) => {
@@ -531,45 +554,45 @@ export default function() {
 				})
 			},
 			openHistory() {
-				this.changeRack(null)
+				this.changeBucket({ bucket: null })
 				this.showHistory = !this.showHistory
 			},
 			closeOthers() {
-				this.changeRack(null)
+				this.changeBucket({ bucket: null })
 				this.showHistory = false
 			},
-			changeRack(rack, fromSidebar) {
+			changeBucket({ bucket, sidebar }) {
 				var shouldUpdateSize = false
 
-				if (this.selectedRack === null && rack) shouldUpdateSize = true
-				else if (this.selectedFolder !== null && rack) shouldUpdateSize = true
+				if (this.selectedRack === null && bucket) shouldUpdateSize = true
+				else if (this.selectedFolder !== null && bucket) shouldUpdateSize = true
 
-				if (rack !== null && this.quick_notes_bucket === rack) {
+				if (bucket !== null && this.quick_notes_bucket === bucket) {
 					var newNoteFolder = this.quick_notes_bucket.folders.find((obj) => {
 						return obj.name === 'New Notes'
 					})
-					this.selectedRack = rack
+					this.selectedRack = bucket
 					this.showHistory = false
 					if (newNoteFolder) {
-						this.changeFolder(newNoteFolder)
+						this.changeFolder({ folder: newNoteFolder })
 					} else {
 						this.newQuickNoteBucket()
 					}
 
-				} else if (rack === null || rack instanceof models.Rack) {
-					this.selectedRack = rack
-					if (rack === null) this.selectedFolder = null
+				} else if (bucket === null || bucket instanceof models.Rack) {
+					this.selectedRack = bucket
+					if (bucket === null) this.selectedFolder = null
 					this.editingFolder = null
-					if (fromSidebar) this.showHistory = false
-				} else if (rack instanceof models.Folder) {
-					this.changeFolder(rack)
+					if (sidebar) this.showHistory = false
+				} else if (bucket instanceof models.Folder) {
+					this.changeFolder({ folder: bucket })
 				}
 
 				if (shouldUpdateSize) {
 					this.update_editor_size()
 				}
 			},
-			changeFolder(folder, weak) {
+			changeFolder({ folder, weak }) {
 				if (weak && folder && (this.showAll || this.showFavorites) && this.selectedRack === folder.rack) return
 				if ((this.selectedFolder === null && folder) || (this.selectedFolder && folder === null)) this.update_editor_size()
 				this.editingFolder = null
@@ -650,7 +673,7 @@ export default function() {
 					this.selectedNote = null
 					return
 				} else if (note === this.selectedNote) {
-					if (this.selectedRack === null && !this.showHistory) this.changeFolder(note.folder)
+					if (this.selectedRack === null && !this.showHistory) this.changeFolder({ folder: note.folder })
 					else if (!this.isFullScreen && fromSidebar) {
 						this.setFullScreen(true)
 					}
@@ -661,7 +684,7 @@ export default function() {
 					if (note.folder && note.folder instanceof models.Folder) {
 						note.folder.parent.openFolder = true
 						if (this.selectedFolder !== note.folder) {
-							this.changeFolder(note.folder, true)
+							this.changeFolder({ folder: note.folder, weak: true })
 						}
 					}
 				}
@@ -817,9 +840,8 @@ export default function() {
 					var i1 = note.folder.notes.indexOf(note)
 					note.folder.notes.splice(i1, 1)
 				}
-				var i2 = this.notes.indexOf(note)
-				if (i2 >= 0) this.notes.splice(i2, 1)
 
+				this.$store.dispatch('removeNote', note)
 				if (this.selectedNote === note) {
 					this.selectedNote = null
 				}
@@ -842,7 +864,7 @@ export default function() {
 						ordering    : 0
 					})
 					self.addFolderToRack(self.quick_notes_bucket, folder)
-					self.changeFolder(folder)
+					self.changeFolder({ folder: folder })
 				}
 
 				if (!this.quick_notes_bucket) {
@@ -872,7 +894,7 @@ export default function() {
 					if (rightFolder === null) {
 						newFolder()
 					} else {
-						this.changeFolder(rightFolder)
+						this.changeFolder({ folder: rightFolder })
 					}
 				}
 			},
@@ -962,32 +984,40 @@ export default function() {
 			addNote() {
 				var currFolder = this.getCurrentFolder()
 				this.changeNote(null)
-				this.changeFolder(currFolder)
+				this.changeFolder({ folder: currFolder })
 				var newNote = models.Note.newEmptyNote(currFolder)
 				if (newNote) {
 					if (this.search.length > 0) this.search = ''
 					currFolder.notes.unshift(newNote)
-					this.notes.unshift(newNote)
+					this.$store.dispatch('addNewNote', newNote)
 					this.isPreview = false
 					this.changeNote(newNote)
 				} else {
-					this.sendFlashMessage(5000, 'error', 'You must select a Folder!')
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : 'You must select a Folder!'
+					})
 				}
 				return newNote
 			},
 			addOutline() {
 				var currFolder = this.getCurrentFolder()
 				this.changeNote(null)
-				this.changeFolder(currFolder)
+				this.changeFolder({ folder: currFolder })
 				var newOutline = models.Outline.newEmptyOutline(currFolder)
 				if (newOutline) {
 					if (this.search.length > 0) this.search = ''
 					currFolder.notes.unshift(newOutline)
-					this.notes.unshift(newOutline)
+					this.$store.dispatch('addNewNote', newOutline)
 					this.isPreview = false
 					this.changeNote(newOutline)
 				} else {
-					this.sendFlashMessage(5000, 'error', 'You must select a Folder!')
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : 'You must select a Folder!'
+					})
 				}
 				return newOutline
 			},
@@ -998,17 +1028,21 @@ export default function() {
 			addEncryptedNote() {
 				var currFolder = this.getCurrentFolder()
 				this.changeNote(null)
-				this.changeFolder(currFolder)
+				this.changeFolder({ folder: currFolder })
 				var newNote = models.EncryptedNote.newEmptyNote(currFolder)
 				if (newNote) {
 					if (this.search.length > 0) this.search = ''
 					currFolder.notes.unshift(newNote)
-					this.notes.unshift(newNote)
+					this.$store.dispatch('addNewNote', newNote)
 					this.isPreview = false
 					this.changeNote(newNote)
 					newNote.saveModel()
 				} else {
-					this.sendFlashMessage(5000, 'error', 'You must select a Folder!')
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : 'You must select a Folder!'
+					})
 				}
 			},
 			/**
@@ -1021,9 +1055,17 @@ export default function() {
 					result = this.selectedNote.saveModel()
 				}
 				if (result && result.error && result.path) {
-					this.sendFlashMessage(5000, 'error', result.error)
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : result.error
+					})
 				} else if (result && result.saved) {
-					this.sendFlashMessage(1000, 'info', 'Note saved')
+					this.sendFlashMessage({
+						time : 1000,
+						level: 'info',
+						text : 'Note saved'
+					})
 					if (this.selectedNote && this.notesDisplayOrder === 'updatedAt' && !this.showHistory) {
 						this.scrollUpScrollbarNotes()
 					}
@@ -1096,7 +1138,7 @@ export default function() {
 				href = decodeURIComponent(href)
 				href = path.join(settingsBaseLibraryPath, href)
 
-				var noteObj = this.findNoteByPath(href)
+				var noteObj = this.$store.getters.findNoteByPath(href)
 				if (noteObj) {
 					this.changeNote(noteObj, newTab)
 				}
@@ -1256,7 +1298,11 @@ export default function() {
 					settings.set('baseLibraryPath', newPath)
 					remote.getCurrentWindow().reload()
 				} else {
-					this.sendFlashMessage(5000, 'error', 'Directory is not Valid')
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : 'Directory is not Valid'
+					})
 				}
 			},
 			openSync() {
@@ -1301,20 +1347,11 @@ export default function() {
 					this.notesDisplayOrder = value
 				}
 			},
-			/**
-			 * sends a Flash Message.
-			 * @function sendFlashMessage
-			 * @param    {Integer}    period   How long it will last (in ms)
-			 * @param    {String}     level    Flash level (info,error)
-			 * @param    {String}     text     Flash message text
-			 * @param    {String}     url      Url to open when Flash Message is clicked
-			 * @return {Void} Function doesn't return anything
-			 */
-			sendFlashMessage(period, level, text, url) {
+			sendFlashMessage({ time, level, text, url }) {
 				var message = {
 					level : 'flashmessage-' + level,
 					text  : text,
-					period: period,
+					period: time,
 					url   : url
 				}
 				this.messages.push(message)

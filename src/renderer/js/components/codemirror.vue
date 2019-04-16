@@ -72,11 +72,10 @@ function countLineBreaks(text) {
 export default {
 	name : 'codemirror',
 	props: {
-		'isFullScreen' : Boolean,
-		'isPreview'    : Boolean,
-		'useMonospace' : Boolean,
-		'togglePreview': Function,
-		'search'       : String
+		'isFullScreen': Boolean,
+		'isPreview'   : Boolean,
+		'useMonospace': Boolean,
+		'search'      : String
 	},
 	data() {
 		return {
@@ -109,8 +108,8 @@ export default {
 					'Ctrl-Y'      : () => { pasteText(cm, this.note) },
 					'Ctrl-V'      : () => { pasteText(cm, this.note) },
 					'Alt-V'       : () => { pasteText(cm, this.note) },
-					'Shift-Ctrl-V': () => { this.togglePreview() },
-					'Alt-P'       : () => { this.togglePreview() }
+					'Shift-Ctrl-V': () => { window.bus.$emit('toggle-preview') },
+					'Alt-P'       : () => { window.bus.$emit('toggle-preview') }
 				},
 				indentUnit        : 4,
 				smartIndent       : true,
@@ -217,7 +216,7 @@ export default {
 							}));*/
 					}
 					menu.append(new MenuItem({ type: 'separator' }))
-					menu.append(new MenuItem({ label: 'Toggle Preview', click: () => { this.togglePreview() } }))
+					menu.append(new MenuItem({ label: 'Toggle Preview', click: () => { window.bus.$emit('toggle-preview') } }))
 					menu.popup(remote.getCurrentWindow())
 				}, 90)
 			})

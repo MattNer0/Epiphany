@@ -172,9 +172,7 @@ export default {
 		'isNoteSelected'   : Boolean,
 		'isOutlineSelected': Boolean,
 		'useMonospace'     : Boolean,
-		'fontsize'         : Number,
-		'togglePreview'    : Function,
-		'sendFlashMessage' : Function
+		'fontsize'         : Number
 	},
 	data() {
 		return {
@@ -228,6 +226,9 @@ export default {
 		'dropdown': myDropdown
 	},
 	methods: {
+		togglePreview() {
+			window.bus.$emit('toggle-preview')
+		},
 		codeMirror() {
 			return this.$root.codeMirror
 		},
@@ -399,7 +400,11 @@ export default {
 			this.properties_visible = false
 			this.note.setMetadata(this.$refs.keyinput.value, this.$refs.valueinput.value)
 			this.note.saveModel()
-			this.sendFlashMessage(2000, 'info', 'New metadata added')
+			window.bus.$emit('flash-message', {
+				time : 2000,
+				level: 'info',
+				text : 'New metadata added'
+			})
 			this.$refs.valueinput.value = ''
 			this.$refs.keyinput.value = ''
 			this.properties_visible = true

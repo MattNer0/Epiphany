@@ -11,18 +11,14 @@
 			@contextmenu.prevent.stop="folderMenu(parentFolder, folder)")
 			folder(
 				:folder="folder"
-				:change-bucket="changeBucket"
-				:change-folder="changeFolder"
 				:editing-folder="editingFolder"
 				:search="search"
 				:from-bucket="fromBucket")
 
 			folders(v-if="folder.folders",
-					:parent-folder="folder"
-					:change-bucket="changeBucket"
-					:change-folder="changeFolder"
-					:editing-folder="editingFolder"
-					:search="search")
+				:parent-folder="folder"
+				:editing-folder="editingFolder"
+				:search="search")
 
 </template>
 
@@ -40,8 +36,6 @@ export default {
 	name : 'folders',
 	props: {
 		'parentFolder' : Object,
-		'changeBucket' : Function,
-		'changeFolder' : Function,
 		'editingFolder': String,
 		'search'       : String,
 		'fromBucket'   : Boolean
@@ -94,7 +88,7 @@ export default {
 				if (this.fromBucket) {
 					this.$root.closeOthers()
 				}
-				this.changeFolder(folder)
+				window.bus.$emit('change-folder', { folder: folder })
 				if (!folder.openFolder) {
 					folder.openFolder = true
 				}
@@ -184,7 +178,7 @@ export default {
 				note.saveModel()
 				this.$root.setDraggingNote(null)
 				if (this.draggingNote === this.selectedNote) {
-					this.changeFolder(folder)
+					window.bus.$emit('change-folder', { folder: folder })
 				}
 			} else if (this.draggingFolder && this.draggingFolder !== folder) {
 				console.log('Dropping Folder to Folder')
@@ -238,7 +232,7 @@ export default {
 				menu.append(new MenuItem({
 					label: 'Deselect folder',
 					click: () => {
-						this.changeFolder(null)
+						window.bus.$emit('change-folder', { folder: null })
 					}
 				}))
 				menu.append(new MenuItem({ type: 'separator' }))
@@ -268,14 +262,14 @@ export default {
 			menu.append(new MenuItem({
 				label: 'Add note',
 				click: () => {
-					this.changeFolder(folder)
+					window.bus.$emit('change-folder', { folder: folder })
 					this.$root.addNote()
 				}
 			}))
 			menu.append(new MenuItem({
 				label: 'Add encrypted note',
 				click: () => {
-					this.changeFolder(folder)
+					window.bus.$emit('change-folder', { folder: folder })
 					this.$root.addEncryptedNote()
 				}
 			}))
@@ -285,7 +279,6 @@ export default {
 				label: 'Delete folder',
 				click: () => {
 					if (confirm('Delete folder "' + folder.name + '" and its content?')) {
-						this.changeBucket(bucket)
 						this.$root.deleteFolder(folder)
 					}
 				}
