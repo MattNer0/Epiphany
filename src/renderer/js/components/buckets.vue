@@ -127,6 +127,8 @@ export default {
 		},
 		// Dragging
 		rackDragStart(event, bucket) {
+			bucket.openFolder = false
+			this.$store.commit('selectFolder', null)
 			event.dataTransfer.setDragImage(event.target, 0, 0)
 			this.$store.commit('dragging', bucket)
 		},
@@ -140,6 +142,13 @@ export default {
 			event.preventDefault()
 			if (this.draggingFolder) {
 				bucket.dragHover = true
+				if (bucket.folders && bucket.folders.length > 0) {
+					setTimeout(() => {
+						if (this.draggingFolder && bucket.dragHover) {
+							bucket.openFolder = true
+						}
+					}, 1000)
+				}
 			} else if (this.draggingBucket && this.draggingBucket !== bucket) {
 				var per = dragging.dragOverPercentage(event.currentTarget, event.clientY)
 				if (per > 0.5) {
@@ -150,7 +159,14 @@ export default {
 					bucket.sortUpper = true
 				}
 			} else if (this.draggingNote) {
-				if (this.selectedBucket !== bucket) this.selectBucket(bucket)
+				bucket.dragHover = true
+				if (bucket.folders && bucket.folders.length > 0) {
+					setTimeout(() => {
+						if (this.draggingNote && bucket.dragHover) {
+							bucket.openFolder = true
+						}
+					}, 1000)
+				}
 			}
 		},
 		rackDragLeave(bucket) {

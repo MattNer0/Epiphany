@@ -262,7 +262,14 @@
 	 */
 	function undoSearch(cm) {
 		var state = getSearchState(cm)
+		state.query = parseQuery('')
 		cm.removeOverlay(state.overlay, queryCaseInsensitive(state.query))
+		if (cm.showMatchesOnScrollbar) {
+			if (state.annotate) {
+				state.annotate.clear()
+				state.annotate = null
+			}
+		}
 	}
 
 	/**

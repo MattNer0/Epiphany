@@ -15,7 +15,7 @@
 				:search="search"
 				:from-bucket="fromBucket")
 
-			folders(v-if="folder.folders",
+			folders(v-if="folder.folders && folder.folders.length > 0",
 				:parent-folder="folder"
 				:editing-folder="editingFolder"
 				:search="search")
@@ -111,6 +111,8 @@ export default {
 			this.$root.setEditingFolder(folder)
 		},
 		folderDragStart(event, parent, folder) {
+			folder.openFolder = false
+			this.$store.commit('selectFolder', null)
 			event.dataTransfer.setDragImage(event.target, 8, 0)
 			this.$store.commit('dragging', folder)
 			this.draggingFolderParent = parent
@@ -127,7 +129,13 @@ export default {
 					event.preventDefault()
 					folder.dragHover = true
 				}
-				folder.openFolder = true
+				if (folder.folders && folder.folders.length > 0) {
+					setTimeout(() => {
+						if (this.draggingNote && folder.dragHover) {
+							folder.openFolder = true
+						}
+					}, 1000)
+				}
 			} else if (this.draggingFolder) {
 				event.stopPropagation()
 				if (folder !== this.draggingFolder) {

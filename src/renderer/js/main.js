@@ -157,6 +157,12 @@ export default function() {
 			notesHistory() {
 				return this.$store.getters.notesHistory
 			},
+			draggingBucket() {
+				return this.$store.state.draggingBucket
+			},
+			draggingFolder() {
+				return this.$store.state.draggingFolder
+			},
 			/**
 			 * filters notes based on search terms
 			 * @function filteredNotes
@@ -1467,6 +1473,12 @@ export default function() {
 			},
 			selectedFolder() {
 				this.scrollUpScrollbarNotes()
+			},
+			draggingBucket() {
+				this.update_editor_size()
+			},
+			draggingFolder() {
+				this.update_editor_size()
 			}
 		}
 	})
