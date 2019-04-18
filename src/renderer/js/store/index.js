@@ -8,15 +8,20 @@ import models from '../models'
 
 export default new Vuex.Store({
 	state: {
-		selectedBucket: null,
-		selectedFolder: null,
-		selectedNote  : null,
-		draggingBucket: null,
-		draggingFolder: null,
-		draggingNote  : null,
-		buckets       : [],
-		images        : [],
-		notes         : []
+		selectedBucket  : null,
+		selectedFolder  : null,
+		selectedNote    : null,
+		draggingBucket  : null,
+		draggingFolder  : null,
+		draggingNote    : null,
+		buckets         : [],
+		images          : [],
+		notes           : [],
+		editorRow       : 0,
+		editorColumn    : 0,
+		editorSelection : 0,
+		editorWordscount: 0,
+		editorLinebreaks: 0
 	},
 	getters: {
 		quickNotesBucket: state => {
@@ -53,7 +58,7 @@ export default new Vuex.Store({
 		selectNote (state, note) {
 			state.selectedNote = note
 		},
-		dragging(state, object) {
+		dragging (state, object) {
 			state.draggingBucket = null
 			state.draggingFolder = null
 			state.draggingNote = null
@@ -67,6 +72,26 @@ export default new Vuex.Store({
 					state.draggingNote = object
 				}
 			}
+		},
+		resetEditor (state) {
+			state.editorRow = 0
+			state.editorColumn = 0
+			state.editorSelection = 0
+			state.editorWordscount = 0
+			state.editorLinebreaks = 0
+		},
+		cursorPositon (state, { row, column }) {
+			state.editorRow = row
+			state.editorColumn = column
+		},
+		cursorSelection (state, selection) {
+			state.editorSelection = selection.length
+		},
+		editorWordsCount (state, wordsCount) {
+			state.editorWordscount = wordsCount
+		},
+		editorLineBreaks (state, lineBreaks) {
+			state.editorLinebreaks = lineBreaks
 		}
 	},
 	actions: {
@@ -79,7 +104,7 @@ export default new Vuex.Store({
 			commit('saveBuckets', arr.sortBy(racksArray.slice(), 'ordering', true))
 		},
 		addNewBucket ({ state, commit }, rack) {
-			var racksArray = arr.sortBy(state.racks.slice(), 'ordering', true)
+			var racksArray = arr.sortBy(state.buckets.slice(), 'ordering', true)
 			racksArray.push(rack)
 			racksArray.forEach((r, i) => {
 				r.ordering = i
@@ -89,7 +114,7 @@ export default new Vuex.Store({
 			commit('saveBuckets', racksArray)
 		},
 		removeBucket ({ state, commit }, rack) {
-			var racksArray = state.racks.filter(r => r !== rack)
+			var racksArray = state.buckets.filter(r => r !== rack)
 			racksArray.forEach((r, i) => {
 				r.ordering = i
 				r.saveModel()

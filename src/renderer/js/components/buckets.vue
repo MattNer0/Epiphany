@@ -13,8 +13,11 @@
 				template(v-if="bucket.icon")
 					i.rack-icon(:class="'coon-'+bucket.icon")
 					a {{ bucket.quick_notes ? 'Quick Notes' : bucket.name }}
-				template(v-else)
+				template(v-else-if="bucket.folders && bucket.folders.length > 0")
 					i.rack-icon.coon-play-right.down(@click.prevent.stop="bucket.openFolder = !bucket.openFolder")
+					a {{ bucket.name }}
+				template(v-else)
+					i.rack-icon.coon-folder
 					a {{ bucket.name }}
 
 			folders-special(
@@ -107,7 +110,7 @@ export default {
 				return {
 					'isShelfSelected': (this.selectedBucket === bucket && bucket.quick_notes && !this.isDraggingNote && !this.isFullScreen) || bucket.dragHover,
 					//'noCursor'       : !bucket.quick_notes,
-					'openFolder'     : bucket.openFolder,
+					'openFolder'     : bucket.openFolder && bucket.folders && bucket.folders.length > 0,
 					'sortUpper'      : bucket.sortUpper,
 					'sortLower'      : bucket.sortLower
 				}
@@ -125,10 +128,10 @@ export default {
 		// Dragging
 		rackDragStart(event, bucket) {
 			event.dataTransfer.setDragImage(event.target, 0, 0)
-			this.$root.setDraggingRack(bucket)
+			this.$store.commit('dragging', bucket)
 		},
 		rackDragEnd() {
-			this.$root.setDraggingRack()
+			this.$store.commit('dragging')
 			window.bus.$emit('change-bucket', {
 				bucket: null
 			})
@@ -209,7 +212,7 @@ export default {
 						r.saveOrdering()
 					}
 				})
-				this.$root.setDraggingRack()
+				this.$store.commit('dragging')
 				rack.sortUpper = false
 				rack.sortLower = false
 			} else {
@@ -233,21 +236,13 @@ export default {
 				name    : '',
 				ordering: this.buckets.length
 			})
-			this.$root.addRack(bucket)
+			this.$store.dispatch('addNewBucket', bucket)
 			this.$root.setEditingRack(bucket)
 		},
 		bucketMenu(bucket) {
 			var menu = new Menu()
 
-			menu.append(new MenuItem({
-				label: 'Add new bucket',
-				click: () => {
-					this.newBucket()
-				}
-			}))
-
 			if (!bucket.quick_notes) {
-				menu.append(new MenuItem({ type: 'separator' }))
 				menu.append(new MenuItem({
 					label: 'Rename bucket',
 					click: () => {
@@ -260,31 +255,9 @@ export default {
 						this.addFolder(bucket)
 					}
 				}))
-
-				if (bucket.icon) {
-					menu.append(new MenuItem({ type: 'separator' }))
-					menu.append(new MenuItem({
-						type   : 'radio',
-						label  : 'Show label',
-						checked: !bucket.hideLabel,
-						click  : () => {
-							bucket.hideLabel = false
-							bucket.saveModel()
-						}
-					}))
-					menu.append(new MenuItem({
-						type   : 'radio',
-						label  : 'Hide label',
-						checked: bucket.hideLabel,
-						click  : () => {
-							bucket.hideLabel = true
-							bucket.saveModel()
-						}
-					}))
-				}
+				menu.append(new MenuItem({ type: 'separator' }))
 			}
 
-			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
 				label: 'Delete bucket',
 				click: () => {

@@ -23,16 +23,16 @@ export default {
 	},
 	methods: {
 		selectNote(note) {
-			this.$root.changeNote(note)
+			window.bus.$emit('change-note', { note: note })
 		},
 		removeTab(note, index) {
 			if (note === this.currentNote) {
 				if (index > 0) {
-					this.$root.changeNote(this.tabsArray[index-1])
+					window.bus.$emit('change-note', { note: this.tabsArray[index-1] })
 				} else if (this.tabsArray.length > 1) {
-					this.$root.changeNote(this.tabsArray[index+1])
+					window.bus.$emit('change-note', { note: this.tabsArray[index+1] })
 				} else {
-					this.$root.changeNote(null)
+					window.bus.$emit('change-note', { note: null })
 				}
 			}
 			this.$root.noteTabs.splice(index, 1)

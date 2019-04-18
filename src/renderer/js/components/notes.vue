@@ -56,7 +56,6 @@ export default {
 	props: {
 		'notesDisplayOrder': String,
 		'notes'            : Array,
-		'changeNote'       : Function,
 		'showHistory'      : Boolean
 	},
 	data() {
@@ -85,14 +84,14 @@ export default {
 	},
 	methods: {
 		selectNote(note, newtab) {
-			this.changeNote(note, newtab, true)
+			window.bus.$emit('change-note', { note: note, newtab: newtab, sidebar: true })
 		},
 		selectNoteAndWide(note) {
 			if (this.selectedNote !== note) {
-				this.changeNote(note, false, true)
+				window.bus.$emit('change-note', { note: note, newtab: false, sidebar: true })
 				window.bus.$emit('toggle-fullscreen')
 			} else {
-				this.changeNote(note, false, true)
+				window.bus.$emit('change-note', { note: note, newtab: false, sidebar: true })
 			}
 		},
 		removeNote(note) {
@@ -110,11 +109,13 @@ export default {
 				if (btn === 0) {
 					this.$root.deleteNote(note)
 					if (this.notes.length === 1) {
-						this.changeNote(this.notes[0])
+						window.bus.$emit('change-note', { note: this.notes[0] })
 					} else if (this.notes.length > 1) {
-						this.changeNote(Note.beforeNote(this.notes.slice(), note, this.notesDisplayOrder))
+						window.bus.$emit('change-note', {
+							note: Note.beforeNote(this.notes.slice(), note, this.notesDisplayOrder)
+						})
 					} else {
-						this.changeNote(null)
+						window.bus.$emit('change-note', { note: null })
 					}
 
 				}
@@ -215,7 +216,10 @@ export default {
 			if (this.showHistory) {
 				menu.append(new MenuItem({ label: 'Open and Close History',
 					click: () => {
-						this.$root.changeRack(note.rack, true)
+						window.bus.$emit('change-bucket', {
+							bucket : note.rack,
+							sidebar: true
+						})
 						this.selectNote(note)
 						this.$root.isFullScreen = false
 					} }))

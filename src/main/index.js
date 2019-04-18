@@ -224,9 +224,9 @@ function createPopupWindow(width, height, callback) {
 		callback     : callback
 	})
 
-	if (isDevelopment) {
+	/*if (isDevelopment) {
 		window.webContents.openDevTools()
-	}
+	}*/
 
 	window.on('closed', () => {
 		popupWindow = null
@@ -235,7 +235,6 @@ function createPopupWindow(width, height, callback) {
 	return window
 }
 
-// quit application when all windows are closed
 app.on('window-all-closed', () => {
 	// on macOS it is common for applications to stay open until the user explicitly quits
 	if (process.platform !== 'darwin') {

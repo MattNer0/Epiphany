@@ -92,11 +92,7 @@ export default {
 	},
 	methods: {
 		newCodemirrorInstance() {
-			if (this.$root.$refs.refNoteFooter) {
-				this.$root.$refs.refNoteFooter.row = 0
-				this.$root.$refs.refNoteFooter.column = 0
-				this.$root.$refs.refNoteFooter.selection = 0
-			}
+			this.$store.commit('resetEditor')
 
 			var cm = CodeMirror(this.$el, {
 				mode        : 'piledmd',
@@ -223,24 +219,19 @@ export default {
 			cm.on('cursorActivity', (cm, event) => {
 				var sel = cm.getSelection()
 				var c = cm.getCursor()
-				if (this.$root.$refs.refNoteFooter) {
-					this.$root.$refs.refNoteFooter.row = c.line
-					this.$root.$refs.refNoteFooter.column = c.ch
-					this.$root.$refs.refNoteFooter.selection = sel.length
-					if (sel.length === 0) {
-						this.$root.$refs.refNoteFooter.wordscount = countWords(cm.getValue())
-						this.$root.$refs.refNoteFooter.linebreaks = 0
-					} else {
-						this.$root.$refs.refNoteFooter.wordscount = countWords(sel)
-						this.$root.$refs.refNoteFooter.linebreaks = countLineBreaks(sel)
-					}
+				this.$store.commit('cursorPositon', { row: c.line, column: c.ch })
+				this.$store.commit('cursorSelection', sel)
+				if (sel.length === 0) {
+					this.$store.commit('editorWordsCount', countWords(cm.getValue()))
+					this.$store.commit('editorLineBreaks', 0)
+				} else {
+					this.$store.commit('editorWordsCount', countWords(sel))
+					this.$store.commit('editorLineBreaks', countLineBreaks(sel))
 				}
 			})
 
 			cm.on('swapDoc', (cm, oldDoc) => {
-				if (this.$root.$refs.refNoteFooter) {
-					this.$root.$refs.refNoteFooter.wordscount = countWords(cm.getValue())
-				}
+				this.$store.commit('editorWordsCount', countWords(cm.getValue()))
 			})
 
 			if (this.useMonospace) {
@@ -251,13 +242,8 @@ export default {
 			this.runSearch()
 		},
 		initFooter() {
-			if (this.$root.$refs.refNoteFooter) {
-				this.$root.$refs.refNoteFooter.row = 0
-				this.$root.$refs.refNoteFooter.column = 0
-				this.$root.$refs.refNoteFooter.selection = 0
-
-				this.$root.$refs.refNoteFooter.wordscount = countWords(this.cm.getValue())
-			}
+			this.$store.commit('resetEditor')
+			this.$store.commit('editorWordsCount', countWords(this.cm.getValue()))
 		},
 		uploadFile() {
 			var notePaths = remote.dialog.showOpenDialog({

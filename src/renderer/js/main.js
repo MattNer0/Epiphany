@@ -91,7 +91,6 @@ export default function() {
 			editingBucket     : null,
 			editingFolder     : null,
 			search            : '',
-			allDragHover      : false,
 			messages          : [],
 			modalShow         : false,
 			modalTitle        : 'title',
@@ -381,14 +380,14 @@ export default function() {
 				titleMenu.init()
 
 				if (self.notes.length === 1) {
-					self.changeNote(self.notes[0])
+					self.changeNote({ note: self.notes[0] })
 
 				} else if (remote.getGlobal('argv')) {
 					var argv = remote.getGlobal('argv')
 					if (argv.length > 1 && path.extname(argv[1]) === '.md' && fs.existsSync(argv[1])) {
 						var openedNote = self.$store.getters.findNoteByPath(argv[1])
 						if (openedNote) {
-							this.changeNote(openedNote)
+							this.changeNote({ note: openedNote })
 						} else {
 							elosenv.console.error('Path not valid')
 						}
@@ -483,9 +482,15 @@ export default function() {
 
 			window.bus.$on('change-bucket', eventData => this.changeBucket(eventData))
 			window.bus.$on('change-folder', eventData => this.changeFolder(eventData))
+			window.bus.$on('change-note', eventData => this.changeNote(eventData))
 			window.bus.$on('toggle-fullscreen', eventData => this.toggleFullScreen(eventData))
 			window.bus.$on('toggle-preview', eventData => this.togglePreview(eventData))
 			window.bus.$on('flash-message', eventData => this.sendFlashMessage(eventData))
+			window.bus.$on('add-note', eventData => this.addNote(eventData))
+			window.bus.$on('add-note-from-url', eventData => this.addNoteFromUrl(eventData))
+			window.bus.$on('add-encrypted-note', eventData => this.addEncryptedNote(eventData))
+			window.bus.$on('add-outline', eventData => this.addOutline(eventData))
+			window.bus.$on('save-note', eventData => this.saveNote(eventData))
 		},
 		methods: {
 			findFolderByPath(rack, folderPath) {
@@ -583,7 +588,12 @@ export default function() {
 					this.selectedRack = bucket
 					if (bucket === null) this.selectedFolder = null
 					this.editingFolder = null
-					if (sidebar) this.showHistory = false
+					if (sidebar) {
+						this.showAll = false
+						this.showFavorites = false
+						this.showHistory = false
+						shouldUpdateSize = true
+					}
 				} else if (bucket instanceof models.Folder) {
 					this.changeFolder({ folder: bucket })
 				}
@@ -646,19 +656,14 @@ export default function() {
 
 				this.update_editor_size()
 			},
-			/**
-			 * event called when a note is selected.
-			 * @param  {Object}  note  selected note
-			 * @return {Void} Function doesn't return anything
-			 */
-			changeNote(note, newtab, fromSidebar) {
+			changeNote({ note, newtab, sidebar }) {
 				var self = this
 
 				if (this.isNoteSelected && this.selectedNote && this.selectedNote !== note) {
 					this.selectedNote.saveModel()
 				}
 
-				if (note !== null && fromSidebar && this.draggingNote) {
+				if (note !== null && sidebar && this.draggingNote) {
 					this.draggingNote = false
 				}
 
@@ -674,7 +679,7 @@ export default function() {
 					return
 				} else if (note === this.selectedNote) {
 					if (this.selectedRack === null && !this.showHistory) this.changeFolder({ folder: note.folder })
-					else if (!this.isFullScreen && fromSidebar) {
+					else if (!this.isFullScreen && sidebar) {
 						this.setFullScreen(true)
 					}
 					return
@@ -983,7 +988,7 @@ export default function() {
 			 */
 			addNote() {
 				var currFolder = this.getCurrentFolder()
-				this.changeNote(null)
+				this.changeNote({ note: null })
 				this.changeFolder({ folder: currFolder })
 				var newNote = models.Note.newEmptyNote(currFolder)
 				if (newNote) {
@@ -991,7 +996,7 @@ export default function() {
 					currFolder.notes.unshift(newNote)
 					this.$store.dispatch('addNewNote', newNote)
 					this.isPreview = false
-					this.changeNote(newNote)
+					this.changeNote({ note: newNote })
 				} else {
 					this.sendFlashMessage({
 						time : 5000,
@@ -1003,7 +1008,7 @@ export default function() {
 			},
 			addOutline() {
 				var currFolder = this.getCurrentFolder()
-				this.changeNote(null)
+				this.changeNote({ note: null })
 				this.changeFolder({ folder: currFolder })
 				var newOutline = models.Outline.newEmptyOutline(currFolder)
 				if (newOutline) {
@@ -1011,7 +1016,7 @@ export default function() {
 					currFolder.notes.unshift(newOutline)
 					this.$store.dispatch('addNewNote', newOutline)
 					this.isPreview = false
-					this.changeNote(newOutline)
+					this.changeNote({ note: newOutline })
 				} else {
 					this.sendFlashMessage({
 						time : 5000,
@@ -1027,7 +1032,7 @@ export default function() {
 			 */
 			addEncryptedNote() {
 				var currFolder = this.getCurrentFolder()
-				this.changeNote(null)
+				this.changeNote({ note: null })
 				this.changeFolder({ folder: currFolder })
 				var newNote = models.EncryptedNote.newEmptyNote(currFolder)
 				if (newNote) {
@@ -1035,7 +1040,7 @@ export default function() {
 					currFolder.notes.unshift(newNote)
 					this.$store.dispatch('addNewNote', newNote)
 					this.isPreview = false
-					this.changeNote(newNote)
+					this.changeNote({ note: newNote })
 					newNote.saveModel()
 				} else {
 					this.sendFlashMessage({
@@ -1140,7 +1145,7 @@ export default function() {
 
 				var noteObj = this.$store.getters.findNoteByPath(href)
 				if (noteObj) {
-					this.changeNote(noteObj, newTab)
+					this.changeNote({ note: noteObj, newtab: newTab })
 				}
 			},
 			open_share_url() {
@@ -1275,7 +1280,7 @@ export default function() {
 					themeJson = this.currentTheme
 				}
 
-				this.changeNote(null)
+				this.changeNote({ note: null })
 				this.editTheme = themeJson
 
 				this.toggleFullScreen()

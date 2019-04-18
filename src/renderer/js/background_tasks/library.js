@@ -115,7 +115,6 @@ export default {
 							_type      : 'rack',
 							name       : rack,
 							quick_notes: rack === '_quick_notes',
-							hide_label : rackData.hidelabel,
 							ordering   : isNaN(rackData.ordering) ? racks.length + ri + 1 : parseInt(rackData.ordering),
 							icon       : rackData.icon || '',
 							path       : rackPath

@@ -206,7 +206,7 @@ export default {
 						if (this.outlineNode.title) n.title = n.title + this.outlineNode.title
 					}
 					this.jumpPreviousNode(len)
-					this.$root.saveNote()
+					window.bus.$emit('save-note')
 				}
 			}
 
@@ -294,13 +294,13 @@ export default {
 			if (this.outlineNode.title) {
 				this.emptyTitle = false
 			}
-			this.$root.saveNote()
+			window.bus.$emit('save-note')
 		},
 		'outlineNode.content': function() {
 			if (this.outlineNode.content) {
 				this.emptyContent = false
 			}
-			this.$root.saveNote()
+			window.bus.$emit('save-note')
 		}
 	}
 }

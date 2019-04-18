@@ -31,8 +31,6 @@ class Rack extends Model {
 
 		this._openFolder = false
 
-		this.hideLabel = data.hide_label || false
-
 		this.folders = []
 	}
 
@@ -185,8 +183,8 @@ class Rack extends Model {
 		if (this._icon === 'delete') this._icon = undefined
 		jsonDataFile.writeMultipleKeys(
 			path.join(this._path, '.bucket.json'),
-			['ordering', 'hidelabel', 'icon'],
-			[this.ordering, this.hideLabel, this._icon]
+			['ordering', 'icon'],
+			[this.ordering, this._icon]
 		)
 	}
 

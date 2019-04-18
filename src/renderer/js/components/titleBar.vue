@@ -110,7 +110,7 @@ export default {
 				name    : '',
 				ordering: 0
 			})
-			this.$root.addRack(bucket)
+			this.$store.dispatch('addNewBucket', bucket)
 			this.$root.setEditingRack(bucket)
 		},
 		popup_position(event) {

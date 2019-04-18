@@ -17,17 +17,23 @@
 
 <script>
 export default {
-	name: 'noteMenu',
-	data() {
-		return {
-			'row'       : 0,
-			'column'    : 0,
-			'selection' : 0,
-			'wordscount': 0,
-			'linebreaks': 0
+	name    : 'noteMenu',
+	computed: {
+		row() {
+			return this.$store.state.editorRow
+		},
+		column() {
+			return this.$store.state.editorColumn
+		},
+		selection() {
+			return this.$store.state.editorSelection
+		},
+		wordscount() {
+			return this.$store.state.editorWordscount
+		},
+		linebreaks() {
+			return this.$store.state.editorLinebreaks
 		}
-	},
-	methods: {
 	}
 }
 </script>

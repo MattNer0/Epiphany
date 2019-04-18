@@ -136,7 +136,7 @@ export default {
 	},
 	watch: {
 		'outlineNote.title': function() {
-			if (this.outlineNote) this.$root.saveNote()
+			if (this.outlineNote) window.bus.$emit('save-note')
 		}
 	}
 }

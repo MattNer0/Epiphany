@@ -17,25 +17,25 @@ export default {
 			menu.append(new MenuItem({
 				label: 'New Simple Note',
 				click: () => {
-					this.$root.addNote()
+					window.bus.$emit('add-note')
 				}
 			}))
 			menu.append(new MenuItem({
 				label: 'Add Note from Url',
 				click: () => {
-					this.$root.addNoteFromUrl()
+					window.bus.$emit('add-note-from-url')
 				}
 			}))
 			menu.append(new MenuItem({
 				label: 'New Encrypted Note',
 				click: () => {
-					this.$root.addEncryptedNote()
+					window.bus.$emit('add-encrypted-note')
 				}
 			}))
 			menu.append(new MenuItem({
 				label: 'New Outline',
 				click: () => {
-					this.$root.addOutline()
+					window.bus.$emit('add-outline')
 				}
 			}))
 
