@@ -131,7 +131,10 @@
 										v-if="metakey != 'createdAt' && metakey != 'updatedAt' && metakey != 'starred' && note.metadata[metakey]"
 									)
 										td: strong {{ metakey }}
-										td.right: span {{ note.metadata[metakey] }}
+										td.right
+											span(v-if="metakey === 'Web' && note.metadata[metakey].indexOf('http') == 0")
+												a(href="#" @click.prevent.stop="openWeb(note.metadata[metakey])") link
+											span(v-else) {{ note.metadata[metakey] }}
 									tr
 										td: strong
 											select(name="metakey", required, ref="keyinput")
@@ -161,6 +164,7 @@
 </template>
 
 <script>
+import { shell } from 'electron'
 import myDropdown from 'vue-my-dropdown'
 
 export default {
@@ -413,6 +417,9 @@ export default {
 			var editor = document.querySelector('.my-editor-preview')
 			var pos = document.querySelector('.my-editor-preview #'+anchor)
 			editor.scrollTop = Math.max(0, pos.offsetTop - pos.clientHeight - 10)
+		},
+		openWeb(url) {
+			shell.openExternal(String(url))
 		}
 	}
 }

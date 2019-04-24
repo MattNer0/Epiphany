@@ -221,10 +221,18 @@ class Note extends Model {
 		if (this._body) {
 			return this.cleanPreviewBody(this.splitTitleFromBody().body)
 		}
-		if (this._summary) {
+		return ''
+	}
+
+	get bodyPreview() {
+		let str = this.bodyWithoutTitle
+		if (str === '' && this._summary) {
 			return this._summary
 		}
-		return ''
+		str = str.replace(/^\[source\]\(.+\)\n$/img, '')
+		str = str.replace(/!?\[([^\]]+)\]\([^)]+\)/ig, '$1')
+		str = str.replace(/\n+/g, '\n')
+		return str.slice(0, 500)
 	}
 
 	get title() {
@@ -510,7 +518,7 @@ class Note extends Model {
 		var finalNote = {
 			name      : this.title,
 			photo     : photoPath ? path.relative(library, photoPath) : null,
-			summary   : this.bodyWithoutTitle.replace(/\n+/g, '\n').slice(0, 500),
+			summary   : this.bodyPreview,
 			favorite  : this.starred,
 			path      : path.relative(library, this._path),
 			created_at: this.createdAt.valueOf(),

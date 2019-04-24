@@ -1,5 +1,7 @@
 import { windowName } from '../common/window'
 
+import { remote } from 'electron'
+
 // loading CSSs
 import './fonts/iconcoon.css'
 import './scss/epiphany.scss'
@@ -19,28 +21,42 @@ import log from 'electron-log'
  */
 const options = window.__args__
 
-if (options) {
-	const toRun = options.windowName
-	log.info('In renderer', options.windowName)
+var previousRun = ''
+
+function runRenderer(toRun) {
+	log.info('In renderer', toRun)
 
 	// load up the correct javascript for the window. This gets around the multiple renders problem.
 	switch (toRun) {
 		case windowName.application:
+			previousRun = toRun
 			runMain()
 			break
 		case windowName.dialog:
+			previousRun = toRun
 			runPopup()
 			break
 		case windowName.background:
+			previousRun = toRun
 			runBackground()
 			break
 		case windowName.browser:
+			previousRun = toRun
 			runBrowser()
 			break
 		default:
 			log.error(`Nothing to run, found '${toRun}'`)
+			if (previousRun) {
+				runRenderer(previousRun)
+			} else {
+				remote.app.quit()
+			}
 	}
+}
 
+if (options) {
+	runRenderer(options.windowName)
 } else {
 	log.info('Renderer has been called without using \'electron-window\' see https://github.com/jprichardson/electron-window#usage')
+	remote.app.quit()
 }

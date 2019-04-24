@@ -1,7 +1,7 @@
 {
     "name": "epiphany-journal",
     "productName": "Epiphany",
-    "version": "0.1.23",
+    "version": "0.1.24",
     "license": "MIT",
     "repository": {
         "type": "git",

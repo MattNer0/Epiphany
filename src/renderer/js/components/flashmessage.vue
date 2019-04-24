@@ -8,12 +8,13 @@
 </template>
 
 <script>
+import { shell } from 'electron'
 export default {
 	name   : 'flashmessage',
 	props  : ['messages'],
 	methods: {
 		openUrl(url) {
-			require('electron').shell.openExternal('' + url + '')
+			shell.openExternal(String(url))
 		}
 	}
 }

@@ -26,7 +26,7 @@
 				.my-notes-note-image(v-if="note.img")
 					img(:src="note.img")
 				.my-notes-note-body(v-else)
-					| {{ note.bodyWithoutTitle | truncate(80) }}
+					| {{ note.bodyPreview | truncate(80) }}
 
 </template>
 
