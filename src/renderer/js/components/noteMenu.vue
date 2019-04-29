@@ -5,8 +5,8 @@
 				a(@click="menu_image", href="#")
 					i.coon-image
 					|  Image
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
-				div: dropdown(:visible="table_visible", :position="position_left", v-on:clickout="table_visible = false")
+			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': isPreview || !isToolbarEnabled }"): div
+				dropdown(:visible="table_visible", :position="position_left", v-on:clickout="table_visible = false")
 					span.link(@click="table_visible = !table_visible")
 						i.coon-table
 						|  Table
@@ -27,8 +27,8 @@
 					i.coon-code
 					|  Code block
 
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isPreview || !noteHeadings || noteHeadings.length < 2 }")
-				div: dropdown(:visible="headings_visible", :position="position_left", v-on:clickout="headings_visible = false")
+			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isPreview || !noteHeadings || noteHeadings.length < 2 }"): div
+				dropdown(:visible="headings_visible", :position="position_left", v-on:clickout="headings_visible = false")
 					span.link(@click="headings_visible = !headings_visible")
 						i.coon-list
 						|  Headers
@@ -36,8 +36,8 @@
 						.headings-dialog(@click="close_headings")
 							a.h(v-for="head in noteHeadings", @click.prevent="jumpTo(head.id)", :class="'hlvl'+head.level", v-html="head.text")
 
-			li.right-align(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
-				div: dropdown(:visible="fontstyle_visible", :position="position_right", v-on:clickout="fontstyle_visible = false")
+			li.right-align(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }"): div
+				dropdown(:visible="fontstyle_visible", :position="position_right", v-on:clickout="fontstyle_visible = false")
 					span.link(@click="fontstyle_visible = !fontstyle_visible")
 						i.coon-size
 						|  Text Style
@@ -51,8 +51,8 @@
 							i.coon-circle.faded(v-else)
 							|  Monospace
 
-			li.right-align(:class="{ 'entry-hidden': !isToolbarEnabled }")
-				div: dropdown(:visible="fontsize_visible", :position="position_right", v-on:clickout="fontsize_visible = false")
+			li.right-align(:class="{ 'entry-hidden': !isToolbarEnabled }"): div
+				dropdown(:visible="fontsize_visible", :position="position_right", v-on:clickout="fontsize_visible = false")
 					span.link(@click="fontsize_visible = !fontsize_visible")
 						i.coon-size
 						|  Text Size
@@ -90,63 +90,63 @@
 							i.coon-circle.faded(v-else)
 							|  24
 
-			li.right-align(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isToolbarEnabled }")
-				div: dropdown(:visible="properties_visible", :position="position_right", v-on:clickout="properties_visible = false")
-					span.link(@click="properties_visible = !properties_visible")
-						i.coon-info
-						|  Properties
-					.dialog(slot="dropdown")
-						.properties-dialog(@click="close_properties")
-							table.file-properties
-								tr
-									td: strong Path:&nbsp;
-									td.right: span {{ note.relativePathNoFileName }}
-								tr
-									td: strong Filename:&nbsp;
-									td.right: span {{ note.documentFilename + note.extension }}
-							hr
-							table
-								tr
-									td: strong Line Count:&nbsp;
-									td.right: span {{ note.properties.lineCount }}
-								tr
-									td: strong Word Count:&nbsp;
-									td.right: span {{ note.properties.wordCount }}
-								tr
-									td: strong Char Count:&nbsp;
-									td.right: span {{ note.properties.charCount }}
-							hr
-							table
-								tr
-									td: strong Modified:&nbsp;
-									td.right: span {{ note.updatedAt.format('MMM DD, YYYY') }}
-								tr
-									td: strong Created:&nbsp;
-									td.right: span {{ note.createdAt.format('MMM DD, YYYY') }}
-							hr
-							form.new-metadata-form(@submit="newMetadata")
-								table(@click.prevent.stop="")
-									tr(
-										v-for="metakey in note.metadataKeys"
-										v-if="metakey != 'createdAt' && metakey != 'updatedAt' && metakey != 'starred' && note.metadata[metakey]"
-									)
-										td: strong {{ metakey }}
-										td.right
-											span(v-if="metakey === 'Web' && note.metadata[metakey].indexOf('http') == 0")
-												a(href="#" @click.prevent.stop="openWeb(note.metadata[metakey])") link
-											span(v-else) {{ note.metadata[metakey] }}
+			li.right-align(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isToolbarEnabled }"): div
+				dropdown(:visible="properties_visible", :position="position_right", v-on:clickout="properties_visible = false")
+						span.link(@click="properties_visible = !properties_visible")
+							i.coon-info
+							|  Properties
+						.dialog(slot="dropdown")
+							.properties-dialog(@click="close_properties")
+								table.file-properties
 									tr
-										td: strong
-											select(name="metakey", required, ref="keyinput")
-												option(value="") ---
-												option Author
-												option Copyright
-												option Language
-												option Subtitle
-												option Title
-												option Web
-										td.right: span
-											input(type="text", name="metavalue", ref="valueinput")
+										td: strong Path:&nbsp;
+										td.right: span {{ note.relativePathNoFileName }}
+									tr
+										td: strong Filename:&nbsp;
+										td.right: span {{ note.documentFilename + note.extension }}
+								hr
+								table
+									tr
+										td: strong Line Count:&nbsp;
+										td.right: span {{ note.properties.lineCount }}
+									tr
+										td: strong Word Count:&nbsp;
+										td.right: span {{ note.properties.wordCount }}
+									tr
+										td: strong Char Count:&nbsp;
+										td.right: span {{ note.properties.charCount }}
+								hr
+								table
+									tr
+										td: strong Modified:&nbsp;
+										td.right: span {{ note.updatedAt.format('MMM DD, YYYY') }}
+									tr
+										td: strong Created:&nbsp;
+										td.right: span {{ note.createdAt.format('MMM DD, YYYY') }}
+								hr
+								form.new-metadata-form(@submit="newMetadata")
+									table(@click.prevent.stop="")
+										tr(
+											v-for="metakey in note.metadataKeys"
+											v-if="metakey != 'createdAt' && metakey != 'updatedAt' && metakey != 'starred' && note.metadata[metakey]"
+										)
+											td: strong {{ metakey }}
+											td.right
+												span(v-if="metakey === 'Web' && note.metadata[metakey].indexOf('http') == 0")
+													a(href="#" @click.prevent.stop="openWeb(note.metadata[metakey])") link
+												span(v-else) {{ note.metadata[metakey] }}
+										tr
+											td: strong
+												select(name="metakey", required, ref="keyinput")
+													option(value="") ---
+													option Author
+													option Copyright
+													option Language
+													option Subtitle
+													option Title
+													option Web
+											td.right: span
+												input(type="text", name="metavalue", ref="valueinput")
 
 			li.right-align(v-if="isPreview && isNoteSelected && !isOutlineSelected")
 				a(@click="openShare", href="#", title="Share")
@@ -165,7 +165,7 @@
 
 <script>
 import { shell } from 'electron'
-import myDropdown from 'vue-my-dropdown'
+import componentDropdown from './dropdown.vue'
 
 export default {
 	name : 'noteMenu',
@@ -227,7 +227,7 @@ export default {
 		}
 	},
 	components: {
-		'dropdown': myDropdown
+		'dropdown': componentDropdown
 	},
 	methods: {
 		togglePreview() {

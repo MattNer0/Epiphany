@@ -38,19 +38,19 @@ export const windowName = {
  *
  * @return {string} uriOrPath
  */
-export function makeUrlToHtmlFile (isDevelopment) {
+export function makeUrlToHtmlFile (isDevelopment, entryPoint) {
 	// MUST be backslashes for packaged version
 	return isDevelopment && process.env.ELECTRON_WEBPACK_WDS_PORT
-		? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}/`
-		: `${__dirname}\\index.html`
+		? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}/${entryPoint}.html`
+		: `${__dirname}\\${entryPoint}.html`
 }
 
-export function makeRendererWindow (isDevelopment = false, options = {}) {
+export function makeRendererWindow (isDevelopment = false, options = {}, entryPoint = 'app') {
 
 	// ... stripped out default options for sample
 	let aWindow = window.createWindow(options.windowOptions)
 
-	const uriOrPath = makeUrlToHtmlFile(isDevelopment)
+	const uriOrPath = makeUrlToHtmlFile(isDevelopment, entryPoint)
 	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`)
 
 	aWindow.showURL(uriOrPath, options.data, () => {
@@ -59,18 +59,17 @@ export function makeRendererWindow (isDevelopment = false, options = {}) {
 		if (typeof options.callback === 'function') {
 			options.callback(aWindow)
 		}
-		if (isDevelopment) log.info(`Window '${options.data.windowName}' opened`)
 	})
 
 	return aWindow
 }
 
-export function makeBackgroundRendererWindow (isDevelopment = false, options = {}) {
+export function makeBackgroundRendererWindow (isDevelopment = false, options = {}, entryPoint = 'background') {
 
 	// ... stripped out default options for sample
 	let aWindow = window.createWindow(options.windowOptions)
 
-	const uriOrPath = makeUrlToHtmlFile(isDevelopment)
+	const uriOrPath = makeUrlToHtmlFile(isDevelopment, entryPoint)
 	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`)
 
 	aWindow._loadURLWithArgs(uriOrPath, options.data, () => {
@@ -79,7 +78,6 @@ export function makeBackgroundRendererWindow (isDevelopment = false, options = {
 		if (typeof options.callback === 'function') {
 			options.callback(aWindow)
 		}
-		if (isDevelopment) log.info(`Window '${options.data.windowName}' opened`)
 	})
 
 	return aWindow

@@ -17,9 +17,6 @@ import { copyText, cutText, pasteText, selectAllText } from '../codemirror/eluti
 
 const IMAGE_TAG_TEMP = _.template('![<%- filename %>](<%- fileurl %>)\n')
 
-require('codemirror/lib/codemirror.css')
-require('codemirror/addon/search/matchesonscrollbar.css')
-
 import CodeMirror from 'codemirror'
 
 require('codemirror/addon/search/searchcursor')

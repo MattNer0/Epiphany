@@ -165,7 +165,7 @@ function createBrowserWindow(callback) {
 			}
 		},
 		callback: callback
-	})
+	}, 'bbrowser')
 
 	window.on('closed', () => {
 		backgroundBrowserWindow = null
@@ -222,7 +222,7 @@ function createPopupWindow(width, height, callback) {
 		},
 		windowOptions: conf,
 		callback     : callback
-	})
+	}, 'popup')
 
 	/*if (isDevelopment) {
 		window.webContents.openDevTools()

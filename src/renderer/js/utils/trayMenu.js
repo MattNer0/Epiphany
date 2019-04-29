@@ -1,5 +1,4 @@
 import { remote } from 'electron'
-const Menu = remote.Menu
 
 var mainWindow = null
 var appIcon = null
@@ -54,7 +53,7 @@ export default {
 				remote.app.quit()
 			}
 		})
-		var contextMenu = Menu.buildFromTemplate(menuEntries)
+		var contextMenu = remote.Menu.buildFromTemplate(menuEntries)
 
 		appIcon.setContextMenu(contextMenu)
 

@@ -6,6 +6,6 @@
 	},
 	"renderer": {
 		"sourceDirectory": "src/renderer",
-		"webpackConfig": "webpack.renderer.config.js"
+		"webpackConfig": "webpack.renderer.additions.js"
 	}
 }
