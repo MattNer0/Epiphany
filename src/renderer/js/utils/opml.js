@@ -19,7 +19,6 @@ function formatUnicorn() {
 export default {
 
 	parseFile(fileContent, outlineObj) {
-		var self = this
 		if (fileContent === '') return
 
 		var doc = new xmldoc.XmlDocument(fileContent)
@@ -33,19 +32,14 @@ export default {
 		outlineObj.title = head.valueWithPath('title')
 		outlineObj.metadata = metadata
 
-		outlineObj.nodes = doc.descendantWithPath('body').childrenNamed('outline').map(function(node) {
-			return self.parse_nodes(node, outlineObj)
-		})
+		outlineObj.nodes = doc.descendantWithPath('body').childrenNamed('outline').map(node => self.parse_nodes(node, outlineObj))
 	},
 
 	parse_nodes(node, outlineObj) {
-		var self = this
 		return outlineObj.generateNewNode(
 			node.attr.text,
 			node.attr.content,
-			node.childrenNamed('outline').map(function(node) {
-				return self.parse_nodes(node, outlineObj)
-			})
+			node.childrenNamed('outline').map(node => self.parse_nodes(node, outlineObj))
 		)
 	},
 

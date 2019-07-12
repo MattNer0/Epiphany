@@ -8,7 +8,7 @@ export default {
 		var menuEntries = []
 		menuEntries.push({
 			label: 'Quit',
-			click() {
+			click: () => {
 				remote.app.isQuiting = true
 				remote.app.quit()
 			}

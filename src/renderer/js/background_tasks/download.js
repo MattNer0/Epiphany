@@ -13,7 +13,7 @@ function decideProtocol(url) {
 
 export default {
 	getFileDataFromUrl(fileUrl) {
-		var pathUrl = (new url.URL(fileUrl)).pathname
+		const pathUrl = (new url.URL(fileUrl)).pathname
 		return {
 			basename : path.basename(pathUrl),
 			cleanname: this.cleanFileName(path.basename(pathUrl)),
@@ -22,7 +22,7 @@ export default {
 	},
 
 	cleanFileName(name) {
-		return name.replace(/[^\w _-]/g, '').replace(/\s+/g, ' ').substr(0, 40).trim()
+		return name.replace(/[^\w _-]/g, '').replace(/\*/g, '').replace(/\s+/g, ' ').substr(0, 40).trim()
 	},
 
 	downloadMultipleFiles(arrayUrls, targetFolder) {
@@ -46,7 +46,7 @@ export default {
 		if (!filename) filename = this.getFileDataFromUrl(sourceUrl).cleanname
 		if (!targetFolder || !filename) return
 
-		var file = path.join(targetFolder, filename)
+		const file = path.join(targetFolder, filename)
 		decideProtocol(sourceUrl).get(sourceUrl, (res) => {
 			var imagedata = ''
 			if (('' + res.statusCode).match(/^2\d\d$/)) {

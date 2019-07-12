@@ -47,28 +47,27 @@ let vueApp = new Vue({
 	computed: { },
 	created() { },
 	mounted() {
-		var self = this
 		ipcRenderer.on('open-popup', (event, data) => {
 			if (!data) {
-				self.closeWindow()
+				this.closeWindow()
 			}
 
-			self.currentTheme = data.theme
-			self.type = data.type
-			self.title = data.title
-			self.message = data.message ? data.message : ''
-			self.closingCallback = null
+			this.currentTheme = data.theme
+			this.type = data.type
+			this.title = data.title
+			this.message = data.message ? data.message : ''
+			this.closingCallback = null
 
-			self.libraryPath = data.library ? data.library : ''
+			this.libraryPath = data.library ? data.library : ''
 
 			switch (data.type) {
 				case 'input-text':
 					switch (data.form) {
 						case 'note-url':
-							self.inputRequired = true
-							self.inputPlaceholder = 'https://...'
-							self.inputDefault = ''
-							self.inputButtons = [{
+							this.inputRequired = true
+							this.inputPlaceholder = 'https://...'
+							this.inputDefault = ''
+							this.inputButtons = [{
 								label: 'Cancel',
 								type : 'close'
 							}, {
@@ -93,31 +92,31 @@ let vueApp = new Vue({
 							}]
 							break
 						case 'bucket-name':
-							self.inputRequired = true
-							self.inputPlaceholder = 'Bucket Name'
-							self.inputDefault = data.bucket
-							self.alphanumericOnly = true
+							this.inputRequired = true
+							this.inputPlaceholder = 'Bucket Name'
+							this.inputDefault = data.bucket
+							this.alphanumericOnly = true
 
-							self.closingCallback = function() {
+							this.closingCallback = () => {
 								ipcRenderer.send('bucket-rename', {
 									name      : null,
 									bucket_uid: data.bucket_uid
 								})
 							}
 
-							self.inputButtons = [{
+							this.inputButtons = [{
 								label: 'Cancel',
 								type : 'close'
 							}, {
-								label: 'Ok',
-								type : 'submit',
-								validate(form) {
+								label   : 'Ok',
+								type    : 'submit',
+								validate: (form) => {
 									if (form.input_data.length > 0 && form.input_data.length < 128 && /^[\w\s]+$/.test(form.input_data)) {
 										return false
 									}
 									return 'input_data'
 								},
-								callback(form) {
+								callback: (form) => {
 									ipcRenderer.send('bucket-rename', {
 										name      : form.input_data,
 										bucket_uid: data.bucket_uid
@@ -126,7 +125,7 @@ let vueApp = new Vue({
 							}]
 							break
 						default:
-							self.closeWindow()
+							this.closeWindow()
 					}
 					break
 			}

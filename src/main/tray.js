@@ -6,12 +6,12 @@ export default function(mainWindow, app) {
 	let appIcon = new Tray(path.join(__static, 'tray.png'))
 	let contextMenu = Menu.buildFromTemplate([{
 		label: 'Show App',
-		click() {
+		click: () => {
 			mainWindow.show()
 		}
 	}, {
 		label: 'Quit',
-		click() {
+		click: () => {
 			app.isQuiting = true
 			app.quit()
 		}

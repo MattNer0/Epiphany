@@ -12,7 +12,7 @@ export default {
 	name   : 'addNote',
 	methods: {
 		open_note_menu() {
-			var menu = new Menu()
+			const menu = new Menu()
 
 			menu.append(new MenuItem({
 				label: 'New Simple Note',
@@ -39,7 +39,7 @@ export default {
 				}
 			}))
 
-			var nodeRect = this.$refs.addNote.getBoundingClientRect()
+			const nodeRect = this.$refs.addNote.getBoundingClientRect()
 			menu.popup({
 				window: remote.getCurrentWindow(),
 				x     : Math.ceil(nodeRect.x),

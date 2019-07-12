@@ -34,7 +34,7 @@ export default {
 	},
 
 	getJSON(key, defaultValue) {
-		var value = settingsData[key]
+		const value = settingsData[key]
 		if (value && typeof value === 'string') {
 			try {
 				return JSON.parse(value)

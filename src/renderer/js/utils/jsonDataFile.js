@@ -17,7 +17,7 @@ function writeOneKey(jsonData, key, value) {
 }
 
 function _writeKey(filePath, key, value) {
-	var data = readJson(filePath)
+	let data = readJson(filePath)
 	data = writeOneKey(data, key, value)
 	fs.writeFileSync(filePath, JSON.stringify(data))
 	return data

@@ -7,8 +7,8 @@ import path from 'path'
  * @return {Array} Array with the new Note
  */
 function makeInitialNotes(folderPath) {
-	var notePath = path.join(folderPath, 'Welcome.md')
-	var noteBody = '# Welcome to Epiphany\n\n' +
+	const notePath = path.join(folderPath, 'Welcome.md')
+	const noteBody = '# Welcome to Epiphany\n\n' +
 		'* Phenomenon User Interface\n' +
 		'* Beautiful highlight, comfortable completing\n\n' +
 		'## Features\n\n' +
@@ -31,10 +31,10 @@ function makeInitialNotes(folderPath) {
  */
 function makeInitialFolders(rackpath) {
 
-	var folder1Path = path.join(rackpath, 'Todo')
+	const folder1Path = path.join(rackpath, 'Todo')
 	if (!fs.existsSync(folder1Path)) fs.mkdirSync(folder1Path)
 
-	var folder2Path = path.join(rackpath, 'Meeting')
+	const folder2Path = path.join(rackpath, 'Meeting')
 	if (!fs.existsSync(folder2Path)) fs.mkdirSync(folder2Path)
 
 	return [folder1Path, folder2Path]

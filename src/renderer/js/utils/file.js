@@ -119,7 +119,7 @@ export default {
 		}
 	},
 	cleanFileName(name) {
-		return name.replace(/[^\w _-]/g, '').replace(/\s+/g, ' ').substr(0, 40).trim()
+		return name.replace(/[^\w _-]/g, '').replace(/\*/g, '').replace(/\s+/g, ' ').substr(0, 40).trim()
 	},
 	copyFileSync(source, target) {
 		fs.writeFileSync(target, fs.readFileSync(source))

@@ -343,18 +343,22 @@ class Note extends Model {
 	}
 
 	downloadImages() {
-		var createdDir = false
-		var imageFormats = ['.png', '.jpg', '.gif', '.bmp']
+		let createdDir = true
+		let imageFormats = ['.png', '.jpg', '.gif', '.bmp']
 
-		var urlDownloads = []
-		var replacedStrings = []
+		let urlDownloads = []
+		let replacedStrings = []
+
+		if (!fs.existsSync(this.imagePath)) {
+			createdDir = false
+		}
 
 		this.body = this.body.replace(/coonpad:\/\//mg, 'epiphany://')
 		this.body = this.body.replace(/pilemd:\/\//mg, 'epiphany://')
 		this.body = this.body.replace(
 			/!\[([^\]]*?)]\((https?:\/\/.*?)\)/img,
 			(match, p1, p2) => {
-				var fileData = utilFile.getFileDataFromUrl(p2)
+				const fileData = utilFile.getFileDataFromUrl(p2)
 				if (fileData.extname && imageFormats.indexOf(fileData.extname) >= 0) {
 					if (!createdDir) {
 						try {
@@ -364,7 +368,7 @@ class Note extends Model {
 						}
 						createdDir = true
 					}
-					var newStr = '![' + p1 + '](epiphany://' + fileData.cleanname + ')'
+					const newStr = '![' + p1 + '](epiphany://' + fileData.cleanname + ')'
 					try {
 						if (urlDownloads.indexOf(p2) === -1) {
 							urlDownloads.push(p2)
@@ -387,7 +391,7 @@ class Note extends Model {
 		this.body = this.body.replace(
 			/^\[(\d+)\]:\s(https?:\/\/.*?$)/img,
 			(match, p1, p2) => {
-				var fileData = utilFile.getFileDataFromUrl(p2)
+				const fileData = utilFile.getFileDataFromUrl(p2)
 				if (fileData.extname && imageFormats.indexOf(fileData.extname) >= 0) {
 					if (!createdDir) {
 						try {
@@ -397,7 +401,7 @@ class Note extends Model {
 						}
 						createdDir = true
 					}
-					var newStr = '[' + p1 + ']: epiphany://' + fileData.cleanname
+					const newStr = '[' + p1 + ']: epiphany://' + fileData.cleanname
 					try {
 						if (urlDownloads.indexOf(p2) === -1) {
 							urlDownloads.push(p2)
@@ -440,13 +444,13 @@ class Note extends Model {
 	}
 
 	parseMetadata() {
-		var re = this.metadataregex
-		var metadata = {}
-		var m
+		let re = this.metadataregex
+		let metadata = {}
+		let m
 
 		function cleanMatch(m) {
 			if (!m) return m
-			var newM = []
+			let newM = []
 			for (var i = 1; i < m.length; i++) {
 				if (m[i]) {
 					newM.push(m[i])
@@ -455,7 +459,7 @@ class Note extends Model {
 			return newM
 		}
 
-		var firstMeta = this._body.match(re)
+		const firstMeta = this._body.match(re)
 		if (firstMeta && this._body.indexOf(firstMeta[0]) === 0) {
 			do {
 				m = re.exec(this._body)
@@ -488,7 +492,7 @@ class Note extends Model {
 		if (this._loadedBody) return false
 
 		if (fs.existsSync(this.path)) {
-			var content = fs.readFileSync(this.path).toString()
+			const content = fs.readFileSync(this.path).toString()
 			if (content && content !== this._body) {
 				this.replaceBody(content)
 			}

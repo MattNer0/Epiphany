@@ -68,36 +68,36 @@ var appVue = new Vue({
 	store   : Store,
 	template: require('./html/app.html'),
 	data    : {
-		loadedRack        : false,
-		isFullScreen      : false,
-		isPreview         : false,
-		isToolbarEnabled  : settings.getSmart('toolbarNote', true),
-		isFullWidthNote   : settings.getSmart('fullWidthNote', true),
-		keepHistory       : settings.getSmart('keepHistory', true),
-		currentTheme      : settings.getJSON('theme', 'dark'),
-		useMonospace      : settings.getSmart('useMonospace', false),
-		reduceToTray      : settings.getSmart('reduceToTray', true),
-		preview           : '',
-		quick_notes_bucket: null,
-		timeoutNoteChange : false,
-		editTheme         : null,
-		showHistory       : false,
-		showAll           : false,
-		showFavorites     : false,
-		noteTabs          : [],
-		editingBucket     : null,
-		editingFolder     : null,
-		search            : '',
-		messages          : [],
-		modalShow         : false,
-		modalTitle        : 'title',
-		modalDescription  : 'description',
-		modalPrompts      : [],
-		modalOkcb         : null,
-		racksWidth        : settings.getSmart('racksWidth', 220),
-		notesWidth        : settings.getSmart('notesWidth', 220),
-		fontsize          : settings.getSmart('fontsize', 15),
-		notesDisplayOrder : 'updatedAt'
+		loadedRack       : false,
+		isFullScreen     : false,
+		isPreview        : false,
+		isToolbarEnabled : settings.getSmart('toolbarNote', true),
+		isFullWidthNote  : settings.getSmart('fullWidthNote', true),
+		keepHistory      : settings.getSmart('keepHistory', true),
+		currentTheme     : settings.getJSON('theme', 'dark'),
+		useMonospace     : settings.getSmart('useMonospace', false),
+		reduceToTray     : settings.getSmart('reduceToTray', true),
+		preview          : '',
+		quickNotesBucket : null,
+		timeoutNoteChange: false,
+		editTheme        : null,
+		showHistory      : false,
+		showAll          : false,
+		showFavorites    : false,
+		noteTabs         : [],
+		editingBucket    : null,
+		editingFolder    : null,
+		search           : '',
+		messages         : [],
+		modalShow        : false,
+		modalTitle       : 'title',
+		modalDescription : 'description',
+		modalPrompts     : [],
+		modalOkcb        : null,
+		racksWidth       : settings.getSmart('racksWidth', 220),
+		notesWidth       : settings.getSmart('notesWidth', 220),
+		fontsize         : settings.getSmart('fontsize', 15),
+		notesDisplayOrder: 'updatedAt'
 	},
 	components: {
 		'flashmessage'  : componentFlashmessage,
@@ -270,20 +270,18 @@ var appVue = new Vue({
 		}
 	},
 	mounted() {
-		var self = this
-
 		theme.load(this.currentTheme)
 
 		this.$nextTick(() => {
 			window.addEventListener('resize', (e) => {
 				e.preventDefault()
-				self.update_editor_size()
+				this.update_editor_size()
 			})
 			window.addEventListener('keydown', (e) => {
-				if (((e.keyCode === 86 && e.shiftKey && e.ctrlKey) || (e.keyCode === 80 && e.altKey)) && self.isPreview) {
+				if (((e.keyCode === 86 && e.shiftKey && e.ctrlKey) || (e.keyCode === 80 && e.altKey)) && this.isPreview) {
 					e.preventDefault()
 					e.stopPropagation()
-					self.togglePreview()
+					this.togglePreview()
 				}
 			}, true)
 
@@ -295,7 +293,7 @@ var appVue = new Vue({
 
 			this.$store.dispatch('loadedRacks', data.racks)
 
-			self.quick_notes_bucket = this.$store.getters.quickNotesBucket
+			this.quickNotesBucket = this.$store.getters.quickNotesBucket
 			this.loadedRack = true
 		})
 
@@ -314,7 +312,7 @@ var appVue = new Vue({
 			})
 		})
 
-		function loadByParent(obj, rack, parent) {
+		const loadByParent = (obj, rack, parent) => {
 			var folder
 			if (parent) {
 				folder = parent.folders.find((f) => {
@@ -353,8 +351,8 @@ var appVue = new Vue({
 
 				folder.notes = notes
 				folder.images = images
-				self.$store.dispatch('addNotes', notes)
-				self.$store.dispatch('addImages', images)
+				this.$store.dispatch('addNotes', notes)
+				this.$store.dispatch('addImages', images)
 
 				if (obj.subnotes && obj.subnotes.length > 0) {
 					obj.subnotes.forEach((r) => {
@@ -382,13 +380,13 @@ var appVue = new Vue({
 			traymenu.init()
 			titleMenu.init()
 
-			if (self.notes.length === 1) {
-				self.changeNote({ note: self.notes[0] })
+			if (this.notes.length === 1) {
+				this.changeNote({ note: this.notes[0] })
 
 			} else if (remote.getGlobal('argv')) {
-				var argv = remote.getGlobal('argv')
+				const argv = remote.getGlobal('argv')
 				if (argv.length > 1 && path.extname(argv[1]) === '.md' && fs.existsSync(argv[1])) {
-					var openedNote = self.$store.getters.findNoteByPath(argv[1])
+					const openedNote = this.$store.getters.findNoteByPath(argv[1])
 					if (openedNote) {
 						this.changeNote({ note: openedNote })
 					} else {
@@ -399,7 +397,7 @@ var appVue = new Vue({
 		})
 
 		ipcRenderer.on('load-page-fail', (event, data) => {
-			self.sendFlashMessage({
+			this.sendFlashMessage({
 				time : 5000,
 				level: 'error',
 				text : 'Load Failed'
@@ -413,18 +411,18 @@ var appVue = new Vue({
 			switch (data.mode) {
 				case 'note-from-url':
 					if (data.markdown) {
-						var newNote = self.addNote()
+						var newNote = this.addNote()
 						if (data.url) {
 							newNote.setMetadata('Web', data.url)
 						}
 						newNote.body = data.markdown
-						self.sendFlashMessage({
+						this.sendFlashMessage({
 							time : 1000,
 							level: 'info',
 							text : 'New Note From Url'
 						})
 					} else {
-						self.sendFlashMessage({
+						this.sendFlashMessage({
 							time : 5000,
 							level: 'error',
 							text : 'Conversion Failed'
@@ -438,14 +436,14 @@ var appVue = new Vue({
 
 		ipcRenderer.on('download-files-failed', (event, data) => {
 			if (!data.replaced || data.replaced.length === 0) return
-			var noteObj = self.$store.getters.findNoteByPath(data.note)
+			var noteObj = this.$store.getters.findNoteByPath(data.note)
 			if (noteObj) {
-				for (var i=0; i<data.replaced.length; i++) {
+				for (let i=0; i<data.replaced.length; i++) {
 					var subStr = data.replaced[i]
 					noteObj.body = noteObj.body.replace(subStr.new, subStr.original)
 				}
 			}
-			self.sendFlashMessage({
+			this.sendFlashMessage({
 				time : 5000,
 				level: 'error',
 				text : data.error
@@ -453,23 +451,23 @@ var appVue = new Vue({
 		})
 
 		ipcRenderer.on('bucket-rename', (event, data) => {
-			if (data && data.bucket_uid && self.editingBucket && self.editingBucket.uid === data.bucket_uid) {
+			if (data && data.bucket_uid && this.editingBucket && this.editingBucket.uid === data.bucket_uid) {
 				if (data.name) {
-					self.editingBucket.name = data.name
-					self.editingBucket.saveModel()
-					if (self.selectedBucket !== self.editingBucket) {
-						self.changeBucket({
-							bucket : self.editingBucket,
+					this.editingBucket.name = data.name
+					this.editingBucket.saveModel()
+					if (this.selectedBucket !== this.editingBucket) {
+						this.changeBucket({
+							bucket : this.editingBucket,
 							sidebar: true
 						})
 					}
-					self.editingBucket = null
-				} else if (self.editingBucket.name.length === 0) {
-					if (self.editingBucket.folders.length > 0) {
-						self.editingBucket.name = 'New Bucket'
+					this.editingBucket = null
+				} else if (this.editingBucket.name.length === 0) {
+					if (this.editingBucket.folders.length > 0) {
+						this.editingBucket.name = 'New Bucket'
 					} else {
-						self.removeRack(self.editingBucket)
-						self.editingBucket = null
+						this.removeRack(this.editingBucket)
+						this.editingBucket = null
 					}
 				}
 			}
@@ -525,13 +523,13 @@ var appVue = new Vue({
 			this.racksWidth = Math.min(this.racksWidth, this.notesWidth)
 			this.notesWidth = this.racksWidth
 
-			var handlerStack = document.getElementById('handlerStack')
+			let handlerStack = document.getElementById('handlerStack')
 			if (handlerStack) {
 				handlerStack.previousElementSibling.style.width = this.racksWidth + 'px'
 				this.$refs.refHandleStack.checkWidth(this.racksWidth)
 			}
 
-			var handlerNotes = document.getElementById('handlerNotes')
+			let handlerNotes = document.getElementById('handlerNotes')
 			if (handlerNotes) {
 				handlerNotes.previousElementSibling.style.width = this.notesWidth + 'px'
 				this.$refs.refHandleNote.checkWidth(this.notesWidth)
@@ -562,21 +560,20 @@ var appVue = new Vue({
 			})
 		},
 		openHistory() {
-			this.changeBucket({ bucket: null })
-			this.showHistory = !this.showHistory
+			this.changeBucket({ bucket: null, sidebar: true, history: !this.showHistory })
 		},
 		closeOthers() {
 			this.changeBucket({ bucket: null })
 			this.showHistory = false
 		},
-		changeBucket({ bucket, sidebar }) {
-			var shouldUpdateSize = false
+		changeBucket({ bucket, sidebar, history }) {
+			let shouldUpdateSize = false
 
 			if (this.selectedRack === null && bucket) shouldUpdateSize = true
 			else if (this.selectedFolder !== null && bucket) shouldUpdateSize = true
 
-			if (bucket !== null && this.quick_notes_bucket === bucket) {
-				var newNoteFolder = this.quick_notes_bucket.folders.find((obj) => {
+			if (bucket !== null && this.quickNotesBucket === bucket) {
+				const newNoteFolder = this.quickNotesBucket.folders.find((obj) => {
 					return obj.name === 'New Notes'
 				})
 				this.selectedRack = bucket
@@ -594,7 +591,7 @@ var appVue = new Vue({
 				if (sidebar) {
 					this.showAll = false
 					this.showFavorites = false
-					this.showHistory = false
+					this.showHistory = typeof history === 'boolean' ? history : false
 					shouldUpdateSize = true
 				}
 			} else if (bucket instanceof models.Folder) {
@@ -619,8 +616,8 @@ var appVue = new Vue({
 			this.showFavorites = false
 
 			if (folder.notes && folder.notes.length > 0) {
-				var loadedCount = 0
-				var noteObjects = []
+				let loadedCount = 0
+				let noteObjects = []
 				for (let i=0; i < folder.notes.length && loadedCount < 5; i++) {
 					let note = folder.notes[i]
 					if (!note.loaded) {
@@ -660,8 +657,6 @@ var appVue = new Vue({
 			this.update_editor_size()
 		},
 		changeNote({ note, newtab, sidebar }) {
-			var self = this
-
 			if (this.isNoteSelected && this.selectedNote && this.selectedNote !== note) {
 				this.selectedNote.saveModel()
 			}
@@ -723,20 +718,20 @@ var appVue = new Vue({
 					}
 				}
 				if (note.isEncrypted) {
-					var message = 'Insert the secret key to Encrypt and Decrypt this note'
+					const message = 'Insert the secret key to Encrypt and Decrypt this note'
 					this.$refs.dialog.init('Secret Key', message, [{
 						label: 'Ok',
-						cb(data) {
+						cb   : (data) => {
 							var result = note.decrypt(data.secretkey)
 							if (result.error) {
 								setTimeout(() => {
-									self.$refs.dialog.init('Error', result.error + '\nNote: ' + note.path, [{
+									this.$refs.dialog.init('Error', result.error + '\nNote: ' + note.path, [{
 										label : 'Ok',
 										cancel: true
 									}])
 								}, 100)
 							} else {
-								self.selectedNote = note
+								this.selectedNote = note
 							}
 						}
 					}, {
@@ -760,7 +755,7 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		removeRack(rack) {
-			var shouldUpdateSize = false
+			let shouldUpdateSize = false
 			if (this.selectedRack === rack) {
 				this.selectedRack = null
 				shouldUpdateSize = true
@@ -769,8 +764,8 @@ var appVue = new Vue({
 				this.selectedFolder = null
 				shouldUpdateSize = true
 			}
-			if (this.quick_notes_bucket === rack) {
-				this.quick_notes_bucket = null
+			if (this.quickNotesBucket === rack) {
+				this.quickNotesBucket = null
 				shouldUpdateSize = true
 			}
 
@@ -862,21 +857,20 @@ var appVue = new Vue({
 			}
 		},
 		newQuickNoteBucket() {
-			var self = this
-			function newFolder() {
-				var folder = new models.Folder({
+			const newFolder = () => {
+				const folder = new models.Folder({
 					name        : 'New Notes',
-					rack        : self.quick_notes_bucket,
+					rack        : this.quickNotesBucket,
 					parentFolder: undefined,
-					rackUid     : self.quick_notes_bucket.uid,
+					rackUid     : this.quickNotesBucket.uid,
 					ordering    : 0
 				})
-				self.addFolderToRack(self.quick_notes_bucket, folder)
-				self.changeFolder({ folder: folder })
+				this.addFolderToRack(this.quickNotesBucket, folder)
+				this.changeFolder({ folder: folder })
 			}
 
-			if (!this.quick_notes_bucket) {
-				this.quick_notes_bucket = new models.Rack({
+			if (!this.quickNotesBucket) {
+				this.quickNotesBucket = new models.Rack({
 					name: '_quick_notes',
 					path: path.join(
 						settingsBaseLibraryPath,
@@ -885,16 +879,16 @@ var appVue = new Vue({
 					quick_notes: true,
 					ordering   : 0
 				})
-				this.$store.dispatch('addNewBucket', this.quick_notes_bucket)
+				this.$store.dispatch('addNewBucket', this.quickNotesBucket)
 				newFolder()
 
-			} else if (this.quick_notes_bucket.folders.length === 0) {
+			} else if (this.quickNotesBucket.folders.length === 0) {
 				newFolder()
 			} else {
 				var rightFolder = null
-				for (var i=0; i<this.quick_notes_bucket.folders.length; i++) {
-					if (this.quick_notes_bucket.folders[i].name === 'New Notes') {
-						rightFolder = this.quick_notes_bucket.folders[i]
+				for (let i=0; i<this.quickNotesBucket.folders.length; i++) {
+					if (this.quickNotesBucket.folders[i].name === 'New Notes') {
+						rightFolder = this.quickNotesBucket.folders[i]
 						break
 					}
 				}
@@ -912,8 +906,8 @@ var appVue = new Vue({
 			this.addNote()
 
 			this.$nextTick(() => {
-				if (self.isFullScreen) {
-					self.toggleFullScreen()
+				if (this.isFullScreen) {
+					this.toggleFullScreen()
 				}
 			})
 		},
@@ -990,10 +984,10 @@ var appVue = new Vue({
 		 * @return  {Note}  New Note object
 		 */
 		addNote() {
-			var currFolder = this.getCurrentFolder()
+			const currFolder = this.getCurrentFolder()
 			this.changeNote({ note: null })
 			this.changeFolder({ folder: currFolder })
-			var newNote = models.Note.newEmptyNote(currFolder)
+			const newNote = models.Note.newEmptyNote(currFolder)
 			if (newNote) {
 				if (this.search.length > 0) this.search = ''
 				currFolder.notes.unshift(newNote)
@@ -1010,10 +1004,10 @@ var appVue = new Vue({
 			return newNote
 		},
 		addOutline() {
-			var currFolder = this.getCurrentFolder()
+			const currFolder = this.getCurrentFolder()
 			this.changeNote({ note: null })
 			this.changeFolder({ folder: currFolder })
-			var newOutline = models.Outline.newEmptyOutline(currFolder)
+			const newOutline = models.Outline.newEmptyOutline(currFolder)
 			if (newOutline) {
 				if (this.search.length > 0) this.search = ''
 				currFolder.notes.unshift(newOutline)
@@ -1034,10 +1028,10 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		addEncryptedNote() {
-			var currFolder = this.getCurrentFolder()
+			const currFolder = this.getCurrentFolder()
 			this.changeNote({ note: null })
 			this.changeFolder({ folder: currFolder })
-			var newNote = models.EncryptedNote.newEmptyNote(currFolder)
+			const newNote = models.EncryptedNote.newEmptyNote(currFolder)
 			if (newNote) {
 				if (this.search.length > 0) this.search = ''
 				currFolder.notes.unshift(newNote)
@@ -1058,7 +1052,7 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		saveNote: _.debounce(function () {
-			var result
+			let result
 			if (this.selectedNote) {
 				result = this.selectedNote.saveModel()
 			}
@@ -1117,7 +1111,6 @@ var appVue = new Vue({
 			m.popup(remote.getCurrentWindow())
 		},
 		contextOnInternalLink(e, href) {
-			var self = this
 			if (e.stopPropagation) {
 				e.stopPropagation()
 			}
@@ -1125,14 +1118,14 @@ var appVue = new Vue({
 			var m = new Menu()
 			m.append(new MenuItem({
 				label: 'Copy Link',
-				click: function() {
+				click: () => {
 					clipboard.writeText(href)
 				}
 			}))
 			m.append(new MenuItem({
 				label: 'Open in new tab',
-				click: function() {
-					self.openInternalLink(null, href, true)
+				click: () => {
+					this.openInternalLink(null, href, true)
 				}
 			}))
 			m.popup(remote.getCurrentWindow())
@@ -1161,76 +1154,35 @@ var appVue = new Vue({
 			}
 		},
 		/**
-		 * displays context menu for the list of racks.
-		 * @function backetsMenu
-		 * @return {Void} Function doesn't return anything
-		 */
-		bucketsMenu() {
-			var menu = new Menu()
-			menu.append(new MenuItem({
-				label: 'Add Bucket',
-				click: () => {
-					var backet = new models.Rack({
-						name    : '',
-						ordering: 0
-					})
-					this.$store.dispatch('addNewBucket', backet)
-					this.setEditingRack(backet)
-				}
-			}))
-			menu.popup(remote.getCurrentWindow())
-		},
-		foldersMenu() {
-			if (this.selectedRack === null) return
-
-			var menu = new Menu()
-			menu.append(new MenuItem({
-				label: 'Add Folder',
-				click: () => {
-					var folder = new models.Folder({
-						name        : '',
-						rack        : this.selectedRack,
-						parentFolder: undefined,
-						rackUid     : this.selectedRack.uid,
-						ordering    : 0
-					})
-					this.addFolderToRack(this.selectedRack, folder)
-					this.setEditingFolder(folder)
-				}
-			}))
-			menu.popup(remote.getCurrentWindow())
-		},
-		/**
 		 * displays context menu on the selected note in preview mode.
 		 * @function previewMenu
 		 * @return {Void} Function doesn't return anything
 		 */
 		previewMenu() {
-			var self = this
-			var menu = new Menu()
+			const menu = new Menu()
 
 			menu.append(new MenuItem({
 				label      : 'Copy',
 				accelerator: 'CmdOrCtrl+C',
-				click() { document.execCommand('copy') }
+				click      : () => { document.execCommand('copy') }
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
 				label: 'Copy to clipboard (Markdown)',
-				click() {
-					if (self.selectedNote) clipboard.writeText(self.selectedNote.bodyWithDataURL)
+				click: () => {
+					if (this.selectedNote) clipboard.writeText(this.selectedNote.bodyWithDataURL)
 				}
 			}))
 			menu.append(new MenuItem({
 				label: 'Copy to clipboard (HTML)',
-				click() {
-					if (self.preview) clipboard.writeText(self.preview)
+				click: () => {
+					if (this.preview) clipboard.writeText(this.preview)
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
 				label: 'Toggle Preview',
-				click() { self.togglePreview() }
+				click: () => { this.togglePreview() }
 			}))
 			menu.popup(remote.getCurrentWindow())
 		},
@@ -1276,7 +1228,7 @@ var appVue = new Vue({
 			}
 		},
 		editThemeView() {
-			var themeJson
+			let themeJson
 			if (typeof this.currentTheme === 'string') {
 				themeJson = theme.read_file(this.currentTheme)
 			} else {
