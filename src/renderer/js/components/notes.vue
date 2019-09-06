@@ -39,11 +39,9 @@ import fileUtils from '../utils/file'
 // Electron things
 import { remote, clipboard, shell } from 'electron'
 const { Menu, MenuItem, dialog } = remote
+import { Note } from '../models'
 
 import preview from '../preview'
-
-import models from '../models'
-const Note = models.Note
 
 import truncate from '../filters/truncate'
 import dateSplitted from '../filters/dateSplitted'
@@ -254,6 +252,18 @@ export default {
 				label: 'Show this note in folder',
 				click: () => {
 					shell.showItemInFolder(note.data.path)
+				}
+			}))
+			menu.append(new MenuItem({
+				label: 'Show this note\'s image folder',
+				click: () => {
+					if (!shell.openItem(note.imagePath)) {
+						window.bus.$emit('flash-message', {
+							time : 5000,
+							level: 'error',
+							text : 'Image folder doesn\'t exist.'
+						})
+					}
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))

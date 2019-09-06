@@ -38,8 +38,7 @@ import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
 import elosenv from '../utils/elosenv'
-
-import models from '../models'
+import { Rack } from '../models'
 
 export default {
 	name : 'titleBar',
@@ -106,7 +105,7 @@ export default {
 			this.query = ''
 		},
 		newBucket() {
-			var bucket = new models.Rack({
+			var bucket = new Rack({
 				name    : '',
 				ordering: 0
 			})

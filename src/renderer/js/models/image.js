@@ -4,7 +4,6 @@ import path from 'path'
 var Library
 
 class Image {
-
 	constructor (localURL, name, note) {
 		if (typeof localURL === 'object') {
 			var data = localURL

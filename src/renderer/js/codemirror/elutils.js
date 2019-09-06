@@ -1,6 +1,6 @@
 import { clipboard } from 'electron'
 import _ from 'lodash'
-const Image = require('../models').Image
+import { Image } from '../models'
 const TEMP_IMAGE_TAG = _.template('![<%- filename %>](<%- fileurl %>)\n')
 
 /**
@@ -106,7 +106,7 @@ function uploadFile(cm, file, selectedNote) {
 	cm.doc.replaceRange(
 		TEMP_IMAGE_TAG({
 			filename: file.name,
-			fileurl : image.coonURL
+			fileurl : image.localURL
 		}),
 		cm.doc.getCursor()
 	)
@@ -121,20 +121,23 @@ function uploadFile(cm, file, selectedNote) {
  * Handles pasting text into the editor
  */
 function pasteText(cm, selectedNote) {
-	if (clipboard.availableFormats().indexOf('image/png') >= 0 || clipboard.availableFormats().indexOf('image/jpg') >= 0) {
+	if (clipboard.availableFormats().indexOf('image/png') >= 0 ||
+		clipboard.availableFormats().indexOf('image/jpg') >= 0 ||
+		clipboard.availableFormats().indexOf('image/bmp') >= 0 ||
+		clipboard.availableFormats().indexOf('image/svg+xml') >= 0) {
 		var im = clipboard.readImage()
 		var image = Image.fromClipboard(im, selectedNote)
 		cm.doc.replaceRange(
 			TEMP_IMAGE_TAG({
 				filename: image.name,
-				fileurl : image.coonURL
+				fileurl : image.localURL
 			}),
 			cm.doc.getCursor()
 		)
 	} else {
 		var pasted = clipboard.readText()
 		if (pasted.indexOf('http') === 0) {
-			pasted = pasted.replace(new RegExp('(.jpg|.png)[?&].*$'), '$1')
+			pasted = pasted.replace(new RegExp('(.jpg|.jpeg|.png|.bmp|.svg)[?&].*$'), '$1')
 		}
 		if (isImage(pasted)) {
 			var f = {

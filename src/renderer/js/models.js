@@ -9,15 +9,15 @@ import NoteBldr from './models/note'
 import Folder from './models/folder'
 import RackBldr from './models/rack'
 
-const Image = ImageBldr(baseLibrary)
+export const Image = ImageBldr(baseLibrary)
 const NoteModels = NoteBldr(baseLibrary)
 const RackModels = RackBldr(baseLibrary)
 
-const Note = NoteModels.Note
+export const Note = NoteModels.Note
 const EncryptedNote = NoteModels.EncryptedNote
 const Outline = NoteModels.Outline
 const OutNode = NoteModels.OutNode
-const Rack = RackModels.Rack
+export const Rack = RackModels.Rack
 
 export default {
 	Image        : Image,

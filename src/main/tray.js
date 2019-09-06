@@ -18,7 +18,6 @@ export default function(mainWindow, app) {
 	}])
 	appIcon.setToolTip('Epiphany')
 	appIcon.setContextMenu(contextMenu)
-	appIcon.setHighlightMode('always')
 	appIcon.on('click', function() {
 		if (mainWindow === null) {
 			app.exit()

@@ -7,7 +7,7 @@ import path from 'path'
 
 import _ from 'lodash'
 
-const Image = require('../models').Image
+import { Image } from '../models'
 
 import electron from 'electron'
 const { remote, shell, clipboard } = electron
@@ -275,7 +275,7 @@ export default {
 					return
 				}
 				cm.doc.replaceRange(
-					IMAGE_TAG_TEMP({ filename: f.name, fileurl: image.coonURL }),
+					IMAGE_TAG_TEMP({ filename: f.name, fileurl: image.localURL }),
 					cm.doc.getCursor()
 				)
 				this.$message('info', 'Saved image to ' + image.makeFilePath())
