@@ -1,61 +1,73 @@
 <template lang="pug">
 	.noteBar
 		nav: ul(:class="{'transparent' : !isPreview && !isToolbarEnabled }")
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
-				a(@click="menu_image", href="#")
-					i.coon-image
-					|  Image
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': isPreview || !isToolbarEnabled }"): div
-				dropdown(:visible="table_visible", :position="position_left", v-on:clickout="table_visible = false")
-					span.link(@click="table_visible = !table_visible")
-						i.coon-table
-						|  Table
-					.dialog(slot="dropdown")
-						.table-dialog(@click="close_table")
-							table.select-table-size(cellpadding="2", @mouseleave="tableClean")
-								tr(v-for="r in table_max_row")
-									td(v-for="c in table_max_column", @click="tableSelect(r,c)", @mouseenter="tableHover(r,c)", ref="tablesizetd")
-							span(v-if="table_hover_row > 0") {{ table_hover_row }} x {{ table_hover_column }}
-							span(v-else)
-								| Select the Table Size
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
-				a(@click="menu_checkMark", href="#")
-					i.coon-check-square
-					|  Checkbox
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
-				a(@click="menu_codeBlock", href="#")
-					i.coon-code
-					|  Code block
-
-			li(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isPreview || !noteHeadings || noteHeadings.length < 2 }"): div
-				dropdown(:visible="headings_visible", :position="position_left", v-on:clickout="headings_visible = false")
-					span.link(@click="headings_visible = !headings_visible")
-						i.coon-list
-						|  Headers
-					.dialog(slot="dropdown")
-						.headings-dialog(@click="close_headings")
-							a.h(v-for="head in noteHeadings", @click.prevent="jumpTo(head.id)", :class="'hlvl'+head.level", v-html="head.text")
+			template(v-if="isNoteSelected && !isOutlineSelected")
+				li(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
+					a.with-label(@click="menu_bold", href="#")
+						i.coon-bold
+						span.label Bold
+				li(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
+					a.with-label(@click="menu_strike", href="#")
+						i.coon-strikethrough
+						span.label Strike
+				li(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
+					a.with-label(@click="menu_image", href="#")
+						i.coon-image
+						span.label Image
+				li(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }"): div
+					dropdown(:visible="table_visible", :position="position_left", v-on:clickout="table_visible = false")
+						span.link.with-label(@click="table_visible = !table_visible")
+							i.coon-table
+							span.label Table
+						.dialog(slot="dropdown")
+							.table-dialog(@click="close_table")
+								table.select-table-size(cellpadding="2", @mouseleave="tableClean")
+									tr(v-for="r in table_max_row")
+										td(v-for="c in table_max_column", @click="tableSelect(r,c)", @mouseenter="tableHover(r,c)", ref="tablesizetd")
+								span(v-if="table_hover_row > 0") {{ table_hover_row }} x {{ table_hover_column }}
+								span(v-else)
+									| Select the Table Size
+				li(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
+					a.with-label(@click="menu_checkMark", href="#")
+						i.coon-check-square
+						span.label Checkbox
+				li(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }")
+					a.with-label(@click="menu_codeBlock", href="#")
+						i.coon-code
+						span.label Code
+				li(:class="{ 'entry-hidden': !isPreview || !noteHeadings || noteHeadings.length < 2 }"): div
+					dropdown(:visible="headings_visible", :position="position_left", v-on:clickout="headings_visible = false")
+						span.link.with-label(@click="headings_visible = !headings_visible")
+							i.coon-list
+							span.label Headers
+						.dialog(slot="dropdown")
+							.headings-dialog(@click="close_headings")
+								a.h(v-for="head, index in noteHeadings"
+									:key="index"
+									@click.prevent="jumpTo(head.id)"
+									:class="'hlvl'+head.level"
+									v-html="head.text")
 
 			li.right-align(:class="{ 'entry-hidden': isPreview || !isToolbarEnabled }"): div
 				dropdown(:visible="fontstyle_visible", :position="position_right", v-on:clickout="fontstyle_visible = false")
-					span.link(@click="fontstyle_visible = !fontstyle_visible")
+					span.link.with-label(@click="fontstyle_visible = !fontstyle_visible")
 						i.coon-size
-						|  Text Style
+						span.label Text Style
 					.dialog(slot="dropdown"): ul.fontsize-dialog
-						li: a(@click.prevent="menu_fontstyle('normal')", href="#")
+						li: a(@click.prevent="menu_fontstyle('normal')" href="#")
 							i.coon-check-circle(v-if="!useMonospace")
 							i.coon-circle.faded(v-else)
 							|  Normal
-						li: a(@click.prevent="menu_fontstyle('monospace')", href="#")
+						li: a(@click.prevent="menu_fontstyle('monospace')" href="#")
 							i.coon-check-circle(v-if="useMonospace")
 							i.coon-circle.faded(v-else)
 							|  Monospace
 
 			li.right-align(:class="{ 'entry-hidden': !isToolbarEnabled }"): div
 				dropdown(:visible="fontsize_visible", :position="position_right", v-on:clickout="fontsize_visible = false")
-					span.link(@click="fontsize_visible = !fontsize_visible")
+					span.link.with-label(@click="fontsize_visible = !fontsize_visible")
 						i.coon-size
-						|  Text Size
+						span.label Text Size
 					.dialog(slot="dropdown"): ul.fontsize-dialog
 						li: a(@click.prevent="menu_fontsize(10)", href="#")
 							i.coon-check-circle(v-if="fontsize == 10")
@@ -92,9 +104,9 @@
 
 			li.right-align(v-if="isNoteSelected && !isOutlineSelected", :class="{ 'entry-hidden': !isToolbarEnabled }"): div
 				dropdown(:visible="properties_visible", :position="position_right", v-on:clickout="properties_visible = false")
-						span.link(@click="properties_visible = !properties_visible")
+						span.link.with-label(@click="properties_visible = !properties_visible")
 							i.coon-info
-							|  Properties
+							span.label Properties
 						.dialog(slot="dropdown")
 							.properties-dialog(@click="close_properties")
 								table.file-properties
@@ -352,24 +364,95 @@ export default {
 
 			var cm = this.codeMirror()
 			var cursor = cm.getCursor()
-
-			if (cursor.ch === 0) {
-				if (cm.doc.getLine(cursor.line).length > 0) {
-					cm.doc.replaceRange('```\n\n```\n', cursor)
-				} else {
-					cm.doc.replaceRange('```\n\n```', cursor)
-				}
+			let selection = cm.getSelection()
+			if (selection.length > 0) {
+				cm.replaceSelection('```\n' + selection + '\n```', 'start')
+				cursor = cm.getCursor()
 			} else {
-				cursor.ch = cm.doc.getLine(cursor.line).length
-				cm.doc.replaceRange('\n```\n\n```', cursor)
-				cursor.line += 1
+				if (cursor.ch === 0) {
+					if (cm.doc.getLine(cursor.line).length > 0) {
+						cm.doc.replaceRange('```\n\n```\n', cursor)
+					} else {
+						cm.doc.replaceRange('```\n\n```', cursor)
+					}
+				} else {
+					cursor.ch = cm.doc.getLine(cursor.line).length
+					cm.doc.replaceRange('\n```\n\n```', cursor)
+					cursor.line += 1
+				}
 			}
-
-
 			cm.doc.setCursor({
 				line: cursor.line+1,
 				ch  : 0
 			})
+			cm.focus()
+		},
+		menu_bold() {
+			if (this.table_visible) {
+				this.close_table()
+				return
+			}
+
+			let cm = this.codeMirror()
+			let cursor = cm.getCursor()
+			let selection = cm.getSelection()
+			if (selection.length > 0) {
+				cm.replaceSelection('__' + selection + '__')
+				cursor = cm.getCursor()
+				cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch-2
+				})
+			} else {
+				if (cursor.ch === 0) {
+					if (cm.doc.getLine(cursor.line).length > 0) {
+						cm.doc.replaceRange('__', cursor)
+					} else {
+						cm.doc.replaceRange('____', cursor)
+					}
+				} else {
+					cm.doc.replaceRange('__', cursor)
+				}
+
+				cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch+2
+				})
+			}
+			cm.focus()
+		},
+		menu_strike() {
+			if (this.table_visible) {
+				this.close_table()
+				return
+			}
+
+			let cm = this.codeMirror()
+			let cursor = cm.getCursor()
+			let selection = cm.getSelection()
+			if (selection.length > 0) {
+				cm.replaceSelection('~~' + selection + '~~')
+				cursor = cm.getCursor()
+				cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch-2
+				})
+			} else {
+				if (cursor.ch === 0) {
+					if (cm.doc.getLine(cursor.line).length > 0) {
+						cm.doc.replaceRange('~~', cursor)
+					} else {
+						cm.doc.replaceRange('~~~~', cursor)
+					}
+				} else {
+					cm.doc.replaceRange('~~', cursor)
+				}
+
+				cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch+2
+				})
+			}
 			cm.focus()
 		},
 		menu_checkMark() {

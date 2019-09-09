@@ -113,12 +113,30 @@
 				float: left;
 
 				i {
-					vertical-align: middle;
+					vertical-align: baseline;
+					background-color: rgba(255, 255, 255, 0.2);
+					border-radius: 1em;
+					padding: 0.3em 0.2em 0.2em;
+					margin-top: -0.1em;
+					display: inline-block;
 				}
 
 				> a, > div {
 					padding: 0.3em 0.5em 0.3em;
 					text-align: center;
+				}
+
+				a.with-label, span.with-label {
+					i {
+						vertical-align: middle;
+					}
+					span.label {
+						font-size: 12px;
+						display: inline-block;
+						padding-left: 0.2em;
+						padding-right: 0.1em;
+						padding-top: 0.1em;
+					}
 				}
 
 				ul {
@@ -129,6 +147,10 @@
 
 					li > a, li > div {
 						border: none !important;
+					}
+
+					li > a {
+						text-align: left;
 					}
 				}
 			}

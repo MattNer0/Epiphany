@@ -23,6 +23,36 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.coon-align-center:before {
+  content: "\e964";
+}
+.coon-align-justify:before {
+  content: "\e965";
+}
+.coon-align-left:before {
+  content: "\e966";
+}
+.coon-align-right:before {
+  content: "\e967";
+}
+.coon-arrow-up-right:before {
+  content: "\e968";
+}
+.coon-printer:before {
+  content: "\e969";
+}
+.coon-edit-2:before {
+  content: "\e96a";
+}
+.coon-underline:before {
+  content: "\e96b";
+}
+.coon-italic:before {
+  content: "\e96c";
+}
+.coon-bold:before {
+  content: "\e96d";
+}
 .coon-file-star:before {
   content: "\e95c";
 }
@@ -322,4 +352,7 @@
 }
 .coon-zoom-out:before {
   content: "\e963";
+}
+.coon-strikethrough:before {
+  content: "\e96e";
 }
