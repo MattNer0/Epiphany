@@ -26,13 +26,15 @@ export default {
 	name: 'modal',
 	data() {
 		return {
-			show       : false,
-			title      : '',
-			description: '',
-			image_url  : '',
-			buttons    : [],
-			prompts    : [],
-			okcb       : undefined
+			show        : false,
+			title       : '',
+			description : '',
+			image_url   : '',
+			image_width : null,
+			image_height: null,
+			buttons     : [],
+			prompts     : [],
+			okcb        : undefined
 		}
 	},
 	components: {
@@ -64,9 +66,11 @@ export default {
 				if (pswd) pswd.focus()
 			}, 100)
 		},
-		image(url) {
+		image(url, width, height) {
 			this.reset_data()
 			this.image_url = url
+			this.image_width = width
+			this.image_height = height
 			this.show = true
 		},
 		reset_data() {
@@ -132,6 +136,14 @@ export default {
 			this.$nextTick(() => {
 				if (this.$refs.imagemodal) {
 					this.$refs.imagemodal.style.backgroundImage = "url('"+this.image_url+"')"
+
+					let win = remote.getCurrentWindow().getBounds()
+					if (win.width > this.image_width) {
+						this.$refs.imagemodal.style.width = this.image_width + 'px'
+					}
+					if (win.height > this.image_height) {
+						this.$refs.imagemodal.style.height = this.image_height + 'px'
+					}
 				}
 			})
 		}

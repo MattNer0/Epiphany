@@ -1,7 +1,7 @@
 {
     "name": "epiphany-journal",
     "productName": "Epiphany",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -24,6 +24,7 @@
         "gulp": "^4.0.2",
         "highlight.js": "^9.15.10",
         "html-loader": "^0.5.5",
+        "image-size": "^0.7.4",
         "jss": "^9.8.7",
         "jss-preset-default": "^4.5.0",
         "lodash": "^4.17.15",
@@ -52,10 +53,10 @@
         "xmldoc": "1.1.2"
     },
     "devDependencies": {
-        "@babel/core": "^7.5.5",
+        "@babel/core": "^7.6.0",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-        "@babel/preset-env": "^7.5.5",
-        "@babel/runtime": "^7.5.5",
+        "@babel/preset-env": "^7.6.0",
+        "@babel/runtime": "^7.6.0",
         "@vue/eslint-config-standard": "^4.0.0",
         "babel-eslint": "^10.0.3",
         "babel-loader": "^8.0.6",
@@ -68,9 +69,9 @@
         "electron-webpack": "^2.7.4",
         "electron-webpack-eslint": "^5.0.1",
         "electron-webpack-vue": "^2.3.0",
-        "eslint": "^6.0.1",
-        "eslint-loader": "^2.2.1",
-        "eslint-plugin-import": "^2.18.0",
+        "eslint": "^6.3.0",
+        "eslint-loader": "^3.0.0",
+        "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-vue": "^5.2.3",
         "file-loader": "^4.2.0",
         "node-sass": "^4.12.0",

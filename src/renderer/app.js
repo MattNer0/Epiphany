@@ -27,6 +27,8 @@ import theme from './js/utils/theme'
 import elosenv from './js/utils/elosenv'
 import ittybitty from './js/utils/itty-bitty'
 
+import sizeOf from 'image-size'
+
 // vue.js plugins
 import componentOutline from './js/components/outline.vue'
 import componentCodeMirror from './js/components/codemirror.vue'
@@ -1088,7 +1090,8 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		openImg(url) {
-			this.$refs.dialog.image(url)
+			var dimensions = sizeOf(url.replace('epiphany://', ''))
+			this.$refs.dialog.image(url, dimensions.width, dimensions.height)
 		},
 		contextOnPreviewLink(e, href) {
 			if (e.stopPropagation) {

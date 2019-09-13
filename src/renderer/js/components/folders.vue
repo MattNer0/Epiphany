@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { remote } from 'electron'
+import { remote, shell } from 'electron'
 import arr from '../utils/arr'
 import dragging from '../utils/dragging'
 import models from '../models'
@@ -279,6 +279,14 @@ export default {
 				click: () => {
 					window.bus.$emit('change-folder', { folder: folder })
 					this.$root.addEncryptedNote()
+				}
+			}))
+			menu.append(new MenuItem({ type: 'separator' }))
+
+			menu.append(new MenuItem({
+				label: 'Open file explorer',
+				click: () => {
+					shell.openItem(folder.path)
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))

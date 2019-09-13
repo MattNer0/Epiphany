@@ -109,34 +109,28 @@
 			width: 100%;
 			font-size: 110%;
 
+			span {
+				font-size: inherit;
+			}
+
 			li {
 				float: left;
 
 				i {
 					vertical-align: baseline;
-					background-color: rgba(255, 255, 255, 0.2);
-					border-radius: 1em;
 					padding: 0.3em 0.2em 0.2em;
 					margin-top: -0.1em;
 					display: inline-block;
 				}
 
-				> a, > div {
-					padding: 0.3em 0.5em 0.3em;
-					text-align: center;
+				> div > span {
+					display: block;
 				}
 
-				a.with-label, span.with-label {
-					i {
-						vertical-align: middle;
-					}
-					span.label {
-						font-size: 12px;
-						display: inline-block;
-						padding-left: 0.2em;
-						padding-right: 0.1em;
-						padding-top: 0.1em;
-					}
+				> a, > div span.link {
+					display: block;
+					padding: 0.3em 0.4em 0.3em;
+					text-align: center;
 				}
 
 				ul {
@@ -155,6 +149,22 @@
 				}
 			}
 
+			li > div {
+				padding: 0;
+			}
+
+			li > div > span {
+				line-height: 1em;
+			}
+
+			li.entry-separator {
+				height: 1.5em;
+				width: 2px;
+				margin: 0;
+				padding: 0;
+				opacity: 0.8;
+			}
+
 			li.right-align {
 				margin-left: auto;
 			}
@@ -170,11 +180,6 @@
 			li.entry-hidden + li.right-align:not(.entry-hidden) {
 				margin-left: auto;
 			}
-
-			li > div span {
-				display: block;
-				text-align: center;
-			}
 		}
 
 		ul.transparent {
@@ -185,6 +190,14 @@
 			clear: both;
 			content: "";
 			display: block;
+		}
+
+		.dialog ul {
+			font-size: $main-font-size;
+
+			li {
+				margin: 0.1em 0;
+			}
 		}
 	}
 

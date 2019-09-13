@@ -22,7 +22,8 @@ module.exports = {
 	],
 
 	globals: {
-		'__static': true
+		'__static': true,
+		'appVue'  : true
 	},
 
 	// add your custom rules here

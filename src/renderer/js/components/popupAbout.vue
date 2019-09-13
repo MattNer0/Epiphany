@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		p
-			| Epiphany is an open-source application built with Electron and Vue.
+			| Epiphany is an open-source note application built with Electron and Vue.
 			br
 			|
 			| Epiphany was originally a fork of PileMd.

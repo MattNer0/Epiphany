@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { remote } from 'electron'
+import { remote, shell } from 'electron'
 const { Menu, MenuItem } = remote
 import Vue from 'vue'
 import arr from '../utils/arr'
@@ -269,6 +269,13 @@ export default {
 					label: 'Add subfolder',
 					click: () => {
 						this.addFolder(bucket)
+					}
+				}))
+				menu.append(new MenuItem({ type: 'separator' }))
+				menu.append(new MenuItem({
+					label: 'Open file explorer',
+					click: () => {
+						shell.openItem(bucket.path)
 					}
 				}))
 				menu.append(new MenuItem({ type: 'separator' }))

@@ -8,6 +8,9 @@
 	line-height: 1.6em;
 	font-style: normal;
 	padding: 0;
+
+	border-radius: 4px;
+    overflow: hidden;
 }
 
 .outer_wrapper .cell-container.main-cell-container.full-note {
@@ -42,7 +45,7 @@
 	}
 }
 
-.CodeMirror span.cm-piled-header-1,
+.CodeMirror span.cm-epy-header-1,
 .my-editor-preview h1,
 .my-editor-outline input.h1 {
 	font-size: 180%;
@@ -51,21 +54,21 @@
 	line-height: 1.4em;
 }
 
-.CodeMirror span.cm-piled-header-2,
+.CodeMirror span.cm-epy-header-2,
 .my-editor-preview h2 {
 	font-size: 160%;
 	font-weight: 600;
 	line-height: 1.4em;
 }
 
-.CodeMirror span.cm-piled-header-3,
+.CodeMirror span.cm-epy-header-3,
 .my-editor-preview h3 {
 	font-size: 130%;
 	line-height: 1.4em;
 	font-weight: 600;
 }
 
-.CodeMirror span.cm-piled-strong,
+.CodeMirror span.cm-epy-strong,
 .my-editor-preview strong {
 	font-weight: 800;
 }

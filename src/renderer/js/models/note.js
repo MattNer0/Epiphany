@@ -301,7 +301,7 @@ class Note extends Model {
 			if (dataUrl) return dataUrl
 		}
 		if (this._body) {
-			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/[-a-zA-Z0-9@:%_+.~#?&/\\=]+?\.(png|jpeg|jpg|gif)/).exec(this.body)
+			var matched = (/(https?|epiphany):\/\/[-a-zA-Z0-9@:%_+.~#?&/\\=]+?\.(png|jpeg|jpg|gif)/).exec(this.body)
 			if (!matched) {
 				return null
 			} else if (matched[1] === 'http' || matched[1] === 'https') {
@@ -319,7 +319,7 @@ class Note extends Model {
 
 	get imgPath() {
 		if (this._body) {
-			var matched = (/(https?|epiphany|coonpad|pilemd):\/\/([-a-zA-Z0-9@:%_+.~#?&/\\=]+?\.(png|jpeg|jpg|gif))/).exec(this.body)
+			var matched = (/(https?|epiphany):\/\/([-a-zA-Z0-9@:%_+.~#?&/\\=]+?\.(png|jpeg|jpg|gif))/).exec(this.body)
 			if (!matched) {
 				return null
 			} else if (matched[1] === 'http' || matched[1] === 'https') {
@@ -353,8 +353,6 @@ class Note extends Model {
 			createdDir = false
 		}
 
-		this.body = this.body.replace(/coonpad:\/\//mg, 'epiphany://')
-		this.body = this.body.replace(/pilemd:\/\//mg, 'epiphany://')
 		this.body = this.body.replace(
 			/!\[([^\]]*?)]\((https?:\/\/.*?)\)/img,
 			(match, p1, p2) => {

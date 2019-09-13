@@ -30,9 +30,13 @@ class Image {
 			return path.join(Library.baseLibraryPath, p)
 		}
 
-		var basePath = this._note.imagePath
-		if (!basePath || basePath.length === 0) throw new Error('Invalid Base Path')
-		return path.join(basePath, p)
+		if (this._note) {
+			var basePath = this._note.imagePath
+			if (!basePath || basePath.length === 0) throw new Error('Invalid Base Path')
+			return path.join(basePath, p)
+		}
+
+		return p
 	}
 
 	makeAbsolutePath() {

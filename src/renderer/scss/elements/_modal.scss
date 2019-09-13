@@ -41,6 +41,8 @@
 		height: 88vh;
 		padding: 0;
 		box-shadow: none;
+		display: flex;
+		align-items: center;
 
 		> div {
 			width: 100%;
@@ -49,6 +51,8 @@
 			background-position: center;
 			background-size: contain;
 			background-repeat: no-repeat;
+			margin: 0 auto;
+			cursor: pointer;
 		}
 	}
 

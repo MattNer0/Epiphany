@@ -123,13 +123,13 @@ function styleObject(obj) {
 					color: obj['note-checkbox-selected']
 				}
 			},
-			'.CodeMirror span.cm-piled-header-1, .my-editor-preview h1, .my-editor-outline input.h1': {
+			'.CodeMirror span.cm-epy-header-1, .my-editor-preview h1, .my-editor-outline input.h1': {
 				color: obj['note-header1-color']
 			},
-			'.CodeMirror span.cm-piled-strong, .my-editor-preview strong': {
+			'.CodeMirror span.cm-epy-strong, .my-editor-preview strong': {
 				color: obj['note-bold-color']
 			},
-			'.CodeMirror span.cm-m-markdown.cm-piled-hr': {
+			'.CodeMirror span.cm-m-markdown.cm-epy-hr': {
 				backgroundColor: obj['note-hr-background'],
 				color          : obj['note-hr-color']
 			},
@@ -289,6 +289,9 @@ function styleObject(obj) {
 				'& nav ul': {
 					'& li > a, li > div': {
 						color: obj['note-bar-color']
+					},
+					'& li.entry-separator': {
+						backgroundColor: obj['note-bar-color']
 					},
 					'& li hr': {
 						border: '1px solid '+obj['note-bar-color']

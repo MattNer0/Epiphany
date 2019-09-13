@@ -29,7 +29,7 @@ require('codemirror/mode/xml/xml')
 require('codemirror/mode/markdown/markdown')
 require('codemirror/mode/gfm/gfm')
 require('codemirror/mode/rst/rst')
-require('../codemirror/piledmd')
+require('../codemirror/epiphanyMode')
 require('codemirror/mode/python/python')
 require('codemirror/mode/javascript/javascript')
 require('codemirror/mode/coffeescript/coffeescript')
@@ -55,14 +55,14 @@ require('../codemirror/piledmap')
 
 function countWords(text) {
 	text = text.replace(/\[[\w\s]+?\]/g, ' ').replace(/[^\w\-’'"_]/g, ' ').replace(/[\s\r\n]+/g, ' ').replace(/\s\W\s/g, ' ')
-	var words = text.split(' ').filter((str) => {
+	let words = text.split(' ').filter((str) => {
 		return str.length > 0
 	})
 	return words.length
 }
 
 function countLineBreaks(text) {
-	var lines = text.split('\n')
+	let lines = text.split('\n')
 	return lines.length
 }
 
@@ -76,7 +76,9 @@ export default {
 	},
 	data() {
 		return {
-			cm: null
+			cm        : null,
+			imageRegex: /!\[(.*)\]\((.+\.(jpg|jpeg|png|gif|svg))(\s("|')(.*)("|')\s?)?\)/gi,
+			widgets   : []
 		}
 	},
 	mounted() {
@@ -92,7 +94,7 @@ export default {
 			this.$store.commit('resetEditor')
 
 			var cm = CodeMirror(this.$el, {
-				mode        : 'piledmd',
+				mode        : 'epiphanymode',
 				lineNumbers : false,
 				lineWrapping: true,
 				theme       : 'default',
@@ -114,7 +116,7 @@ export default {
 				scrollbarStyle    : 'native',
 				cursorScrollMargin: 10,
 				placeholder       : '',
-				value             : this.note ? new CodeMirror.Doc(this.note.body, 'piledmd') : undefined
+				value             : this.note ? new CodeMirror.Doc(this.note.body, 'epiphanymode') : undefined
 			})
 			this.cm = cm
 			this.$root.codeMirror = cm
@@ -138,8 +140,8 @@ export default {
 				}
 				var types = type.split(' ')
 				return (_.includes(types, 'link') ||
-						_.includes(types, 'piled-link-href') ||
-						_.includes(types, 'link')) && !_.includes(types, 'piled-formatting')
+						_.includes(types, 'epy-link-href') ||
+						_.includes(types, 'link')) && !_.includes(types, 'epy-formatting')
 			}
 			cm.on('contextmenu', (cm, event) => {
 				// Makidng timeout Cause codemirror's contextmenu handler using setTimeout on 50ms or so.
@@ -231,16 +233,88 @@ export default {
 				this.$store.commit('editorWordsCount', countWords(cm.getValue()))
 			})
 
+			cm.on('renderLine', (cm, line, elem) => {
+				let found = false
+				for (let i = 0; i < this.widgets.length; ++i) {
+					let widget = this.widgets[i]
+					if (widget.line === line) {
+						found = true
+						this.validateInlinePreview(i, line.text)
+						break
+					}
+				}
+				if (!found) {
+					this.imageRegex.lastIndex = 0
+					this.$nextTick(() => {
+						this.addInlinePreview(line.text, this.cm.getLineNumber(line))
+					})
+				}
+			})
+
 			if (this.useMonospace) {
 				this.$el.classList.add('codemirror-monospace')
 			}
 
 			this.initFooter()
 			this.runSearch()
+			this.$nextTick(() => {
+				this.initInlinePreview()
+			})
 		},
 		initFooter() {
 			this.$store.commit('resetEditor')
 			this.$store.commit('editorWordsCount', countWords(this.cm.getValue()))
+		},
+		inlinePreviewCleanUrl(match) {
+			return 'epiphany://' + path.join(this.note.imagePath, match[2].replace(/^epiphany:\/\//i, ''))
+		},
+		validateInlinePreview(index, text) {
+			this.imageRegex.lastIndex = 0
+			let match = this.imageRegex.exec(text)
+			if (match === null) {
+				this.$nextTick(() => {
+					this.cm.removeLineWidget(this.widgets[index])
+					this.widgets.splice(index, 1)
+				})
+			} else {
+				try {
+					let img = this.widgets[index].node.children[0]
+					img.src = this.inlinePreviewCleanUrl(match)
+				} catch (e) {
+					console.error(e)
+				}
+			}
+		},
+		addInlinePreview(line, index) {
+			let match
+			while ((match = this.imageRegex.exec(line)) !== null) {
+				let url = match[2]
+				if (url.startsWith('epiphany://')) {
+					let msg = document.createElement('div')
+					let img = msg.appendChild(document.createElement('img'))
+					msg.classList.add('image-widget')
+					img.src = this.inlinePreviewCleanUrl(match)
+					img.draggable = false
+					img.addEventListener('click', () => {
+						this.$root.openImg(img.src)
+					})
+					//msg.onclick = 'appVue.openImg(\''+img.src+'\'); return false;'
+					this.widgets.push(this.cm.addLineWidget(index, msg, { coverGutter: false, noHScroll: false }))
+				}
+			}
+		},
+		removeInlinePreview() {
+			for (let i = 0; i < this.widgets.length; ++i) {
+				this.cm.removeLineWidget(this.widgets[i])
+			}
+			this.widgets.length = 0
+		},
+		initInlinePreview() {
+			this.removeInlinePreview()
+			let lines = this.cm.getValue().split('\n')
+			lines.forEach((line, index) => {
+				this.addInlinePreview(line, index)
+			})
 		},
 		uploadFile() {
 			var notePaths = remote.dialog.showOpenDialog({
@@ -271,14 +345,14 @@ export default {
 					var image = Image.fromBinary(f.name, f.path, this.note)
 				} catch (e) {
 					this.$message('error', 'Failed to load and save image', 5000)
-					console.log(e)
+					console.error(e)
 					return
 				}
 				cm.doc.replaceRange(
 					IMAGE_TAG_TEMP({ filename: f.name, fileurl: image.localURL }),
 					cm.doc.getCursor()
 				)
-				this.$message('info', 'Saved image to ' + image.makeFilePath())
+				this.$message('info', 'Image saved')
 			})
 		},
 		updateNoteBody: _.debounce(function () {
@@ -307,7 +381,7 @@ export default {
 		refreshNoteBody() {
 			var doc
 			if (this.note.body) {
-				doc = new CodeMirror.Doc(this.note.body, 'piledmd')
+				doc = new CodeMirror.Doc(this.note.body, 'epiphanymode')
 			}
 			this.note.doc = doc
 			if (doc) {

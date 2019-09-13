@@ -69,11 +69,10 @@ function cutText(cm) {
  * @param  {String} text {description}
  * @return {Boolean} {description}
  * check if the string contains an image url.
- * only cares about '.png' and '.jpg' extensions
  */
 function isImage(text) {
 	let ext = text.split('.').pop().toLowerCase()
-	return ['png', 'jpeg', 'jpg', 'gif'].indexOf(ext) >= 0
+	return ['png', 'jpeg', 'jpg', 'gif', 'bmp'].indexOf(ext) >= 0
 }
 
 /**
