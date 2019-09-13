@@ -4,6 +4,7 @@ import log from 'electron-log'
 import sqlite from 'sqlite'
 
 import models from '../models'
+import utilFile from '../utils/file'
 
 /**
  * @function getValidMarkdownFormats
@@ -329,6 +330,23 @@ export default {
 			}
 		} catch (err) {
 			log.error(err.message)
+		}
+
+		return null
+	},
+	async cleanDatabase(db, library) {
+		const data = await db.all('SELECT * FROM notes')
+		log.log('Notes in DB: ' + data.length)
+		for (let i=0; i<data.length; i++) {
+			const note = data[i]
+			const notePath = path.join(library, note.path)
+			if (!fs.existsSync(notePath)) {
+				await db.run('DELETE FROM notes WHERE path = ?', note.path)
+				const imageFolder = path.join(path.dirname(notePath), '.' + path.basename(notePath, path.extname(notePath)))
+				if (fs.existsSync(imageFolder)) {
+					utilFile.deleteFolderRecursive(imageFolder)
+				}
+			}
 		}
 
 		return null

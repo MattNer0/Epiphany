@@ -47,6 +47,8 @@ import componentTabsBar from './js/components/tabsBar.vue'
 import componentThemeEditor from './js/components/themeEditor.vue'
 import componentThemeMenu from './js/components/themeMenu.vue'
 
+import templateHtml from './html/app.html'
+
 window.bus = new Vue()
 
 settings.init()
@@ -68,7 +70,7 @@ if (settingsBaseLibraryPath) models.setBaseLibraryPath(settingsBaseLibraryPath)
 var appVue = new Vue({
 	el      : '#app',
 	store   : Store,
-	template: require('./html/app.html'),
+	template: templateHtml,
 	data    : {
 		loadedRack       : false,
 		isFullScreen     : false,
@@ -396,6 +398,14 @@ var appVue = new Vue({
 					}
 				}
 			}
+		})
+
+		ipcRenderer.on('database-cleaned', (event, data) => {
+			this.sendFlashMessage({
+				time : 1000,
+				level: 'info',
+				text : 'Database cleaned'
+			})
 		})
 
 		ipcRenderer.on('load-page-fail', (event, data) => {
@@ -1296,6 +1306,11 @@ var appVue = new Vue({
 				library: models.getBaseLibraryPath(),
 				title  : 'About',
 				height : 'medium'
+			})
+		},
+		cleanDatabase() {
+			ipcRenderer.send('clean-database', {
+				library: models.getBaseLibraryPath()
 			})
 		},
 		/**

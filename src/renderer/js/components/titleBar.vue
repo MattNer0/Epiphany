@@ -151,6 +151,12 @@ export default {
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
+				label: 'Clean Database',
+				click: () => {
+					this.$root.cleanDatabase()
+				}
+			}))
+			menu.append(new MenuItem({
 				label: 'Reload',
 				click: () => {
 					remote.getCurrentWindow().reload()

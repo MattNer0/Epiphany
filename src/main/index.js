@@ -279,6 +279,7 @@ app.on('ready', () => {
 	ipcMain.on('cache-note', (event, payload) => backgroundWindow.webContents.send('cache-note', payload))
 	ipcMain.on('cache-notes', (event, payload) => backgroundWindow.webContents.send('cache-notes', payload))
 	ipcMain.on('delete-note', (event, payload) => backgroundWindow.webContents.send('delete-note', payload))
+	ipcMain.on('clean-database', (event, payload) => backgroundWindow.webContents.send('clean-database', payload))
 	ipcMain.on('load-page', (event, payload) => {
 		if (backgroundBrowserWindow) {
 			backgroundBrowserWindow.webContents.send('load-page', payload)
@@ -312,6 +313,8 @@ app.on('ready', () => {
 		//start watching file changes
 		//backgroundWindow.webContents.send('loaded-all-notes', payload);
 	})
+
+	ipcMain.on('database-cleaned', (event, payload) => mainWindow.webContents.send('database-cleaned', payload))
 
 	ipcMain.on('load-page-fail', (event, payload) => mainWindow.webContents.send('load-page-fail', payload))
 	ipcMain.on('load-page-success', (event, payload) => mainWindow.webContents.send('load-page-success', payload))

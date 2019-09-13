@@ -138,4 +138,19 @@ window.onload = function () {
 			log.error(err.message)
 		})
 	})
+
+	ipcRenderer.on('clean-database', (event, data) => {
+		if (!data.library) {
+			log.error('clean-database: library missing')
+			return
+		}
+
+		libraryHelper.initDB(data.library).then((db) => {
+			return libraryHelper.cleanDatabase(db, data.library)
+		}).then(() => {
+			ipcRenderer.send('database-cleaned')
+		}).catch((err) => {
+			log.error(err.message)
+		})
+	})
 }
