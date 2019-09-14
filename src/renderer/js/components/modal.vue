@@ -72,6 +72,15 @@ export default {
 			this.image_width = width
 			this.image_height = height
 			this.show = true
+
+			document.addEventListener('keydown', this.escKeydown)
+		},
+		escKeydown(event) {
+			switch (event.key) {
+				case 'Escape':
+					this.clickout_close()
+					break
+			}
 		},
 		reset_data() {
 			this.title = ''
@@ -80,6 +89,7 @@ export default {
 			this.prompts = []
 			this.image_url = ''
 			this.show = false
+			document.removeEventListener('keydown', this.escKeydown)
 		},
 		clickout_close() {
 			if (this.buttons.length < 2 && this.prompts.length === 0) {

@@ -5,7 +5,6 @@
 			.my-notes-note(v-for="note in separated.notes",
 				track-by="uid",
 				@click="selectNote(note)",
-				@dblclick="selectNoteAndWide(note)",
 				v-on:auxclick.stop.prevent="selectNote(note, true)"
 				@contextmenu.prevent.stop="noteMenu(note)",
 				@dragstart.stop="noteDragStart($event, note)",
@@ -59,6 +58,9 @@ export default {
 	data() {
 		return {
 			'addnote_visible': false,
+			'clicks'         : 0,
+			'clickDelay'     : 500,
+			'clickTimer'     : null,
 			'position'       : [ 'left', 'top', 'left', 'top' ]
 		}
 	},
@@ -82,14 +84,24 @@ export default {
 	},
 	methods: {
 		selectNote(note, newtab) {
-			window.bus.$emit('change-note', { note: note, newtab: newtab, sidebar: true })
+			this.clicks++
+			if (this.clicks === 1) {
+				this.clickTimer = setTimeout(() => {
+					window.bus.$emit('change-note', { note: note, newtab: newtab, sidebar: true })
+					this.clicks = 0
+				}, this.clickDelay)
+			} else {
+				clearTimeout(this.clickTimer)
+				this.selectNoteAndWide(note)
+				this.clicks = 0
+			}
 		},
 		selectNoteAndWide(note) {
 			if (this.selectedNote !== note) {
 				window.bus.$emit('change-note', { note: note, newtab: false, sidebar: true })
 				window.bus.$emit('toggle-fullscreen')
 			} else {
-				window.bus.$emit('change-note', { note: note, newtab: false, sidebar: true })
+				window.bus.$emit('toggle-fullscreen')
 			}
 		},
 		removeNote(note) {

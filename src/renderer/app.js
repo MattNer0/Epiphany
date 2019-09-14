@@ -19,15 +19,13 @@ import preview from './js/preview'
 import searcher from './js/searcher'
 
 // electron things
-import { ipcRenderer, remote, clipboard, shell } from 'electron'
+import { ipcRenderer, remote, clipboard, shell, nativeImage } from 'electron'
 const { Menu, MenuItem, dialog } = remote
 
 import arr from './js/utils/arr'
 import theme from './js/utils/theme'
 import elosenv from './js/utils/elosenv'
 import ittybitty from './js/utils/itty-bitty'
-
-import sizeOf from 'image-size'
 
 // vue.js plugins
 import componentOutline from './js/components/outline.vue'
@@ -689,9 +687,6 @@ var appVue = new Vue({
 				return
 			} else if (note === this.selectedNote) {
 				if (this.selectedRack === null && !this.showHistory) this.changeFolder({ folder: note.folder })
-				else if (!this.isFullScreen && sidebar) {
-					this.setFullScreen(true)
-				}
 				return
 			}
 
@@ -1100,7 +1095,8 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		openImg(url) {
-			var dimensions = sizeOf(url.replace('epiphany://', ''))
+			let image = nativeImage.createFromPath(url.replace('epiphany://', ''))
+			var dimensions = image.getSize()
 			this.$refs.dialog.image(url, dimensions.width, dimensions.height)
 		},
 		contextOnPreviewLink(e, href) {
