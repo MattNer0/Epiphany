@@ -19,7 +19,7 @@
 		"mimeTypes": [ "text/markdown" ]
 	},
 	"win": {
-		"target": ["portable"],
+		"target": ["nsis", "portable"],
 		"icon": "icons/epiphany.ico"
 	}
 }
