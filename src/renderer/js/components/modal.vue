@@ -4,6 +4,7 @@
 		.modal-wrapper
 			.modal-container.modal-image(v-if="image_url")
 				div(ref="imagemodal", @click="clickout_close")
+					img(:src="image_url")
 			.modal-container(v-else)
 				h3 {{ title }}
 				p(v-html="descriptionHtml")
@@ -145,8 +146,6 @@ export default {
 		image_url() {
 			this.$nextTick(() => {
 				if (this.$refs.imagemodal) {
-					this.$refs.imagemodal.style.backgroundImage = "url('"+this.image_url+"')"
-
 					let win = remote.getCurrentWindow().getBounds()
 					if (win.width > this.image_width) {
 						this.$refs.imagemodal.style.width = this.image_width + 'px'

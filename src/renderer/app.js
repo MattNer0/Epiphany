@@ -753,6 +753,11 @@ var appVue = new Vue({
 					}])
 				} else {
 					this.selectedNote = note
+					setTimeout(() => {
+						if (document.body.clientWidth <= 580 && !this.isFullScreen) {
+							this.toggleFullScreen()
+						}
+					}, 400)
 				}
 			}
 		},
@@ -1399,7 +1404,11 @@ var appVue = new Vue({
 				widthTotalLeft += widthFixedLeft
 			}
 
-			document.querySelector('.main-cell-container').style.marginLeft = widthTotalLeft + 'px'
+			if (document.body.clientWidth > 580) {
+				document.querySelector('.main-cell-container').style.marginLeft = widthTotalLeft + 'px'
+			} else {
+				document.querySelector('.main-cell-container').style.marginLeft = ''
+			}
 		}, 100)
 	},
 	watch: {

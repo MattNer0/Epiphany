@@ -49,13 +49,16 @@ nav > ul {
 
 	li > a, li > div, li > span {
 		box-sizing: border-box;
-		display: block;
-		padding: 0.5em 0.5em 0.3em 0.45em;
 		text-align: left;
 		line-height: 1em;
 		outline: none;
 		text-decoration: none;
 		transition: all .25s ease;
+	}
+
+	li > a, li > div {
+		display: block;
+		padding: 0.5em 0.5em 0.3em 0.45em;
 	}
 
 	li.center > a, li.center > div {
@@ -106,6 +109,14 @@ nav > ul {
 
 		li {
 			margin: 0.4em 0;
+		}
+	}
+}
+
+@media only screen and (max-width: 580px) {
+	.title-bar nav {
+		.coon-plus + span, .coon-sidebar + span {
+			display: none !important;
 		}
 	}
 }
@@ -173,7 +184,7 @@ nav > ul {
 			font-size: 120%;
 			vertical-align: middle;
 		}
-	
+
 		i:last-child {
 			position: absolute;
 			cursor: pointer;

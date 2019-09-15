@@ -11,13 +11,13 @@
 						li(@click="tools_menu") Tools
 						li(@click="quick_note")
 							i.coon-plus
-							|  New Quick Note
+							span New Quick Note
 						li(@click="open_sidebar", v-if="isFullScreen")
 							i.coon-sidebar
-							|  Open Sidebar
+							span Open Sidebar
 						li(@click="close_sidebar", v-else)
 							i.coon-sidebar
-							|  Close Sidebar
+							span Close Sidebar
 						li(v-bind:class="{ 'open-search' : focusSearch || query, 'close-search': !focusSearch && !query }")
 							label
 								i.coon-search

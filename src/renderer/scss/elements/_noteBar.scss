@@ -1,7 +1,7 @@
 .noteBar {
 	height: $note-bar-height;
 	position: relative;
-	z-index: 10;
+	z-index: 9;
 
 	i.faded {
 		opacity: 0.4;
@@ -75,7 +75,7 @@
 			}
 		}
 
-		
+
 
 		table.select-table-size {
 			opacity: 0.6;
