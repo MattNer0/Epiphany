@@ -317,7 +317,7 @@ export default {
 			})
 		},
 		uploadFile() {
-			var notePaths = remote.dialog.showOpenDialog({
+			remote.dialog.showOpenDialog({
 				title  : 'Attach Image',
 				filters: [{
 					name      : 'Markdown',
@@ -328,15 +328,20 @@ export default {
 				}],
 				properties: ['openFile', 'multiSelections']
 			})
-			if (!notePaths || notePaths.length === 0) {
-				return
-			}
+				.then(result => {
+					if (result.canceled || !result.filePaths) {
+						return
+					}
 
-			var files = notePaths.map((notePath) => {
-				var name = path.basename(notePath)
-				return { name: name, path: notePath }
-			})
-			this.uploadFiles(this.cm, files)
+					const files = result.filePaths.map((notePath) => {
+						var name = path.basename(notePath)
+						return { name: name, path: notePath }
+					})
+					this.uploadFiles(this.cm, files)
+				})
+				.catch(err => {
+					console.error(err)
+				})
 		},
 		uploadFiles(cm, files) {
 			files = Array.prototype.slice.call(files, 0, 5)

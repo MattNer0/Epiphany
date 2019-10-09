@@ -1201,7 +1201,7 @@ var appVue = new Vue({
 			menu.popup(remote.getCurrentWindow())
 		},
 		loadThemeFromFile() {
-			var themePath = dialog.showOpenDialog(remote.getCurrentWindow(), {
+			dialog.showOpenDialog(remote.getCurrentWindow(), {
 				title  : 'Import Theme',
 				filters: [{
 					name      : 'Theme',
@@ -1209,17 +1209,22 @@ var appVue = new Vue({
 				}],
 				properties: ['openFile']
 			})
-			if (!themePath || themePath.length === 0) {
-				return
-			}
+				.then(result => {
+					if (result.canceled || !result.filePaths) {
+						return
+					}
+					const themePath = result.filePaths[0]
 
-			try {
-				this.setCustomTheme(
-					JSON.parse(fs.readFileSync(themePath[0], 'utf8'))
-				)
-			} catch (e) {
-				console.error(e)
-			}
+					try {
+						const fileContents = fs.readFileSync(themePath, 'utf8')
+						this.setCustomTheme(JSON.parse(fileContents))
+					} catch (e) {
+						console.error(e)
+					}
+				})
+				.catch(err => {
+					console.error(err)
+				})
 		},
 		setCustomTheme(themeJson) {
 			if (typeof themeJson === 'string') {
@@ -1256,44 +1261,54 @@ var appVue = new Vue({
 		},
 		moveSync() {
 			var currentPath = models.getBaseLibraryPath()
-			var newPaths = dialog.showOpenDialog(remote.getCurrentWindow(), {
+			dialog.showOpenDialog(remote.getCurrentWindow(), {
 				title      : 'Select New Sync Folder',
 				defaultPath: currentPath || '/',
 				properties : ['openDirectory', 'createDirectory', 'promptToCreate']
 			})
-			if (!newPaths) {
-				return
-			}
-			var newPath = newPaths[0]
+				.then(result => {
+					if (result.canceled || !result.filePaths) {
+						return
+					}
+					var newPath = result.filePaths[0]
 
-			// copy files
-			if (models.copyData(currentPath, newPath)) {
-				models.setBaseLibraryPath(newPath)
-				settings.set('baseLibraryPath', newPath)
-				remote.getCurrentWindow().reload()
-			} else {
-				this.sendFlashMessage({
-					time : 5000,
-					level: 'error',
-					text : 'Directory is not Valid'
+					// copy files
+					if (models.copyData(currentPath, newPath)) {
+						models.setBaseLibraryPath(newPath)
+						settings.set('baseLibraryPath', newPath)
+						remote.getCurrentWindow().reload()
+					} else {
+						this.sendFlashMessage({
+							time : 5000,
+							level: 'error',
+							text : 'Directory is not Valid'
+						})
+					}
 				})
-			}
+				.catch(err => {
+					console.error(err)
+				})
 		},
 		openSync() {
 			var currentPath = models.getBaseLibraryPath()
-			var newPaths = dialog.showOpenDialog(remote.getCurrentWindow(), {
+			dialog.showOpenDialog(remote.getCurrentWindow(), {
 				title      : 'Open Existing Sync Folder',
 				defaultPath: currentPath || '/',
 				properties : ['openDirectory', 'createDirectory']
 			})
-			if (!newPaths) {
-				return
-			}
-			var newPath = newPaths[0]
+				.then(result => {
+					if (result.canceled || !result.filePaths) {
+						return
+					}
+					var newPath = result.filePaths[0]
 
-			models.setBaseLibraryPath(newPath)
-			settings.set('baseLibraryPath', newPath)
-			remote.getCurrentWindow().reload()
+					models.setBaseLibraryPath(newPath)
+					settings.set('baseLibraryPath', newPath)
+					remote.getCurrentWindow().reload()
+				})
+				.catch(err => {
+					console.error(err)
+				})
 		},
 		/**
 		 * shows the About dialog window.

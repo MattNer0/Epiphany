@@ -1,12 +1,12 @@
 import fs from 'fs'
 import path from 'path'
-
 import { remote } from 'electron'
-
 import elosenv from './elosenv'
 
+const isDevelopment = process.env.NODE_ENV !== 'production'
+
 var settingsData = {}
-var settingsFilename = 'epiphanyConfig.json'
+var settingsFilename = isDevelopment ? 'epiphanyConfigDevelopment.json' : 'epiphanyConfig.json'
 var settingsPath
 
 export default {
@@ -18,9 +18,13 @@ export default {
 		}
 
 		try {
-			settingsData = JSON.parse(fs.readFileSync(settingsPath))
-		} catch (e) {
-			console.error(e)
+			if (fs.existsSync(settingsPath)) {
+				settingsData = JSON.parse(fs.readFileSync(settingsPath))
+			} else {
+				settingsData = {}
+			}
+		} catch (err) {
+			console.error(err)
 			settingsData = {}
 		}
 	},

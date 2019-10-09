@@ -21,5 +21,8 @@
 	"win": {
 		"target": ["nsis", "portable"],
 		"icon": "icons/epiphany.ico"
+	},
+	"mac": {
+		"icon": "icons/epiphany.iconset/icon_512x512@1x.png"
 	}
 }
