@@ -263,11 +263,16 @@ var appVue = new Vue({
 		} else {
 			elosenv.console.error("Couldn't open library directory. Path: " + models.getBaseLibraryPath())
 			setTimeout(() => {
+				settings.set('baseLibraryPath', '')
 				this.$refs.dialog.init('Error', 'Couldn\'t open library directory.\nPath: '+models.getBaseLibraryPath(), [{
-					label : 'Ok',
+					label: 'Open new directory',
+					cb   : () => {
+						this.openSync()
+					}
+				}, {
+					label : 'Cancel',
 					cancel: true
 				}])
-				settings.set('baseLibraryPath', '')
 			}, 100)
 		}
 	},

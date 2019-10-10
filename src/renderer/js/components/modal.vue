@@ -101,7 +101,7 @@ export default {
 		button_submit(button) {
 			if (button.cancel) {
 				this.show = false
-			} else {
+			} else if (this.prompts) {
 				for (var i = 0; i < this.prompts.length; i++) {
 					if (this.prompts[i].required && !this.prompts[i].retValue) return false
 				}
@@ -110,9 +110,11 @@ export default {
 					if (validationFailed) return false
 				}
 				this.show = false
+			} else {
+				this.show = false
 			}
 
-			if (button.cb) button.cb(this.promptsObject)
+			if (button.cb) button.cb(this.prompts ? this.promptsObject : null)
 			this.reset_data()
 		},
 		contextMenu() {
