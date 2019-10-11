@@ -9,8 +9,6 @@ import path from 'path'
 function makeInitialNotes(folderPath) {
 	const notePath = path.join(folderPath, 'Welcome.md')
 	const noteBody = '# Welcome to Epiphany\n\n' +
-		'* Phenomenon User Interface\n' +
-		'* Beautiful highlight, comfortable completing\n\n' +
 		'## Features\n\n' +
 		'* Note listing as time line (updated / created)\n' +
 		'* Syncing with local files\n' +

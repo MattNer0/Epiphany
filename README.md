@@ -5,22 +5,18 @@
 
 ---
 
-**Originally a fork from**: https://github.com/hirokiky/pilemd
-
----
-
 ## Quick list of features
 
-- file system folder structure with **racks**, **folders** and `.md` note files for easy access
+- file system folder structure with **buckets**, **folders** and separate `.md` note files for easy access
 - auxiliary json files to store additional metadata (like display order)
-- **note** contents are only loaded when the **folder** or the **note** itself is opened (instead of loading everything on startup)
-- even if the note isn't loaded, the body preview is cached inside a sqlite DB
+- local sqlite database for caching and faster loading notes
 - sidebar with expandable tree menu list (**folders** and **racks**)
-- resize sidebar width (could use more work but it's there)
-- note menu with option to change font size, insert tables and more
+- resizable sidebar
+- outlines
+- inline image previews
+- quick menu with option to change font size, insert tables and more
 - properties window with words/lines count
 - application settings saved inside `appData` folder (window size, last open folder, preview toggle, etc.) 
-- added more items to the right click menu in preview mode (toggle, copy, etc.)
 - checkbox display and interaction in preview mode
 - choose between different themes (light, dark, custom)
 - **encrypted** notes (password protected)

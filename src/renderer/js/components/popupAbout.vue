@@ -2,9 +2,6 @@
 	div
 		p
 			| Epiphany is an open-source note application built with Electron and Vue.
-			br
-			|
-			| Epiphany was originally a fork of PileMd.
 		p(v-if="libraryPath")
 			| Current Library Path:
 			br
@@ -32,7 +29,7 @@ export default {
 			shell.openExternal('https://github.com/MattNer0/epiphany')
 		},
 		openLibrary() {
-			shell.showItemInFolder(this.libraryPath)
+			shell.openItem(this.libraryPath)
 		}
 	}
 }
