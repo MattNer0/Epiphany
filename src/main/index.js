@@ -238,10 +238,10 @@ function createPopupWindow(width, height, callback) {
 }
 
 app.on('window-all-closed', () => {
-	// on macOS it is common for applications to stay open until the user explicitly quits
-	if (process.platform !== 'darwin') {
-		app.quit()
-	}
+	app.quit()
+	/*if (process.platform !== 'darwin') {
+		// on macOS it is common for applications to stay open until the user explicitly quits
+	}*/
 })
 
 app.on('activate', () => {
