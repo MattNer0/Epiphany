@@ -215,7 +215,7 @@
 			query = parseString(query)
 		}
 		if (typeof query === 'string' ? query === '' : query.test('')) {
-			query = /x^/
+			query = ''
 		}
 		return query
 	}

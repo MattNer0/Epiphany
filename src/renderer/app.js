@@ -285,7 +285,9 @@ var appVue = new Vue({
 				this.update_editor_size()
 			})
 			window.addEventListener('keydown', (e) => {
-				if (((e.keyCode === 86 && e.shiftKey && e.ctrlKey) || (e.keyCode === 80 && e.altKey)) && this.isPreview) {
+				if (((e.keyCode === 86 && e.shiftKey && e.ctrlKey) ||
+					(e.keyCode === 80 && e.altKey) ||
+					(e.keyCode === 86 && e.altKey)) && this.isPreview) {
 					e.preventDefault()
 					e.stopPropagation()
 					this.togglePreview()

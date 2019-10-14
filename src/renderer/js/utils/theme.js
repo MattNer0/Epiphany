@@ -19,14 +19,6 @@ function styleObject(obj) {
 			'::-webkit-scrollbar-thumb:hover': {
 				backgroundColor: obj['scrollbar-thumb']
 			},
-			'#action-bar': {
-				color: obj['action-bar-color'],
-
-				'& nav': {
-					borderTop   : '1px solid '+obj['app-border'],
-					borderBottom: '1px solid '+obj['app-border']
-				}
-			},
 			'nav > ul': {
 				'& li ul': {
 					border    : '1px solid '+obj['app-border'],

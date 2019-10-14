@@ -320,11 +320,15 @@ export default {
 			}
 			this.fontstyle_visible = false
 		},
-		menu_image() {
+		close_table_if_visible() {
 			if (this.table_visible) {
 				this.close_table()
-				return
+				return true
 			}
+			return false
+		},
+		menu_image() {
+			if (this.close_table_if_visible()) return
 
 			var cm = this.codeMirror()
 			var cursor = cm.getCursor()
@@ -348,10 +352,7 @@ export default {
 			cm.focus()
 		},
 		menu_codeBlock() {
-			if (this.table_visible) {
-				this.close_table()
-				return
-			}
+			if (this.close_table_if_visible()) return
 
 			var cm = this.codeMirror()
 			var cursor = cm.getCursor()
@@ -379,112 +380,19 @@ export default {
 			cm.focus()
 		},
 		menu_bold() {
-			if (this.table_visible) {
-				this.close_table()
-				return
-			}
-
-			let cm = this.codeMirror()
-			let cursor = cm.getCursor()
-			let selection = cm.getSelection()
-			if (selection.length > 0) {
-				cm.replaceSelection('**' + selection + '**')
-				cursor = cm.getCursor()
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch  : cursor.ch-2
-				})
-			} else {
-				if (cursor.ch === 0) {
-					if (cm.doc.getLine(cursor.line).length > 0) {
-						cm.doc.replaceRange('**', cursor)
-					} else {
-						cm.doc.replaceRange('****', cursor)
-					}
-				} else {
-					cm.doc.replaceRange('**', cursor)
-				}
-
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch  : cursor.ch+2
-				})
-			}
-			cm.focus()
+			if (this.close_table_if_visible()) return
+			window.bus.$emit('codemirror-bold')
 		},
 		menu_italic() {
-			if (this.table_visible) {
-				this.close_table()
-				return
-			}
-
-			let cm = this.codeMirror()
-			let cursor = cm.getCursor()
-			let selection = cm.getSelection()
-			if (selection.length > 0) {
-				cm.replaceSelection('*' + selection + '*')
-				cursor = cm.getCursor()
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch  : cursor.ch-1
-				})
-			} else {
-				if (cursor.ch === 0) {
-					if (cm.doc.getLine(cursor.line).length > 0) {
-						cm.doc.replaceRange('*', cursor)
-					} else {
-						cm.doc.replaceRange('**', cursor)
-					}
-				} else {
-					cm.doc.replaceRange('*', cursor)
-				}
-
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch  : cursor.ch+1
-				})
-			}
-			cm.focus()
+			if (this.close_table_if_visible()) return
+			window.bus.$emit('codemirror-italic')
 		},
 		menu_strike() {
-			if (this.table_visible) {
-				this.close_table()
-				return
-			}
-
-			let cm = this.codeMirror()
-			let cursor = cm.getCursor()
-			let selection = cm.getSelection()
-			if (selection.length > 0) {
-				cm.replaceSelection('~~' + selection + '~~')
-				cursor = cm.getCursor()
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch  : cursor.ch-2
-				})
-			} else {
-				if (cursor.ch === 0) {
-					if (cm.doc.getLine(cursor.line).length > 0) {
-						cm.doc.replaceRange('~~', cursor)
-					} else {
-						cm.doc.replaceRange('~~~~', cursor)
-					}
-				} else {
-					cm.doc.replaceRange('~~', cursor)
-				}
-
-				cm.doc.setCursor({
-					line: cursor.line,
-					ch  : cursor.ch+2
-				})
-			}
-			cm.focus()
+			if (this.close_table_if_visible()) return
+			window.bus.$emit('codemirror-strike')
 		},
 		menu_checkMark() {
-			if (this.table_visible) {
-				this.close_table()
-				return
-			}
+			if (this.close_table_if_visible()) return
 
 			var cm = this.codeMirror()
 			var cursor = cm.getCursor()

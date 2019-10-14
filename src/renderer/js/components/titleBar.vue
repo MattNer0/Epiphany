@@ -7,6 +7,7 @@
 					ul
 						li.icon
 						li(@click="file_menu") File
+						li(@click="edit_menu") Edit
 						li(@click="view_menu") View
 						li(@click="tools_menu") Tools
 						li(@click="quick_note")
@@ -50,6 +51,8 @@ export default {
 		'notesDisplayOrder': String,
 		'isToolbarEnabled' : Boolean,
 		'isFullWidthNote'  : Boolean,
+		'isNoteSelected'   : Boolean,
+		'isPreview'        : Boolean,
 		'currentTheme'     : String,
 		'windowTitle'      : String
 	},
@@ -253,6 +256,69 @@ export default {
 			}))
 
 			return notesSubmenu
+		},
+		edit_menu(event) {
+			var menu = new Menu()
+
+			menu.append(new MenuItem({
+				label      : 'Undo',
+				accelerator: 'CmdOrCtrl+Z',
+				enabled    : this.isNoteSelected && !this.isPreview,
+				click      : () => {
+					window.bus.$emit('codemirror-undo')
+				}
+			}))
+
+			menu.append(new MenuItem({
+				label      : 'Redo',
+				accelerator: 'CmdOrCtrl+Y',
+				enabled    : this.isNoteSelected && !this.isPreview,
+				click      : () => {
+					window.bus.$emit('codemirror-redo')
+				}
+			}))
+
+			menu.append(new MenuItem({ type: 'separator' }))
+
+			menu.append(new MenuItem({
+				label      : 'Cut',
+				accelerator: 'CmdOrCtrl+X',
+				enabled    : this.isNoteSelected && !this.isPreview,
+				click      : () => {
+					window.bus.$emit('codemirror-cut')
+				}
+			}))
+
+			menu.append(new MenuItem({
+				label      : 'Copy',
+				accelerator: 'CmdOrCtrl+C',
+				enabled    : this.isNoteSelected && !this.isPreview,
+				click      : () => {
+					window.bus.$emit('codemirror-copy')
+				}
+			}))
+
+			menu.append(new MenuItem({
+				label      : 'Paste',
+				accelerator: 'CmdOrCtrl+V',
+				enabled    : this.isNoteSelected && !this.isPreview,
+				click      : () => {
+					window.bus.$emit('codemirror-paste')
+				}
+			}))
+
+			menu.append(new MenuItem({ type: 'separator' }))
+
+			menu.append(new MenuItem({
+				label      : 'Find in Note',
+				accelerator: 'CmdOrCtrl+F',
+				enabled    : this.isNoteSelected && !this.isPreview,
+				click      : () => {
+					window.bus.$emit('codemirror-find')
+				}
+			}))
+
+			menu.popup(this.popup_position(event))
 		},
 		view_menu(event) {
 			var menu = new Menu()

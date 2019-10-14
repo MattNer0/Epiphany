@@ -221,6 +221,14 @@
 			li > div {
 				cursor: default;
 			}
+
+			li {
+				padding-right: 0.4em;
+			}
+
+			li:last-child {
+				padding-right: 0;
+			}
 		}
 	}
 }

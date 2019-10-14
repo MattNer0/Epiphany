@@ -1,5 +1,7 @@
 import { copyText, cutText, killLine } from './elutils'
 
+import elosenv from '../utils/elosenv'
+
 const TODO_REGEXP = /^( *)((\*|-) \[( |x)] )(.*)$/
 const LI_REGEXP = /^( *)((\*|-) )(.*)$/
 const OL_REGEXP = /^( *)(([0-9]+)\. )(.*)$/
@@ -165,29 +167,40 @@ function enterHandler(before, after) {
 	delete map['Ctrl-8']
 	delete map['Ctrl-9']
 
-	var keymapOverray = {
+	const keymapOverrayLinux = {
+		'Ctrl-End' : 'goDocEnd',
+		'Ctrl-Home': 'goDocStart',
+		'Ctrl-C'   : copyText,
+		'Ctrl-A'   : 'selectAll',
+		'Ctrl-X'   : cutText,
+		'Ctrl-Z'   : 'undo',
+		'Ctrl-Y'   : 'redo',
+		'Ctrl-F'   : 'findPersistent',
+		'Ctrl-R'   : 'replace'
+	}
+
+	const keymapOverrayDarwin = {
+		'Cmd-Right': 'goLineRight',
+		'Cmd-Left' : 'goLineLeft',
+		'Cmd-Down' : 'goDocEnd',
+		'Cmd-Up'   : 'goDocStart',
+		'Cmd-C'    : copyText,
+		'Cmd-A'    : 'selectAll',
+		'Cmd-X'    : cutText,
+		'Cmd-Z'    : 'undo',
+		'Cmd-Y'    : 'redo',
+		'Cmd-F'    : 'findPersistent',
+		'Cmd-R'    : 'replace'
+	}
+
+	const keymapOverray = {
 		'Ctrl-Right': CodeMirror.keyMap.emacs['Alt-F'],
 		'Ctrl-Left' : CodeMirror.keyMap.emacs['Alt-B'],
 		'End'       : 'goLineRight',
 		'Home'      : 'goLineLeft',
-		'Ctrl-End'  : 'goDocEnd',
-		'Ctrl-Home' : 'goDocStart',
-		'Ctrl-C'    : copyText,
-		'Alt-W'     : copyText,
-		'Ctrl-A'    : 'selectAll',
-		'Ctrl-X'    : cutText,
-		'Ctrl-W'    : cutText,
 		'Ctrl-K'    : killLine,
-		'Ctrl-Z'    : 'undo',
-		'Ctrl-F'    : 'findPersistent',
-		'Ctrl-R'    : 'replace',
-		'Cmd-Left'  : 'goLineLeft',
-		'Cmd-Right' : 'goLineRight',
 		'Alt-G G'   : () => {
 			// delete this behavior
-		},
-		'Alt-Z': (cm) => {
-			cm.execCommand('redo')
 		},
 		'Shift-Ctrl-A': 'selectAll',
 		'Backspace'   : (cm) => {
@@ -289,6 +302,11 @@ function enterHandler(before, after) {
 		}
 	}
 	var updated = _.assign(map, keymapOverray)
+	if (elosenv.isDarwin()) {
+		updated = _.assign(updated, keymapOverrayDarwin)
+	} else {
+		updated = _.assign(updated, keymapOverrayLinux)
+	}
 	CodeMirror.keyMap.piledmap = updated
 	CodeMirror.normalizeKeyMap(updated)
 })(require('lodash'), require('codemirror'), require('codemirror/keymap/emacs'))

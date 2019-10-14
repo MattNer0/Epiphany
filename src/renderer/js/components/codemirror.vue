@@ -8,6 +8,7 @@ import path from 'path'
 import _ from 'lodash'
 
 import { Image } from '../models'
+import elosenv from '../utils/elosenv'
 
 import electron from 'electron'
 const { remote, shell, clipboard } = electron
@@ -83,6 +84,26 @@ export default {
 	},
 	mounted() {
 		this.newCodemirrorInstance()
+		window.bus.$on('codemirror-undo', this.commandUndo)
+		window.bus.$on('codemirror-redo', this.commandRedo)
+		window.bus.$on('codemirror-cut', this.commandCut)
+		window.bus.$on('codemirror-copy', this.commandCopy)
+		window.bus.$on('codemirror-paste', this.commandPaste)
+		window.bus.$on('codemirror-find', this.commandFind)
+		window.bus.$on('codemirror-bold', this.commandBold)
+		window.bus.$on('codemirror-italic', this.commandItalic)
+		window.bus.$on('codemirror-strike', this.commandStrike)
+	},
+	beforeDestroy() {
+		window.bus.$off('codemirror-undo', this.commandUndo)
+		window.bus.$off('codemirror-redo', this.commandRedo)
+		window.bus.$off('codemirror-cut', this.commandCut)
+		window.bus.$off('codemirror-copy', this.commandCopy)
+		window.bus.$off('codemirror-paste', this.commandPaste)
+		window.bus.$off('codemirror-find', this.commandFind)
+		window.bus.$off('codemirror-bold', this.commandBold)
+		window.bus.$off('codemirror-italic', this.commandItalic)
+		window.bus.$off('codemirror-strike', this.commandStrike)
 	},
 	computed: {
 		note() {
@@ -93,19 +114,36 @@ export default {
 		newCodemirrorInstance() {
 			this.$store.commit('resetEditor')
 
-			var cm = CodeMirror(this.$el, {
-				mode        : 'epiphanymode',
-				lineNumbers : false,
-				lineWrapping: true,
-				theme       : 'default',
-				keyMap      : 'piledmap',
-				extraKeys   : {
-					'Ctrl-Y'      : () => { pasteText(cm, this.note) },
+			let extraKeys
+			if (elosenv.isDarwin()) {
+				extraKeys = {
+					'Cmd-B'      : () => { this.commandBold() },
+					'Cmd-I'      : () => { this.commandItalic() },
+					'Cmd-V'      : () => { pasteText(cm, this.note) },
+					'Shift-Cmd-V': () => { window.bus.$emit('toggle-preview') },
+					'Alt-P'      : () => { window.bus.$emit('toggle-preview') },
+					'Alt-V'      : () => { window.bus.$emit('toggle-preview') },
+					'Shift-Cmd-A': () => { this.uploadFile() }
+				}
+			} else {
+				extraKeys = {
+					'Ctrl-B'      : () => { this.commandBold() },
+					'Ctrl-I'      : () => { this.commandItalic() },
 					'Ctrl-V'      : () => { pasteText(cm, this.note) },
-					'Alt-V'       : () => { pasteText(cm, this.note) },
 					'Shift-Ctrl-V': () => { window.bus.$emit('toggle-preview') },
-					'Alt-P'       : () => { window.bus.$emit('toggle-preview') }
-				},
+					'Alt-P'       : () => { window.bus.$emit('toggle-preview') },
+					'Alt-V'       : () => { window.bus.$emit('toggle-preview') },
+					'Shift-Ctrl-A': () => { this.uploadFile() }
+				}
+			}
+
+			var cm = CodeMirror(this.$el, {
+				mode              : 'epiphanymode',
+				lineNumbers       : false,
+				lineWrapping      : true,
+				theme             : 'default',
+				keyMap            : 'piledmap',
+				extraKeys         : extraKeys,
 				indentUnit        : 4,
 				smartIndent       : true,
 				tabSize           : 4,
@@ -175,7 +213,7 @@ export default {
 
 					menu.append(new MenuItem({ type: 'separator' }))
 					menu.append(new MenuItem({
-						label      : 'Attach Image',
+						label      : 'Insert Image',
 						accelerator: 'Shift+CmdOrCtrl+A',
 						click      : () => { this.uploadFile() }
 					}))
@@ -200,18 +238,13 @@ export default {
 								shell.openExternal(s)
 							}
 						}))
-					} else {
-						/*menu.append(new MenuItem({
-								label  : 'Copy Link',
-								enabled: false
-							}));
-							menu.append(new MenuItem({
-								label  : 'Open Link In Browser',
-								enabled: false
-							}));*/
 					}
 					menu.append(new MenuItem({ type: 'separator' }))
-					menu.append(new MenuItem({ label: 'Toggle Preview', click: () => { window.bus.$emit('toggle-preview') } }))
+					menu.append(new MenuItem({
+						label      : 'Toggle Preview',
+						accelerator: 'Alt+P',
+						click      : () => { window.bus.$emit('toggle-preview') }
+					}))
 					menu.popup(remote.getCurrentWindow())
 				}, 90)
 			})
@@ -260,6 +293,111 @@ export default {
 			this.$nextTick(() => {
 				this.initInlinePreview()
 			})
+		},
+		commandUndo() {
+			this.cm.execCommand('undo')
+		},
+		commandRedo() {
+			this.cm.execCommand('redo')
+		},
+		commandCut() {
+			cutText(this.cm)
+		},
+		commandCopy() {
+			copyText(this.cm)
+		},
+		commandPaste() {
+			pasteText(this.cm, this.note)
+		},
+		commandFind() {
+			this.cm.execCommand('findPersistent')
+		},
+		commandBold() {
+			if (!this.cm) return
+			let cursor = this.cm.getCursor()
+			let selection = this.cm.getSelection()
+			if (selection.length > 0) {
+				this.cm.replaceSelection('**' + selection + '**')
+				cursor = this.cm.getCursor()
+				this.cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch-2
+				})
+			} else {
+				if (cursor.ch === 0) {
+					if (this.cm.doc.getLine(cursor.line).length > 0) {
+						this.cm.doc.replaceRange('**', cursor)
+					} else {
+						this.cm.doc.replaceRange('****', cursor)
+					}
+				} else {
+					this.cm.doc.replaceRange('**', cursor)
+				}
+
+				this.cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch+2
+				})
+			}
+			this.cm.focus()
+		},
+		commandItalic() {
+			if (!this.cm) return
+			let cursor = this.cm.getCursor()
+			let selection = this.cm.getSelection()
+			if (selection.length > 0) {
+				this.cm.replaceSelection('*' + selection + '*')
+				cursor = this.cm.getCursor()
+				this.cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch-1
+				})
+			} else {
+				if (cursor.ch === 0) {
+					if (this.cm.doc.getLine(cursor.line).length > 0) {
+						this.cm.doc.replaceRange('*', cursor)
+					} else {
+						this.cm.doc.replaceRange('**', cursor)
+					}
+				} else {
+					this.cm.doc.replaceRange('*', cursor)
+				}
+
+				this.cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch+1
+				})
+			}
+			this.cm.focus()
+		},
+		commandStrike() {
+			if (!this.cm) return
+			let cursor = this.cm.getCursor()
+			let selection = this.cm.getSelection()
+			if (selection.length > 0) {
+				this.cm.replaceSelection('~~' + selection + '~~')
+				cursor = this.cm.getCursor()
+				this.cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch-2
+				})
+			} else {
+				if (cursor.ch === 0) {
+					if (this.cm.doc.getLine(cursor.line).length > 0) {
+						this.cm.doc.replaceRange('~~', cursor)
+					} else {
+						this.cm.doc.replaceRange('~~~~', cursor)
+					}
+				} else {
+					this.cm.doc.replaceRange('~~', cursor)
+				}
+
+				this.cm.doc.setCursor({
+					line: cursor.line,
+					ch  : cursor.ch+2
+				})
+			}
+			this.cm.focus()
 		},
 		initFooter() {
 			this.$store.commit('resetEditor')
