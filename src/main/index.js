@@ -2,7 +2,7 @@
 
 import path from 'path'
 import fs from 'fs'
-import { app, screen, protocol, ipcMain } from 'electron'
+import { app, screen, protocol, ipcMain, Menu } from 'electron'
 import { makeRendererWindow, makeBackgroundRendererWindow, windowName } from '../common/window'
 import trayIcon from './tray'
 
@@ -22,6 +22,15 @@ app.setPath(
 		'.portable'
 	)) ? path.join(path.dirname(process.execPath), 'userdata') : app.getPath('userData')
 )
+
+if (process.platform === 'linux' || process.platform === 'darwin') {
+	app.setAboutPanelOptions({
+		applicationName   : 'Epiphany',
+		applicationVersion: '0.2.8',
+		copyright         : 'MIT',
+		website           : 'https://github.com/MattNer0/epiphany'
+	})
+}
 
 var gotTheLock = app.requestSingleInstanceLock()
 
@@ -45,6 +54,42 @@ if (!gotTheLock) {
 
 if (process.platform === 'linux') {
 	app.disableHardwareAcceleration()
+}
+
+function setApplicationMenu() {
+	var template = [
+		{
+			label  : 'Application',
+			submenu: [
+				{
+					label   : 'About Application',
+					selector: 'orderFrontStandardAboutPanel:'
+				},
+				{ type: 'separator' },
+				{
+					label      : 'Quit',
+					accelerator: 'Command+Q',
+					click      : function() {
+						app.quit()
+					}
+				}
+			]
+		},
+		{
+			label  : 'Edit',
+			submenu: [
+				{ label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+				{ label: 'Redo', accelerator: 'CmdOrCtrl+Y', selector: 'redo:' },
+				{ type: 'separator' },
+				{ label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+				{ label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+				{ label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+				{ label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
+			]
+		}
+	]
+
+	Menu.setApplicationMenu(Menu.buildFromTemplate(template))
 }
 
 // Create main BrowserWindow when electron is ready
@@ -125,6 +170,10 @@ function createMainWindow() {
 			window.focus()
 		})
 	})
+
+	if (process.platform === 'linux' || process.platform === 'darwin') {
+		setApplicationMenu()
+	}
 
 	return window
 }
