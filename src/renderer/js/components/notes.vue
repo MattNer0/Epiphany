@@ -188,28 +188,42 @@ export default {
 			if (note.isOutline) {
 				filename = fileUtils.safeName(note.title) + '.opml'
 			}
-			var notePath = dialog.showSaveDialog(remote.getCurrentWindow(), {
+
+			dialog.showSaveDialog(remote.getCurrentWindow(), {
 				title      : 'Export Note',
 				defaultPath: filename
 			})
-			if (!notePath) {
-				return null
-			}
-			try {
-				var fd = fs.openSync(notePath, 'w')
-				if (note.isOutline) {
-					fs.writeSync(fd, note.compileOutlineBody())
-				} else {
-					fs.writeSync(fd, note.bodyWithDataURL)
-				}
-			} catch (e) {
-				window.bus.$emit('flash-message', {
-					time : 5000,
-					level: 'error',
-					text : 'File "' + filename + '" already exists, skipped'
+				.then(result => {
+					if (result.canceled || !result.filePath) {
+						return
+					}
+					const notePath = result.filePath
+
+					try {
+						var fd = fs.openSync(notePath, 'w')
+						if (note.isOutline) {
+							fs.writeSync(fd, note.compileOutlineBody())
+						} else {
+							fs.writeSync(fd, note.bodyWithDataURL)
+						}
+						fs.closeSync(fd)
+						window.bus.$emit('flash-message', {
+							time : 1000,
+							level: 'info',
+							text : 'Note exported'
+						})
+					} catch (e) {
+						fs.closeSync(fd)
+						window.bus.$emit('flash-message', {
+							time : 5000,
+							level: 'error',
+							text : 'File "' + filename + '" already exists, skipped'
+						})
+					}
 				})
-			}
-			fs.closeSync(fd)
+				.catch(err => {
+					console.error(err)
+				})
 		},
 		noteMenu(note) {
 			var menu = new Menu()
