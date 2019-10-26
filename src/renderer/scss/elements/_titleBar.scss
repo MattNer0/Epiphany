@@ -15,6 +15,7 @@
 	nav {
 		display: inline-block;
 		-webkit-app-region: no-drag;
+		width: 100%;
 
 		ul {
 			-webkit-font-smoothing: antialiased;
@@ -81,7 +82,7 @@
 	}
 
 	.system-icons {
-		display: inline-block;
+		display: flex;
 		-webkit-app-region: no-drag;
 
 		.system-icon {
@@ -121,10 +122,12 @@
 			height: 1.1em;
 			margin-right: 0.4em;
 			margin-left: 0.4em;
+			padding: 0.1em 0 0;
 			background-color: #44CA45;
 		}
 		i {
 			opacity: 0;
+			padding: 0;
 			background-color: transparent !important;
 			color: #444 !important;
 		}
@@ -133,10 +136,10 @@
 		}
 		.system-icon.close-icon {
 			order: -1;
-			padding-top: 0.3em;
 			background-color: #F55D5C;
 		}
 		.system-icon.minimize {
+			padding-left: 0.1em;
 			background-color: #F8BC3A;
 		}
 	}

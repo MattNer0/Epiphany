@@ -26,7 +26,7 @@
 								i.coon-x-circle(v-show="query", @click="clearSearch")
 
 				.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
-					.system-icon(@click="win_min", v-if="!windowTitle")
+					.system-icon.minimize(@click="win_min", v-if="!windowTitle")
 						i.coon-underscore
 					.system-icon(@click="win_max", v-if="!windowTitle")
 						i.coon-square
