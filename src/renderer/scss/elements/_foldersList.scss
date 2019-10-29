@@ -140,7 +140,7 @@
 	i.down {
 		position: absolute;
 		left: 0.1em;
-		top: 0.75em;
+		top: 0.65em;
 		display: none;
 		cursor: pointer;
 		margin: 0;
@@ -165,9 +165,9 @@
 	}
 }
 
-.folder-object.openFolder {
+.openFolder .folder-object {
 	i.down {
-		top: 0.7em;
+		top: 0.6em;
 	}
 }
 
@@ -288,19 +288,32 @@
 	text-align: center;
 	font-size: 80%;
 	line-height: 1.4em;
-	padding: 0 0.2em 0 0.3em;
+	padding: 0.15em 0.3em 0.1em 0.3em;
 	min-width: 1.4em;
 	margin: -0.1em 0 0 0.3em;
 	opacity: 0.6;
+
+	i {
+		display: inline-block;
+		margin-right: 0.2em;
+	}
+}
+
+.my-shelf-folder .my-shelf-folder-badge {
+	i {
+		display: inline-block;
+		margin-right: 0.2em;
+	}
 }
 
 .my-shelf-folder-badge:before {
 	content: "";
 	position: absolute;
-	height: 1.4em;
+	min-height: 1.4em;
 	border-radius: 10em;
 	z-index: -1;
 	top: 0;
+	bottom: 0;
 	left: 0;
 	right: 0;
 }

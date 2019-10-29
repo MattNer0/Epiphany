@@ -6,13 +6,14 @@
 			| Current Library Path:
 			br
 			| {{ libraryPath }}
+			| &nbsp;
 			a(href="#", @click.prevent.stop="openLibrary")
 				i.coon-external-link
 			br
 			br
 		p
 			i.coon-github
-			|
+			| &nbsp;
 			a(href="#", @click.prevent.stop="openRepo") Github Repository
 </template>
 
