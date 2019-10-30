@@ -7,12 +7,6 @@ nav ul {
 	transition: background-color .25s ease;
 }
 
-nav > ul:after {
-	content: "";
-	clear: both;
-	display: block;
-}
-
 nav > ul {
 	display: flex;
 	flex-direction: row;

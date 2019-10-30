@@ -114,8 +114,6 @@
 			}
 
 			li {
-				float: left;
-
 				i {
 					vertical-align: baseline;
 					padding: 0.3em 0.2em 0.2em;
@@ -184,12 +182,6 @@
 
 		ul.transparent {
 			background: transparent;
-		}
-
-		ul:after {
-			clear: both;
-			content: "";
-			display: block;
 		}
 
 		.dialog ul {

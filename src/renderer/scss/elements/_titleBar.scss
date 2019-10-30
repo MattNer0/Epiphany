@@ -14,7 +14,6 @@
 
 	nav {
 		display: inline-block;
-		-webkit-app-region: no-drag;
 		width: 100%;
 
 		ul {
@@ -25,6 +24,7 @@
 				padding: 0.3em 0.5em;
 				cursor: default;
 				-webkit-user-select: none;
+				-webkit-app-region: no-drag;
 			}
 
 			li.icon {

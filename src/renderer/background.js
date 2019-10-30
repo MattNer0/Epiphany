@@ -147,8 +147,8 @@ window.onload = function () {
 
 		libraryHelper.initDB(data.library).then((db) => {
 			return libraryHelper.cleanDatabase(db, data.library)
-		}).then(() => {
-			ipcRenderer.send('database-cleaned')
+		}).then(numNotes => {
+			ipcRenderer.send('database-cleaned', { num: numNotes })
 		}).catch((err) => {
 			log.error(err.message)
 		})

@@ -19,10 +19,11 @@
 		"mimeTypes": [ "text/markdown" ]
 	},
 	"win": {
-		"target": ["nsis", "portable"],
+		"target": ["nsis"],
 		"icon": "icons/epiphany.ico"
 	},
 	"mac": {
+		"target": ["dmg"],
 		"icon": "icons/epiphany.iconset/icon_512x512@1x.png"
 	}
 }

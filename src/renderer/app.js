@@ -406,11 +406,19 @@ var appVue = new Vue({
 		})
 
 		ipcRenderer.on('database-cleaned', (event, data) => {
-			this.sendFlashMessage({
-				time : 1000,
-				level: 'info',
-				text : 'Database cleaned'
-			})
+			if (data && data.num) {
+				this.sendFlashMessage({
+					time : 1500,
+					level: 'info',
+					text : 'Database cleaned - ' + data.num + (data.num > 1 ? ' notes' : ' note')
+				})
+			} else {
+				this.sendFlashMessage({
+					time : 1000,
+					level: 'info',
+					text : 'Database cleaned'
+				})
+			}
 		})
 
 		ipcRenderer.on('load-page-fail', (event, data) => {
