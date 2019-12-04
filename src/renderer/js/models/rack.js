@@ -89,7 +89,7 @@ class Rack extends Model {
 	}
 
 	searchMatchName(search) {
-		let lowerSearch = search.toLowerCase()
+		const lowerSearch = search.toLowerCase()
 		return this.name.toLowerCase() === lowerSearch || this.name.toLowerCase().indexOf(lowerSearch) === 0
 	}
 

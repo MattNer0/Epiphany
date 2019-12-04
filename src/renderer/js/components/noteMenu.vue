@@ -192,8 +192,8 @@ export default {
 			'table_max_column'  : 10,
 			'table_hover_row'   : 0,
 			'table_hover_column': 0,
-			'position_left'     : [ 'left', 'top', 'left', 'top' ],
-			'position_right'    : [ 'right', 'top', 'right', 'top' ]
+			'position_left'     : ['left', 'top', 'left', 'top'],
+			'position_right'    : ['right', 'top', 'right', 'top']
 		}
 	},
 	computed: {
@@ -356,7 +356,7 @@ export default {
 
 			var cm = this.codeMirror()
 			var cursor = cm.getCursor()
-			let selection = cm.getSelection()
+			const selection = cm.getSelection()
 			if (selection.length > 0) {
 				cm.replaceSelection('```\n' + selection + '\n```', 'start')
 				cursor = cm.getCursor()

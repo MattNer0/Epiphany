@@ -105,7 +105,7 @@ export default {
 	},
 	watch: {
 		input_data() {
-			this.$refs['input_data'].classList.remove('error')
+			this.$refs.input_data.classList.remove('error')
 		}
 	}
 }

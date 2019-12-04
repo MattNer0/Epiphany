@@ -148,7 +148,7 @@ export default {
 		image_url() {
 			this.$nextTick(() => {
 				if (this.$refs.imagemodal) {
-					let win = remote.getCurrentWindow().getBounds()
+					const win = remote.getCurrentWindow().getBounds()
 					if (win.width > this.image_width) {
 						this.$refs.imagemodal.style.width = this.image_width + 'px'
 					}

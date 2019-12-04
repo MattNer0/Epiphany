@@ -3,8 +3,8 @@ import { Tray, Menu } from 'electron'
 
 export default function(mainWindow, app) {
 
-	let appIcon = new Tray(path.join(__static, 'tray.png'))
-	let contextMenu = Menu.buildFromTemplate([{
+	const appIcon = new Tray(path.join(__static, 'tray.png'))
+	const contextMenu = Menu.buildFromTemplate([{
 		label: 'Show App',
 		click: () => {
 			mainWindow.show()

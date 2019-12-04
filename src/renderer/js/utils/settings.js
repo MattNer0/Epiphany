@@ -64,10 +64,10 @@ export default {
 
 	loadWindowSize() {
 		var win = remote.getCurrentWindow()
-		if (settingsData['screen_maximized']) {
+		if (settingsData.screen_maximized) {
 			win.maximize()
-		} else if (settingsData['screen_width'] && settingsData['screen_height']) {
-			win.setSize(settingsData['screen_width'], settingsData['screen_height'])
+		} else if (settingsData.screen_width && settingsData.screen_height) {
+			win.setSize(settingsData.screen_width, settingsData.screen_height)
 		}
 	},
 
@@ -77,17 +77,17 @@ export default {
 		var currentBounds = win.getBounds()
 
 		if (win.isMaximized()) {
-			settingsData['screen_maximized'] = true
-			settingsData['screen_width'] = currentSize[0]
-			settingsData['screen_height'] = currentSize[1]
-			settingsData['screen_x'] = currentBounds.x
-			settingsData['screen_y'] = currentBounds.y
+			settingsData.screen_maximized = true
+			settingsData.screen_width = currentSize[0]
+			settingsData.screen_height = currentSize[1]
+			settingsData.screen_x = currentBounds.x
+			settingsData.screen_y = currentBounds.y
 		} else {
-			settingsData['screen_maximized'] = false
-			settingsData['screen_width'] = currentSize[0]
-			settingsData['screen_height'] = currentSize[1]
-			settingsData['screen_x'] = currentBounds.x
-			settingsData['screen_y'] = currentBounds.y
+			settingsData.screen_maximized = false
+			settingsData.screen_width = currentSize[0]
+			settingsData.screen_height = currentSize[1]
+			settingsData.screen_x = currentBounds.x
+			settingsData.screen_y = currentBounds.y
 		}
 
 		try {

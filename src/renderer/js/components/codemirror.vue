@@ -56,14 +56,14 @@ require('../codemirror/piledmap')
 
 function countWords(text) {
 	text = text.replace(/\[[\w\s]+?\]/g, ' ').replace(/[^\w\-’'"_]/g, ' ').replace(/[\s\r\n]+/g, ' ').replace(/\s\W\s/g, ' ')
-	let words = text.split(' ').filter((str) => {
+	const words = text.split(' ').filter((str) => {
 		return str.length > 0
 	})
 	return words.length
 }
 
 function countLineBreaks(text) {
-	let lines = text.split('\n')
+	const lines = text.split('\n')
 	return lines.length
 }
 
@@ -269,7 +269,7 @@ export default {
 			cm.on('renderLine', (cm, line, elem) => {
 				let found = false
 				for (let i = 0; i < this.widgets.length; ++i) {
-					let widget = this.widgets[i]
+					const widget = this.widgets[i]
 					if (widget.line === line) {
 						found = true
 						this.validateInlinePreview(i, line.text)
@@ -315,7 +315,7 @@ export default {
 		commandBold() {
 			if (!this.cm) return
 			let cursor = this.cm.getCursor()
-			let selection = this.cm.getSelection()
+			const selection = this.cm.getSelection()
 			if (selection.length > 0) {
 				this.cm.replaceSelection('**' + selection + '**')
 				cursor = this.cm.getCursor()
@@ -344,7 +344,7 @@ export default {
 		commandItalic() {
 			if (!this.cm) return
 			let cursor = this.cm.getCursor()
-			let selection = this.cm.getSelection()
+			const selection = this.cm.getSelection()
 			if (selection.length > 0) {
 				this.cm.replaceSelection('*' + selection + '*')
 				cursor = this.cm.getCursor()
@@ -373,7 +373,7 @@ export default {
 		commandStrike() {
 			if (!this.cm) return
 			let cursor = this.cm.getCursor()
-			let selection = this.cm.getSelection()
+			const selection = this.cm.getSelection()
 			if (selection.length > 0) {
 				this.cm.replaceSelection('~~' + selection + '~~')
 				cursor = this.cm.getCursor()
@@ -408,7 +408,7 @@ export default {
 		},
 		validateInlinePreview(index, text) {
 			this.imageRegex.lastIndex = 0
-			let match = this.imageRegex.exec(text)
+			const match = this.imageRegex.exec(text)
 			if (match === null) {
 				this.$nextTick(() => {
 					this.cm.removeLineWidget(this.widgets[index])
@@ -416,7 +416,7 @@ export default {
 				})
 			} else {
 				try {
-					let img = this.widgets[index].node.children[0]
+					const img = this.widgets[index].node.children[0]
 					img.src = this.inlinePreviewCleanUrl(match)
 				} catch (e) {
 					console.error(e)
@@ -426,10 +426,10 @@ export default {
 		addInlinePreview(line, index) {
 			let match
 			while ((match = this.imageRegex.exec(line)) !== null) {
-				let url = match[2]
+				const url = match[2]
 				if (url.startsWith('epiphany://')) {
-					let msg = document.createElement('div')
-					let img = msg.appendChild(document.createElement('img'))
+					const msg = document.createElement('div')
+					const img = msg.appendChild(document.createElement('img'))
 					msg.classList.add('image-widget')
 					img.src = this.inlinePreviewCleanUrl(match)
 					img.draggable = false
@@ -449,7 +449,7 @@ export default {
 		},
 		initInlinePreview() {
 			this.removeInlinePreview()
-			let lines = this.cm.getValue().split('\n')
+			const lines = this.cm.getValue().split('\n')
 			lines.forEach((line, index) => {
 				this.addInlinePreview(line, index)
 			})

@@ -71,7 +71,7 @@ function cutText(cm) {
  * check if the string contains an image url.
  */
 function isImage(text) {
-	let ext = text.split('.').pop().toLowerCase()
+	const ext = text.split('.').pop().toLowerCase()
 	return ['png', 'jpeg', 'jpg', 'gif', 'bmp'].indexOf(ext) >= 0
 }
 

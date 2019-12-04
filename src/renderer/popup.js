@@ -21,7 +21,7 @@ document.addEventListener('drop', (e) => {
 })
 
 // eslint-disable-next-line no-unused-vars
-let vueApp = new Vue({
+const vueApp = new Vue({
 	el      : '#app',
 	template: require('./html/popup.html'),
 	data    : {

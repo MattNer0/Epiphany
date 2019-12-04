@@ -45,6 +45,7 @@ module.exports = {
 		'no-multiple-empty-lines': 0,
 		'indent': ['error', 'tab', { "SwitchCase": 1 }],
 		'key-spacing': ['error', { 'align': 'colon' }],
+		'quote-props': ['error', 'consistent'],
 
 		'import/first': 0,
 		'import/named': 2,

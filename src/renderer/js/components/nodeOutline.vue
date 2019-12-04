@@ -245,7 +245,7 @@ export default {
 					else if (!selection) nodeElement.setSelectionRange(0, 0)
 				}, 0)
 			} else {
-				let inputList = document.querySelectorAll('.my-editor-outline > div > input')[0]
+				const inputList = document.querySelectorAll('.my-editor-outline > div > input')[0]
 				if (inputList) inputList.focus()
 			}
 		},

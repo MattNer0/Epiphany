@@ -51,7 +51,7 @@ function styleObject(obj) {
 					backgroundColor: obj['fixed-sidebar-background']
 				},
 				'& .my-shelf-buckets.fixed-bottom': {
-					backgroundColor          : obj['fixed-sidebar-background'],
+					'backgroundColor'        : obj['fixed-sidebar-background'],
 					'& .my-shelf-rack:before': {
 						backgroundColor: obj['fixed-sidebar-background']
 					}
@@ -144,10 +144,10 @@ function styleObject(obj) {
 				}
 			},
 			'.my-shelf-folders-outer': {
-				color: obj['sidebar-color'],
+				'color': obj['sidebar-color'],
 
 				'& .folder-object': {
-					color: obj['sidebar-color'],
+					'color': obj['sidebar-color'],
 
 					'& input': {
 						color: obj['sidebar-color']
@@ -161,8 +161,8 @@ function styleObject(obj) {
 				}
 			},
 			'.my-shelf-banner, .my-search': {
-				color          : obj['sidebar-color'],
-				backgroundColor: obj['fixed-sidebar-background'],
+				'color'          : obj['sidebar-color'],
+				'backgroundColor': obj['fixed-sidebar-background'],
 
 				'& .link:hover': {
 					backgroundColor: obj['sidebar-background-hover'],
@@ -170,8 +170,8 @@ function styleObject(obj) {
 				}
 			},
 			'.my-editor-theme': {
-				color          : obj['note-text-color'],
-				backgroundColor: obj['note-background-color'],
+				'color'          : obj['note-text-color'],
+				'backgroundColor': obj['note-background-color'],
 
 				'& input': {
 					color: obj['note-hr-color']
@@ -211,23 +211,23 @@ function styleObject(obj) {
 				color          : obj['folder-selected-color']
 			},
 			'.my-shelf-folder.sortInside > .folder-object, .my-shelf-folder.isShelfSelected > .folder-object': {
-				backgroundColor: obj['sidebar-background-selected'],
-				color          : obj['folder-selected-color'],
-				'& input'      : {
+				'backgroundColor': obj['sidebar-background-selected'],
+				'color'          : obj['folder-selected-color'],
+				'& input'        : {
 					color: obj['folder-selected-color']
 				}
 			},
 			'.my-shelf-rack.isShelfSelected:not(.noCursor) > .rack-object': {
-				backgroundColor: obj['sidebar-background-selected'],
-				color          : obj['folder-selected-color'],
-				'& input'      : {
+				'backgroundColor': obj['sidebar-background-selected'],
+				'color'          : obj['folder-selected-color'],
+				'& input'        : {
 					color: obj['folder-selected-color']
 				}
 			},
 			'.my-shelf-folder.isShelfEditing > .folder-object': {
-				backgroundColor: obj['sidebar-background-hover'],
-				color          : obj['folder-selected-color'],
-				'& input'      : {
+				'backgroundColor': obj['sidebar-background-hover'],
+				'color'          : obj['folder-selected-color'],
+				'& input'        : {
 					color: obj['folder-selected-color']
 				}
 			},
@@ -269,8 +269,8 @@ function styleObject(obj) {
 						color: obj['note-bar-text-color']
 					},
 					'& table.select-table-size': {
-						border: '1px solid '+obj['note-bar-text-color'],
-						'& td': {
+						'border': '1px solid '+obj['note-bar-text-color'],
+						'& td'  : {
 							border: '1px solid '+obj['note-bar-text-color']
 						},
 						'& td.selected, td:hover': {
@@ -304,8 +304,8 @@ function styleObject(obj) {
 					color: obj['ui-text-color-dim']
 				},
 				'& .my-notes-note': {
-					color     : obj['note-list-text-color'],
-					background: obj['note-list-background'],
+					'color'     : obj['note-list-text-color'],
+					'background': obj['note-list-background'],
 
 					'& .my-notes-note-date, .my-notes-note-image, .my-notes-note-body': {
 						color: obj['note-list-body-color']
@@ -315,16 +315,16 @@ function styleObject(obj) {
 					backgroundColor: obj['sidebar-background-selected']
 				},
 				'& .my-notes-note:hover': {
-					background: obj['note-list-background-hover'],
-					color     : obj['note-list-text-color-hover'],
+					'background': obj['note-list-background-hover'],
+					'color'     : obj['note-list-text-color-hover'],
 
 					'& .my-notes-note-date, .my-notes-note-image, .my-notes-note-body': {
 						color: obj['note-list-body-color-hover']
 					}
 				},
 				'& .my-notes-note.my-notes-note-selected': {
-					background: obj['sidebar-background-selected'],
-					color     : obj['note-list-text-color-selected'],
+					'background': obj['sidebar-background-selected'],
+					'color'     : obj['note-list-text-color-selected'],
 
 					'& .my-notes-note-date, .my-notes-note-image, .my-notes-note-body': {
 						color: obj['note-list-body-color-selected']
@@ -348,8 +348,8 @@ function styleObject(obj) {
 					color          : obj['sidebar-color-hover']
 				},
 				'& .dialog ul': {
-					border              : '1px solid '+obj['resize-panel-handler'],
-					background          : obj['fixed-sidebar-background'],
+					'border'            : '1px solid '+obj['resize-panel-handler'],
+					'background'        : obj['fixed-sidebar-background'],
 					'& li > a, li > div': {
 						color: obj['sidebar-color']
 					},
@@ -378,8 +378,8 @@ function styleObject(obj) {
 				}
 			},
 			'.title-bar': {
-				backgroundColor: obj['fixed-sidebar-background'],
-				color          : obj['title-bar-color'],
+				'backgroundColor': obj['fixed-sidebar-background'],
+				'color'          : obj['title-bar-color'],
 
 				'& .spacer.right-align > nav > ul:after': {
 					borderRight: '2px solid '+obj['title-bar-color']
@@ -397,8 +397,8 @@ function styleObject(obj) {
 				}
 			},
 			'.popup-simple': {
-				color: obj['ui-text-color-selected'],
-				'& a': {
+				'color': obj['ui-text-color-selected'],
+				'& a'  : {
 					color: obj['title-bar-color']
 				},
 				'& a:hover': {

@@ -61,7 +61,7 @@ export default {
 			'clicks'         : 0,
 			'clickDelay'     : 500,
 			'clickTimer'     : null,
-			'position'       : [ 'left', 'top', 'left', 'top' ]
+			'position'       : ['left', 'top', 'left', 'top']
 		}
 	},
 	computed: {
@@ -238,7 +238,8 @@ export default {
 			}
 
 			if (this.showHistory) {
-				menu.append(new MenuItem({ label: 'Open and Close History',
+				menu.append(new MenuItem({
+					label: 'Open and Close History',
 					click: () => {
 						window.bus.$emit('change-bucket', {
 							bucket : note.rack,
@@ -246,22 +247,27 @@ export default {
 						})
 						this.selectNote(note)
 						this.$root.isFullScreen = false
-					} }))
+					}
+				}))
 				menu.append(new MenuItem({ type: 'separator' }))
 			}
 
 			if (note.starred) {
-				menu.append(new MenuItem({ label: 'Remove from Favorites',
+				menu.append(new MenuItem({
+					label: 'Remove from Favorites',
 					click: () => {
 						note.starred = false
 						note.saveModel()
-					} }))
+					}
+				}))
 			} else {
-				menu.append(new MenuItem({ label: 'Add to Favorites',
+				menu.append(new MenuItem({
+					label: 'Add to Favorites',
 					click: () => {
 						note.starred = true
 						note.saveModel()
-					} }))
+					}
+				}))
 			}
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({ label: 'Copy Internal Link to clipboard', click: () => { this.copyNotePath(note) } }))

@@ -48,7 +48,7 @@ export function makeUrlToHtmlFile (isDevelopment, entryPoint) {
 export function makeRendererWindow (isDevelopment = false, options = {}, entryPoint = 'app') {
 
 	// ... stripped out default options for sample
-	let aWindow = window.createWindow(options.windowOptions)
+	const aWindow = window.createWindow(options.windowOptions)
 
 	const uriOrPath = makeUrlToHtmlFile(isDevelopment, entryPoint)
 	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`)
@@ -67,7 +67,7 @@ export function makeRendererWindow (isDevelopment = false, options = {}, entryPo
 export function makeBackgroundRendererWindow (isDevelopment = false, options = {}, entryPoint = 'background') {
 
 	// ... stripped out default options for sample
-	let aWindow = window.createWindow(options.windowOptions)
+	const aWindow = window.createWindow(options.windowOptions)
 
 	const uriOrPath = makeUrlToHtmlFile(isDevelopment, entryPoint)
 	if (isDevelopment) log.debug(`Rendering using: '${uriOrPath}'`)

@@ -223,7 +223,7 @@ function enterHandler(before, after) {
 					ch  : numDelete
 				})
 			}
-			return CodeMirror.keyMap.emacs['Backspace'](cm)
+			return CodeMirror.keyMap.emacs.Backspace(cm)
 		},
 		'Enter': (cm) => {
 			var selection = cm.getSelection()

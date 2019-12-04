@@ -344,10 +344,10 @@ class Note extends Model {
 
 	downloadImages() {
 		let createdDir = true
-		let imageFormats = ['.png', '.jpg', '.gif', '.bmp']
+		const imageFormats = ['.png', '.jpg', '.gif', '.bmp']
 
-		let urlDownloads = []
-		let replacedStrings = []
+		const urlDownloads = []
+		const replacedStrings = []
 
 		if (!fs.existsSync(this.imagePath)) {
 			createdDir = false
@@ -442,13 +442,13 @@ class Note extends Model {
 	}
 
 	parseMetadata() {
-		let re = this.metadataregex
-		let metadata = {}
+		const re = this.metadataregex
+		const metadata = {}
 		let m
 
 		function cleanMatch(m) {
 			if (!m) return m
-			let newM = []
+			const newM = []
 			for (var i = 1; i < m.length; i++) {
 				if (m[i]) {
 					newM.push(m[i])

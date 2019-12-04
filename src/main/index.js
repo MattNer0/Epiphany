@@ -94,7 +94,7 @@ function setApplicationMenu() {
 
 // Create main BrowserWindow when electron is ready
 function createMainWindow() {
-	let settingsPath = path.join(app.getPath('userData'), 'epiphanyConfig.json')
+	const settingsPath = path.join(app.getPath('userData'), 'epiphanyConfig.json')
 	let settingsData = null
 	try {
 		settingsData = JSON.parse(fs.readFileSync(settingsPath))
@@ -102,8 +102,8 @@ function createMainWindow() {
 		settingsData = {}
 	}
 
-	let WINDOW_WIDTH = settingsData['screen_width'] || 1024
-	let WINDOW_HEIGHT = settingsData['screen_height'] || 768
+	const WINDOW_WIDTH = settingsData.screen_width || 1024
+	const WINDOW_HEIGHT = settingsData.screen_height || 768
 	let WINDOW_CENTER = true
 	let WINDOW_X
 	let WINDOW_Y
@@ -112,14 +112,14 @@ function createMainWindow() {
 	//let WINDOW_RECT_Y = settingsData['screen_y']
 
 	if (process.platform === 'linux') {
-		let bounds = screen.getPrimaryDisplay().bounds
+		const bounds = screen.getPrimaryDisplay().bounds
 		WINDOW_X = bounds.x + ((bounds.width - WINDOW_WIDTH) / 2)
 		WINDOW_Y = bounds.y + ((bounds.height - WINDOW_HEIGHT) / 2)
 		WINDOW_CENTER = false
 	}
 
 	// create the browser window.
-	let conf = {
+	const conf = {
 		width            : WINDOW_WIDTH,
 		height           : WINDOW_HEIGHT,
 		x                : WINDOW_X,
@@ -144,7 +144,7 @@ function createMainWindow() {
 	}
 
 	if (process.platform === 'linux') {
-		conf['icon'] = path.join(__static, 'icon.png')
+		conf.icon = path.join(__static, 'icon.png')
 	}
 
 	const window = makeRendererWindow(isDevelopment, {
@@ -228,10 +228,10 @@ function createBrowserWindow(callback) {
 function createPopupWindow(width, height, callback) {
 	if (mainWindow === null) return
 
-	let wSize = mainWindow.getSize()
-	let wBounds = mainWindow.getBounds()
+	const wSize = mainWindow.getSize()
+	const wBounds = mainWindow.getBounds()
 
-	let conf = {
+	const conf = {
 		width         : Math.ceil(wSize[0]*0.6),
 		height        : Math.ceil(wSize[1]*0.6),
 		modal         : true,
@@ -305,7 +305,6 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
-
 	protocol.registerFileProtocol('epiphany', (request, callback) => {
 		const url = request.url.substr(11)
 		callback({ path: path.normalize(decodeURI(url)) })

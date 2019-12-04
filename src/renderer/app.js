@@ -189,7 +189,7 @@ var appVue = new Vue({
 		},
 		searchRack() {
 			if (this.search && this.racks.length > 0) {
-				let metaRack = {
+				const metaRack = {
 					folders: []
 				}
 
@@ -224,7 +224,7 @@ var appVue = new Vue({
 			return !this.$store.state.draggingFolder && (this.selectedFolder || this.showAll || this.showFavorites)
 		},
 		mainCellClass() {
-			var classes = [ 'font' + this.fontsize ]
+			var classes = ['font' + this.fontsize]
 			if (this.noteTabs.length > 1) classes.push('tabs-open')
 			if (this.isFullWidthNote) classes.push('full-note')
 			if (this.isNoteSelected || this.isOutlineSelected || this.isThemeSelected) classes.push('note-open')
@@ -548,13 +548,13 @@ var appVue = new Vue({
 			this.racksWidth = Math.min(this.racksWidth, this.notesWidth)
 			this.notesWidth = this.racksWidth
 
-			let handlerStack = document.getElementById('handlerStack')
+			const handlerStack = document.getElementById('handlerStack')
 			if (handlerStack) {
 				handlerStack.previousElementSibling.style.width = this.racksWidth + 'px'
 				this.$refs.refHandleStack.checkWidth(this.racksWidth)
 			}
 
-			let handlerNotes = document.getElementById('handlerNotes')
+			const handlerNotes = document.getElementById('handlerNotes')
 			if (handlerNotes) {
 				handlerNotes.previousElementSibling.style.width = this.notesWidth + 'px'
 				this.$refs.refHandleNote.checkWidth(this.notesWidth)
@@ -642,9 +642,9 @@ var appVue = new Vue({
 
 			if (folder.notes && folder.notes.length > 0) {
 				let loadedCount = 0
-				let noteObjects = []
+				const noteObjects = []
 				for (let i=0; i < folder.notes.length && loadedCount < 5; i++) {
-					let note = folder.notes[i]
+					const note = folder.notes[i]
 					if (!note.loaded) {
 						loadedCount += 1
 						if (note.loadBody()) {
@@ -1115,7 +1115,7 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		openImg(url) {
-			let image = nativeImage.createFromPath(url.replace('epiphany://', ''))
+			const image = nativeImage.createFromPath(url.replace('epiphany://', ''))
 			var dimensions = image.getSize()
 			this.$refs.dialog.image(url, dimensions.width, dimensions.height)
 		},

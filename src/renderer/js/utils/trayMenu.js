@@ -13,7 +13,7 @@ export default {
 		this.refreshTrayMenu()
 	},
 	refreshTrayMenu() {
-		let menuEntries = []
+		const menuEntries = []
 		if (mainWindow === null) {
 			mainWindow = remote.getCurrentWindow()
 		}

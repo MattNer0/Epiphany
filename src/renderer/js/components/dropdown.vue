@@ -15,8 +15,8 @@
  * @return {object} Object with `width` and `height` properties.
  */
 function getSize($ele) {
-	let $clone = $ele.cloneNode(true)
-	let size = {}
+	const $clone = $ele.cloneNode(true)
+	const size = {}
 
 	$clone.style.display = 'block'
 	$clone.style.visibility = 'hidden'
@@ -36,15 +36,16 @@ function getSize($ele) {
  * @param {array} position - Dropdown position.
  */
 function setPosition($link, $dd, position, margin) {
-	let refSize = getSize($link)
-	let cornerPos = {}
-	let outStyle = {}
-	let origin = {}
-	let [ p1, p2, p3, p4 ] = position
-	let rect = $link.getBoundingClientRect()
-	let refPos = { top: 0, left: 0 }
-	let dpSize = getSize($dd)
-	let parentPosition = document.defaultView.getComputedStyle($link.offsetParent).position
+	const refSize = getSize($link)
+	const cornerPos = {}
+	const outStyle = {}
+	const origin = {}
+	const [p1, p2, p3, p4] = position
+	const rect = $link.getBoundingClientRect()
+	const refPos = { top: 0, left: 0 }
+	const dpSize = getSize($dd)
+	const parentPosition = document.defaultView.getComputedStyle($link.offsetParent).position
+	let parentRect
 
 	switch (parentPosition.toLowerCase()) {
 		case 'fixed':
@@ -53,7 +54,7 @@ function setPosition($link, $dd, position, margin) {
 			break
 
 		case 'absolute':
-			let parentRect = $link.offsetParent.getBoundingClientRect()
+			parentRect = $link.offsetParent.getBoundingClientRect()
 			refPos.left = rect.left - parentRect.left
 			refPos.top = rect.top - parentRect.top
 			break

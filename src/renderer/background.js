@@ -6,7 +6,7 @@ import log from 'electron-log'
 
 async function readNotesInsideFolders(allNotes, allImages, library, rack, folders, db) {
 	var arrayNotes = []
-	for (let f of folders) {
+	for (const f of folders) {
 		var newNotes = await libraryHelper.readNotesByFolder(library, f.path, db)
 		var newImages = await libraryHelper.readImagesByFolder(f.path)
 
@@ -31,7 +31,7 @@ async function loadNotes(library, arrayRacks, db) {
 	var allNotes = []
 	var allImages = []
 
-	for (let r of arrayRacks) {
+	for (const r of arrayRacks) {
 		try {
 			var arrayNotes = await readNotesInsideFolders(allNotes, allImages, library, r.rack, r.folders, db)
 			if (arrayNotes && arrayNotes.length > 0) {
