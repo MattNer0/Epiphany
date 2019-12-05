@@ -148,7 +148,7 @@ export default {
 			})
 		},
 		copyNoteHTML(note) {
-			clipboard.writeText(preview.render(note.body, Vue))
+			clipboard.writeText(preview.render(note, this))
 			window.bus.$emit('flash-message', {
 				time : 1000,
 				level: 'info',
