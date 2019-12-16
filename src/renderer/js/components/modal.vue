@@ -141,7 +141,7 @@ export default {
 				label: 'Select all',
 				role : 'selectall'
 			}])
-			inputMenu.popup(remote.getCurrentWindow())
+			inputMenu.popup()
 		}
 	},
 	watch: {

@@ -1213,10 +1213,10 @@ var appVue = new Vue({
 				label: 'Toggle Preview',
 				click: () => { this.togglePreview() }
 			}))
-			menu.popup(remote.getCurrentWindow())
+			menu.popup()
 		},
 		loadThemeFromFile() {
-			dialog.showOpenDialog(remote.getCurrentWindow(), {
+			dialog.showOpenDialog({
 				title  : 'Import Theme',
 				filters: [{
 					name      : 'Theme',
@@ -1276,7 +1276,7 @@ var appVue = new Vue({
 		},
 		moveSync() {
 			var currentPath = models.getBaseLibraryPath()
-			dialog.showOpenDialog(remote.getCurrentWindow(), {
+			dialog.showOpenDialog({
 				title      : 'Select New Sync Folder',
 				defaultPath: currentPath || '/',
 				properties : ['openDirectory', 'createDirectory', 'promptToCreate']
@@ -1306,7 +1306,7 @@ var appVue = new Vue({
 		},
 		openSync() {
 			var currentPath = models.getBaseLibraryPath()
-			dialog.showOpenDialog(remote.getCurrentWindow(), {
+			dialog.showOpenDialog({
 				title      : 'Open Existing Sync Folder',
 				defaultPath: currentPath || '/',
 				properties : ['openDirectory', 'createDirectory']

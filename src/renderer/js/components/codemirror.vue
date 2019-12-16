@@ -245,7 +245,7 @@ export default {
 						accelerator: 'Alt+P',
 						click      : () => { window.bus.$emit('toggle-preview') }
 					}))
-					menu.popup(remote.getCurrentWindow())
+					menu.popup()
 				}, 90)
 			})
 			cm.on('cursorActivity', (cm, event) => {

@@ -299,7 +299,7 @@ export default {
 					}
 				}
 			}))
-			menu.popup(remote.getCurrentWindow())
+			menu.popup()
 		}
 	}
 }

@@ -115,21 +115,22 @@ export default {
 			dialogOptions.title = 'Remove Note'
 			dialogOptions.message = 'Are you sure you want to remove this note?\n\nTitle: ' + note.title + '\nContent: ' + note.bodyWithoutTitle.replace('\n', ' ').slice(0, 100) + '...'
 
-			dialog.showMessageBox(remote.getCurrentWindow(), dialogOptions, (btn) => {
-				if (btn === 0) {
-					this.$root.deleteNote(note)
-					if (this.notes.length === 1) {
-						window.bus.$emit('change-note', { note: this.notes[0] })
-					} else if (this.notes.length > 1) {
-						window.bus.$emit('change-note', {
-							note: Note.beforeNote(this.notes.slice(), note, this.notesDisplayOrder)
-						})
-					} else {
-						window.bus.$emit('change-note', { note: null })
-					}
+			return dialog.showMessageBox(dialogOptions)
+				.then(({ response }) => {
+					if (response === 0) {
+						this.$root.deleteNote(note)
+						if (this.notes.length === 1) {
+							window.bus.$emit('change-note', { note: this.notes[0] })
+						} else if (this.notes.length > 1) {
+							window.bus.$emit('change-note', {
+								note: Note.beforeNote(this.notes.slice(), note, this.notesDisplayOrder)
+							})
+						} else {
+							window.bus.$emit('change-note', { note: null })
+						}
 
-				}
-			})
+					}
+				})
 		},
 		// Dragging
 		noteDragStart(event, note) {
@@ -189,7 +190,7 @@ export default {
 				filename = fileUtils.safeName(note.title) + '.opml'
 			}
 
-			dialog.showSaveDialog(remote.getCurrentWindow(), {
+			dialog.showSaveDialog({
 				title      : 'Export Note',
 				defaultPath: filename
 			})
@@ -302,8 +303,7 @@ export default {
 			menu.append(new MenuItem({ label: 'Export this note...', click: () => { this.exportNoteDiag(note) } }))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({ label: 'Delete note', click: () => { this.removeNote(note) } }))
-
-			menu.popup(remote.getCurrentWindow())
+			menu.popup()
 		}
 	}
 }
