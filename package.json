@@ -45,11 +45,12 @@
         "v-tooltip": "2.0.2",
         "vue": "^2.6.11",
         "vue-html-loader": "^1.2.4",
-        "vue-password": "^2.0.3",
+        "vue-password-strength-meter": "^1.6.1",
         "vue-resource": "^1.5.1",
         "vue-template-compiler": "^2.6.11",
         "vuex": "^3.1.2",
-        "xmldoc": "1.1.2"
+        "xmldoc": "1.1.2",
+        "zxcvbn": "^4.4.2"
     },
     "devDependencies": {
         "@babel/core": "^7.7.5",

@@ -12,15 +12,28 @@
 					.modal-prompts
 						.modal-field(v-for="field in prompts")
 							span.modal-field-label {{ field.label }}
-							input(v-if="field.type == 'text'", type="text", v-model="field.retValue", :name="field.name", v-on:contextmenu="contextMenu")
-							vue-password(v-else-if="field.type == 'password'", v-model="field.retValue", classes="input", :name="field.label")
+							.modal-input
+								input(
+									:type="field.type === 'password' && !showPassword ? 'password' : 'text'"
+									v-model="field.retValue"
+									:name="field.name"
+									v-on:contextmenu="contextMenu"
+								)
+								button.toggle-password-button(v-if="field.type === 'password'" @click.prevent="togglePassword" type="button")
+									i.coon-eye-off(v-if="showPassword")
+									i.coon-eye(v-else)
+							password(
+								v-if="field.type === 'password'"
+								:strength-meter-only="true"
+								v-model="field.retValue"
+							)
 					.modal-buttons
 						template(v-for="button in buttons")
 							button.modal-button(@click.prevent="button_submit(button)", type="button") {{ button.label }}
 </template>
 
 <script>
-import VuePassword from 'vue-password'
+import Password from 'vue-password-strength-meter'
 import { remote } from 'electron'
 
 export default {
@@ -31,6 +44,7 @@ export default {
 			title       : '',
 			description : '',
 			image_url   : '',
+			showPassword: false,
 			image_width : null,
 			image_height: null,
 			buttons     : [],
@@ -39,7 +53,7 @@ export default {
 		}
 	},
 	components: {
-		'vue-password': VuePassword
+		Password
 	},
 	computed: {
 		descriptionHtml() {
@@ -97,6 +111,9 @@ export default {
 				this.show = false
 				this.reset_data()
 			}
+		},
+		togglePassword() {
+			this.showPassword = !this.showPassword
 		},
 		button_submit(button) {
 			if (button.cancel) {

@@ -76,6 +76,7 @@
 
 	.modal-field-label {
 		display: block;
+		padding-left: 0.1em;
 	}
 
 	.modal-field-label + input {
@@ -90,12 +91,36 @@
 	}
 
 	.modal-prompts {
-		margin: 0;
+		max-width: 480px;
+		margin: 0 auto;
 	}
 
 	.modal-field {
 		margin: 4px 0 4px 0;
 		font-weight: 600;
+
+		.modal-input {
+			background: #FFF;
+			border: 2px solid #2a2a2a;
+			border-radius: 5px;
+			padding: 0.2em;
+			margin-top: 0.1em;
+			display: flex;
+
+			input {
+				width: 100%;
+				margin: 0;
+				padding: 0.5em;
+				border: none;
+				outline: none;
+			}
+		}
+	}
+
+	.toggle-password-button {
+		border: none;
+		background-color: transparent;
+		outline: none;
 	}
 
 	.modal-field {
@@ -132,15 +157,5 @@
 	.modal-enter .modal-container,
 	.modal-leave-active .modal-container {
 		transform: scale(1.1);
-	}
-}
-
-.VuePassword {
-	height: 4.6em;
-
-	input {
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
-		padding-left: 0.5em;
 	}
 }
