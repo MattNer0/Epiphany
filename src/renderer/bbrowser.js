@@ -43,7 +43,7 @@ window.onload = function () {
 			}
 			switch (webviewEl.title) {
 				case 'note-from-url':
-					webviewEl.getWebContents().executeJavaScript(htmlToMarkdown.parseScript(), (result) => {
+					webviewEl.executeJavaScript(htmlToMarkdown.parseScript(), (result) => {
 						ipcRenderer.send('load-page-success', {
 							url     : webviewEl.src,
 							mode    : webviewEl.title,

@@ -30,7 +30,7 @@ export default {
 			shell.openExternal('https://github.com/MattNer0/epiphany')
 		},
 		openLibrary() {
-			shell.openItem(this.libraryPath)
+			shell.openPath(this.libraryPath)
 		}
 	}
 }

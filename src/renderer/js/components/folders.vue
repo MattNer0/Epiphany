@@ -286,7 +286,7 @@ export default {
 			menu.append(new MenuItem({
 				label: 'Open file explorer',
 				click: () => {
-					shell.openItem(folder.path)
+					shell.openPath(folder.path)
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))

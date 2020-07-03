@@ -14,6 +14,8 @@ let backgroundWindow
 let popupWindow
 let backgroundBrowserWindow
 
+app.allowRendererProcessReuse = false
+
 // support for portable mode
 app.setPath(
 	'userData',
@@ -135,6 +137,7 @@ function createMainWindow() {
 		frame            : false,
 		webPreferences   : {
 			nodeIntegration     : true,
+			enableRemoteModule  : true,
 			contextIsolation    : false,
 			devTools            : isDevelopment,
 			webgl               : false,
@@ -186,9 +189,10 @@ function createBackgroundWindow() {
 		windowOptions: {
 			skipTaskbar   : true,
 			webPreferences: {
-				devTools        : false,
-				nodeIntegration : true,
-				contextIsolation: false
+				devTools          : false,
+				nodeIntegration   : true,
+				enableRemoteModule: true,
+				contextIsolation  : false
 			}
 		}
 	})
@@ -210,9 +214,10 @@ function createBrowserWindow(callback) {
 		windowOptions: {
 			skipTaskbar   : true,
 			webPreferences: {
-				devTools        : false,
-				nodeIntegration : true,
-				contextIsolation: false
+				devTools          : false,
+				nodeIntegration   : true,
+				enableRemoteModule: true,
+				contextIsolation  : false
 			}
 		},
 		callback: callback
@@ -241,9 +246,10 @@ function createPopupWindow(width, height, callback) {
 		darkTheme     : true,
 		frame         : false,
 		webPreferences: {
-			devTools        : isDevelopment,
-			nodeIntegration : true,
-			contextIsolation: false
+			devTools          : isDevelopment,
+			nodeIntegration   : true,
+			enableRemoteModule: true,
+			contextIsolation  : false
 		}
 	}
 

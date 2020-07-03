@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import log from 'electron-log'
-import sqlite from 'sqlite'
+import sqlite3 from 'sqlite3'
+import { open } from 'sqlite'
 
 import models from '../models'
 import utilFile from '../utils/file'
@@ -78,7 +79,10 @@ export default {
 
 	async initDB(library) {
 		models.setBaseLibraryPath(library)
-		var db = await sqlite.open(path.join(library, 'epiphany.db'))
+		var db = await open({
+			'filename': path.join(library, 'epiphany.db'),
+			'driver'  : sqlite3.cached.Database
+		})
 		await db.run('CREATE TABLE IF NOT EXISTS notes '+
 			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
 			'name TEXT, photo TEXT, summary TEXT, favorite INTEGER, ' +

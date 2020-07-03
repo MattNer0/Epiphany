@@ -35,13 +35,15 @@ const configuration = {
 				test   : /\.html$/,
 				loader : 'html-loader',
 				options: {
-					attrs: false
+					// Disables attributes processing
+					attributes: false
 				}
 			}
 		]
 	},
 	externals: {
-		sqlite: 'commonjs sqlite'
+		'aws-sdk': 'aws-sdk',
+		'sqlite' : 'commonjs sqlite'
 	},
 	plugins: webpackPlugins
 }
@@ -58,7 +60,7 @@ const addChunk = (entry, renderer, addHtmlFile) => {
 
 	if (addHtmlFile) {
 		configuration.plugins.push(new HtmlWebpackPlugin({
-			'template'      : '!!html-loader?minimize=false&url=false!dist/.renderer-index-template.html',
+			'template'      : '!!html-loader?minimize=false!dist/.renderer-index-template.html',
 			'filename'      : `${entry}.html`,
 			'hash'          : false,
 			'inject'        : true,
