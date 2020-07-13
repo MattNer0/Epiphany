@@ -640,17 +640,18 @@ var appVue = new Vue({
 			this.showAll = false
 			this.showFavorites = false
 
-			if (folder.notes && folder.notes.length > 0) {
-				let loadedCount = 0
+			this.loadAllNotesInFolder(folder)
+		},
+		async loadAllNotesInFolder(folder) {
+			if (this.selectedFolder === folder) {
 				const noteObjects = []
-				for (let i=0; i < folder.notes.length && loadedCount < 5; i++) {
-					const note = folder.notes[i]
-					if (!note.loaded) {
-						loadedCount += 1
-						if (note.loadBody()) {
-							noteObjects.push(note.getObjectDB(models.getBaseLibraryPath()))
-						}
+				for (let i=0; i < this.filteredNotes.length; i++) {
+					const note = await this.loadOneNoteInFolder(this.filteredNotes[i])
+					if (note) {
+						noteObjects.push(note)
 					}
+
+					await new Promise(resolve => setTimeout(resolve, 200))
 				}
 
 				if (noteObjects.length > 0) {
@@ -660,6 +661,20 @@ var appVue = new Vue({
 					})
 				}
 			}
+		},
+		loadOneNoteInFolder(note) {
+			return new Promise((resolve, reject) => {
+				try {
+					if (!note.loaded) {
+						if (note.loadBody()) {
+							return resolve(note.getObjectDB(models.getBaseLibraryPath()))
+						}
+					}
+					return resolve(null)
+				} catch (err) {
+					return reject(err)
+				}
+			})
 		},
 		showAllRack(rack) {
 			this.selectedRack = rack

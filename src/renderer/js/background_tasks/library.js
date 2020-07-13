@@ -78,14 +78,24 @@ export default {
 
 	async initDB(library) {
 		models.setBaseLibraryPath(library)
-		const db = sqlite3(path.join(library, 'epiphany.db'))
-		const stmt = db.prepare('CREATE TABLE IF NOT EXISTS notes '+
-			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
-			'name TEXT, photo TEXT, summary TEXT, favorite INTEGER, ' +
-			'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))')
-		stmt.run()
 
-		return db
+		try {
+			const db = sqlite3(path.join(library, 'epiphany.db'))
+			const stmt = db.prepare('CREATE TABLE IF NOT EXISTS notes '+
+				'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
+				'name TEXT, photo TEXT, summary TEXT, favorite INTEGER, ' +
+				'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))')
+			stmt.run()
+
+			process.on('exit', () => db.close())
+			process.on('SIGHUP', () => process.exit(128 + 1))
+			process.on('SIGINT', () => process.exit(128 + 2))
+			process.on('SIGTERM', () => process.exit(128 + 15))
+			return db
+
+		} catch (err) {
+			log.error(err)
+		}
 	},
 
 	readRacks(library) {

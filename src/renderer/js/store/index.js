@@ -35,7 +35,7 @@ export default new Vuex.Store({
 		},
 		notesHistory: state => {
 			return arr.sortBy(state.notes.filter((n) => {
-				return !n.isEncrypted
+				return !n.isEncrypted && (n._loadedBody || n.bodyPreview)
 			}), 'updatedAt').slice(0, 10)
 		}
 	},
