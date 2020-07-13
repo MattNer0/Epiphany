@@ -346,6 +346,7 @@ app.on('ready', () => {
 	ipcMain.on('cache-notes', (event, payload) => backgroundWindow.webContents.send('cache-notes', payload))
 	ipcMain.on('delete-note', (event, payload) => backgroundWindow.webContents.send('delete-note', payload))
 	ipcMain.on('clean-database', (event, payload) => backgroundWindow.webContents.send('clean-database', payload))
+	ipcMain.on('saved-note', (event, payload) => backgroundWindow.webContents.send('saved-note', payload))
 	ipcMain.on('load-page', (event, payload) => {
 		if (backgroundBrowserWindow) {
 			backgroundBrowserWindow.webContents.send('load-page', payload)

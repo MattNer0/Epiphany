@@ -282,6 +282,11 @@ class Note extends Model {
 	get bodyWithMetadata() {
 		if (this._body) {
 			var str = '+++\n'
+
+			if (this.createdAt.valueOf() === 0) {
+				this._metadata.createdAt = this._metadata.updatedAt
+			}
+
 			Object.keys(this._metadata).forEach((key) => {
 				if (this._metadata[key]) str += key + ' = "' + this._metadata[key] + '"\n'
 			})
@@ -527,6 +532,15 @@ class Note extends Model {
 			updated_at: this.updatedAt.valueOf(),
 			library   : library
 		}
+
+		if (finalNote.created_at === 0) {
+			finalNote.created_at = moment().valueOf()
+		}
+
+		if (finalNote.updated_at === 0) {
+			finalNote.updated_at = moment().valueOf()
+		}
+
 		return finalNote
 	}
 
@@ -786,6 +800,10 @@ class Outline extends Note {
 
 	set title(value) {
 		this._name = value
+	}
+
+	get metadata() {
+		return this._metadata
 	}
 
 	set metadata(newValue) {

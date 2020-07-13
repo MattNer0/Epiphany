@@ -86,18 +86,20 @@ window.onload = function () {
 			return
 		}
 
-		libraryHelper.initDB(data.library).then((db) => {
-			var arrayRacks = libraryHelper.readRacks(data.library)
-			if (arrayRacks.length === 0) {
-				initialModels.initialSetup(data.library)
-				arrayRacks = libraryHelper.readRacks(data.library)
-			}
-			ipcRenderer.send('loaded-racks', { racks: arrayRacks })
-			var arrayFolders = loadFolders(arrayRacks)
-			return loadNotes(data.library, arrayFolders, db)
-		}).catch((err) => {
-			log.error(err.message)
-		})
+		libraryHelper.initDB(data.library)
+			.then((db) => {
+				var arrayRacks = libraryHelper.readRacks(data.library)
+				if (arrayRacks.length === 0) {
+					initialModels.initialSetup(data.library)
+					arrayRacks = libraryHelper.readRacks(data.library)
+				}
+				ipcRenderer.send('loaded-racks', { racks: arrayRacks })
+				var arrayFolders = loadFolders(arrayRacks)
+				return loadNotes(data.library, arrayFolders, db)
+			})
+			.catch((err) => {
+				log.error(err.message)
+			})
 	})
 
 	ipcRenderer.on('cache-note', (event, data) => {
@@ -106,11 +108,13 @@ window.onload = function () {
 			return
 		}
 
-		libraryHelper.initDB(data.library).then((db) => {
-			return libraryHelper.insertNoteInDB(db, data)
-		}).catch((err) => {
-			log.error(err.message)
-		})
+		libraryHelper.initDB(data.library)
+			.then((db) => {
+				return libraryHelper.insertNoteInDB(db, data)
+			})
+			.catch((err) => {
+				log.error(err.message)
+			})
 	})
 
 	ipcRenderer.on('cache-notes', (event, data) => {
@@ -119,11 +123,13 @@ window.onload = function () {
 			return
 		}
 
-		libraryHelper.initDB(data.library).then((db) => {
-			return libraryHelper.insertNotesInDB(db, data)
-		}).catch((err) => {
-			log.error(err.message)
-		})
+		libraryHelper.initDB(data.library)
+			.then((db) => {
+				return libraryHelper.insertNotesInDB(db, data)
+			})
+			.catch((err) => {
+				log.error(err.message)
+			})
 	})
 
 	ipcRenderer.on('delete-note', (event, data) => {
@@ -132,11 +138,13 @@ window.onload = function () {
 			return
 		}
 
-		libraryHelper.initDB(data.library).then((db) => {
-			return libraryHelper.deleteNoteFromDB(db, data.library, data.path)
-		}).catch((err) => {
-			log.error(err.message)
-		})
+		libraryHelper.initDB(data.library)
+			.then((db) => {
+				return libraryHelper.deleteNoteFromDB(db, data.library, data.path)
+			})
+			.catch((err) => {
+				log.error(err.message)
+			})
 	})
 
 	ipcRenderer.on('clean-database', (event, data) => {
@@ -145,12 +153,30 @@ window.onload = function () {
 			return
 		}
 
-		libraryHelper.initDB(data.library).then((db) => {
-			return libraryHelper.cleanDatabase(db, data.library)
-		}).then(numNotes => {
-			ipcRenderer.send('database-cleaned', { num: numNotes })
-		}).catch((err) => {
-			log.error(err.message)
-		})
+		libraryHelper.initDB(data.library)
+			.then((db) => {
+				return libraryHelper.cleanDatabase(db, data.library)
+			})
+			.then(numNotes => {
+				ipcRenderer.send('database-cleaned', { num: numNotes })
+			})
+			.catch((err) => {
+				log.error(err.message)
+			})
+	})
+
+	ipcRenderer.on('saved-note', (event, data) => {
+		if (!data.path || !data.library) {
+			log.error('saved-note: path missing')
+			return
+		}
+
+		libraryHelper.initDB(data.library)
+			.then((db) => {
+				return libraryHelper.insertNoteInDB(db, data)
+			})
+			.catch((err) => {
+				log.error(err.message)
+			})
 	})
 }

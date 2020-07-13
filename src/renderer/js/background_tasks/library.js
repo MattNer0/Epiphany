@@ -78,7 +78,6 @@ export default {
 
 	async initDB(library) {
 		models.setBaseLibraryPath(library)
-		console.log(typeof sqlite3)
 		const db = sqlite3(path.join(library, 'epiphany.db'))
 		const stmt = db.prepare('CREATE TABLE IF NOT EXISTS notes '+
 			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
@@ -258,7 +257,7 @@ export default {
 			photoPath = photoPath.split(path.sep).join('/')
 		}
 		const stmt = db.prepare('SELECT * FROM notes WHERE path = ? LIMIT 1')
-		const data = stmt.run(relativePath)
+		const data = stmt.get(relativePath)
 
 		const stmtUpdate = db.prepare('UPDATE notes SET (name, summary, photo, favorite, created_at, updated_at) = (?, ?, ?, ?, ?, ?) WHERE path = ?')
 		const stmtInsert = db.prepare('INSERT INTO notes (name, summary, photo, favorite, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')

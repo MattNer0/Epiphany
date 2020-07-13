@@ -1090,6 +1090,8 @@ var appVue = new Vue({
 					text : result.error
 				})
 			} else if (result && result.saved) {
+				ipcRenderer.send('saved-note', this.selectedNote.getObjectDB(models.getBaseLibraryPath()))
+
 				this.sendFlashMessage({
 					time : 1000,
 					level: 'info',
@@ -1099,7 +1101,7 @@ var appVue = new Vue({
 					this.scrollUpScrollbarNotes()
 				}
 			}
-		}, 500),
+		}, 1000),
 		addNoteFromUrl() {
 			ipcRenderer.send('open-popup', {
 				type  : 'input-text',
