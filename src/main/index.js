@@ -188,8 +188,9 @@ function createBackgroundWindow() {
 		},
 		windowOptions: {
 			skipTaskbar   : true,
+			show          : false,
 			webPreferences: {
-				devTools          : false,
+				devTools          : isDevelopment,
 				nodeIntegration   : true,
 				enableRemoteModule: true,
 				contextIsolation  : false
@@ -200,6 +201,17 @@ function createBackgroundWindow() {
 	window.on('closed', () => {
 		backgroundWindow = null
 	})
+
+	window.webContents.on('did-fail-load', ev => {
+		console.error(ev)
+		window.close()
+	})
+
+	/*if (isDevelopment) {
+		window.webContents.on('did-frame-finish-load', () => {
+			window.webContents.openDevTools()
+		})
+	}*/
 
 	return window
 }

@@ -19,7 +19,8 @@ var webpackPlugins = [
 		'lzma',
 		'marked',
 		'moment',
-		'datauri'
+		'datauri',
+		'better-sqlite3'
 	]),
 	new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
 ]
@@ -43,7 +44,7 @@ const configuration = {
 	},
 	externals: {
 		'aws-sdk': 'aws-sdk',
-		'sqlite' : 'commonjs sqlite'
+		'sqlite' : 'commonjs better-sqlite3 sqlite'
 	},
 	plugins: webpackPlugins
 }

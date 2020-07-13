@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import log from 'electron-log'
-import sqlite3 from 'sqlite3'
-import { open } from 'sqlite'
+import * as sqlite3 from 'better-sqlite3'
 
 import models from '../models'
 import utilFile from '../utils/file'
@@ -79,17 +78,13 @@ export default {
 
 	async initDB(library) {
 		models.setBaseLibraryPath(library)
-		var db = await open({
-			'filename': path.join(library, 'epiphany.db'),
-			'driver'  : sqlite3.cached.Database
-		})
-		await db.run('CREATE TABLE IF NOT EXISTS notes '+
+		console.log(typeof sqlite3)
+		const db = sqlite3(path.join(library, 'epiphany.db'))
+		const stmt = db.prepare('CREATE TABLE IF NOT EXISTS notes '+
 			'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
 			'name TEXT, photo TEXT, summary TEXT, favorite INTEGER, ' +
 			'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))')
-
-		//var diff = new Date().getTime() - 16070400000
-		//await db.run('DELETE FROM notes WHERE updated_at < ?', diff);
+		stmt.run()
 
 		return db
 	},
@@ -262,10 +257,14 @@ export default {
 			relativePath = relativePath.split(path.sep).join('/')
 			photoPath = photoPath.split(path.sep).join('/')
 		}
-		var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', relativePath)
+		const stmt = db.prepare('SELECT * FROM notes WHERE path = ? LIMIT 1')
+		const data = stmt.run(relativePath)
+
+		const stmtUpdate = db.prepare('UPDATE notes SET (name, summary, photo, favorite, created_at, updated_at) = (?, ?, ?, ?, ?, ?) WHERE path = ?')
+		const stmtInsert = db.prepare('INSERT INTO notes (name, summary, photo, favorite, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
 		if (data) {
 			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== photoPath) {
-				await db.run('UPDATE notes SET (name, summary, photo, favorite, created_at, updated_at) = (?, ?, ?, ?, ?, ?) WHERE path = ?', [
+				stmtUpdate.run(
 					finalNote.name,
 					finalNote.summary,
 					photoPath,
@@ -273,10 +272,10 @@ export default {
 					finalNote.created_at,
 					finalNote.updated_at,
 					relativePath
-				])
+				)
 			}
 		} else {
-			await db.run('INSERT INTO notes (name, summary, photo, favorite, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [
+			stmtInsert.run(
 				finalNote.name,
 				finalNote.summary,
 				photoPath,
@@ -284,16 +283,18 @@ export default {
 				finalNote.path,
 				finalNote.created_at,
 				finalNote.updated_at
-			])
+			)
 		}
 	},
 	async deleteNoteFromDB(db, library, notePath) {
 		try {
+			const stmt = db.prepare('DELETE FROM notes WHERE path = ?')
+
 			let relativePath = path.relative(library, notePath)
 			if (path.sep === '\\') {
 				relativePath = relativePath.split(path.sep).join('/')
 			}
-			await db.run('DELETE FROM notes WHERE path = ?', relativePath)
+			stmt.run(relativePath)
 		} catch (err) {
 			log.error(err.message)
 		}
@@ -304,7 +305,9 @@ export default {
 			if (path.sep === '\\') {
 				relativePath = relativePath.split(path.sep).join('/')
 			}
-			var data = await db.get('SELECT * FROM notes WHERE path = ? LIMIT 1', relativePath)
+			const stmt = db.prepare('SELECT * FROM notes WHERE path = ? LIMIT 1')
+			const data = stmt.get(relativePath)
+
 			if (data) {
 				var extension = path.extname(notePath)
 				var type
@@ -339,13 +342,16 @@ export default {
 		return null
 	},
 	async cleanDatabase(db, library) {
-		const data = await db.all('SELECT * FROM notes')
+		const stmt = db.prepare('SELECT * FROM notes')
+		const data = stmt.all()
 		log.log('Notes in DB: ' + data.length)
+
+		const stmtDelete = db.prepare('DELETE FROM notes WHERE path = ?')
 		for (let i=0; i<data.length; i++) {
 			const note = data[i]
 			const notePath = path.join(library, note.path)
 			if (!fs.existsSync(notePath)) {
-				await db.run('DELETE FROM notes WHERE path = ?', note.path)
+				stmtDelete.run(note.path)
 				const imageFolder = path.join(path.dirname(notePath), '.' + path.basename(notePath, path.extname(notePath)))
 				if (fs.existsSync(imageFolder)) {
 					utilFile.deleteFolderRecursive(imageFolder)
