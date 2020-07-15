@@ -10,7 +10,6 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow
-let backgroundWindow
 let popupWindow
 let backgroundBrowserWindow
 
@@ -48,7 +47,6 @@ if (!gotTheLock) {
 			if (mainWindow.isMinimized()) mainWindow.restore()
 			mainWindow.focus()
 		} else {
-			if (!backgroundWindow) backgroundWindow = createBackgroundWindow()
 			mainWindow = createMainWindow()
 		}
 	})
@@ -136,13 +134,14 @@ function createMainWindow() {
 		tabbingIdentifier: 'epiphany',
 		frame            : false,
 		webPreferences   : {
-			nodeIntegration     : true,
-			enableRemoteModule  : true,
-			contextIsolation    : false,
-			devTools            : isDevelopment,
-			webgl               : false,
-			webaudio            : false,
-			backgroundThrottling: true
+			nodeIntegration        : true,
+			nodeIntegrationInWorker: true,
+			enableRemoteModule     : true,
+			contextIsolation       : false,
+			devTools               : isDevelopment,
+			webgl                  : false,
+			webaudio               : false,
+			backgroundThrottling   : true
 		}
 	}
 
@@ -177,41 +176,6 @@ function createMainWindow() {
 	if (process.platform === 'linux' || process.platform === 'darwin') {
 		setApplicationMenu()
 	}
-
-	return window
-}
-
-function createBackgroundWindow() {
-	const window = makeBackgroundRendererWindow(isDevelopment, {
-		data: {
-			windowName: windowName.background
-		},
-		windowOptions: {
-			skipTaskbar   : true,
-			show          : false,
-			webPreferences: {
-				devTools          : isDevelopment,
-				nodeIntegration   : true,
-				enableRemoteModule: true,
-				contextIsolation  : false
-			}
-		}
-	})
-
-	window.on('closed', () => {
-		backgroundWindow = null
-	})
-
-	window.webContents.on('did-fail-load', ev => {
-		console.error(ev)
-		window.close()
-	})
-
-	/*if (isDevelopment) {
-		window.webContents.on('did-frame-finish-load', () => {
-			window.webContents.openDevTools()
-		})
-	}*/
 
 	return window
 }
@@ -316,9 +280,6 @@ app.on('activate', () => {
 	if (mainWindow === null) {
 		mainWindow = createMainWindow()
 	}
-	if (backgroundWindow === null) {
-		backgroundWindow = createBackgroundWindow()
-	}
 })
 
 // create main BrowserWindow when electron is ready
@@ -331,7 +292,6 @@ app.on('ready', () => {
 	})
 
 	mainWindow = createMainWindow()
-	backgroundWindow = createBackgroundWindow()
 
 	global.appIcon = trayIcon(mainWindow, app)
 	global.isDarwin = process.platform === 'darwin'
@@ -340,13 +300,6 @@ app.on('ready', () => {
 	global.argv = process.argv
 
 	// relay events to background task
-	ipcMain.on('download-files', (event, payload) => backgroundWindow.webContents.send('download-files', payload))
-	ipcMain.on('load-racks', (event, payload) => backgroundWindow.webContents.send('load-racks', payload))
-	ipcMain.on('cache-note', (event, payload) => backgroundWindow.webContents.send('cache-note', payload))
-	ipcMain.on('cache-notes', (event, payload) => backgroundWindow.webContents.send('cache-notes', payload))
-	ipcMain.on('delete-note', (event, payload) => backgroundWindow.webContents.send('delete-note', payload))
-	ipcMain.on('clean-database', (event, payload) => backgroundWindow.webContents.send('clean-database', payload))
-	ipcMain.on('saved-note', (event, payload) => backgroundWindow.webContents.send('saved-note', payload))
 	ipcMain.on('load-page', (event, payload) => {
 		if (backgroundBrowserWindow) {
 			backgroundBrowserWindow.webContents.send('load-page', payload)
@@ -372,23 +325,10 @@ app.on('ready', () => {
 	})
 
 	// relay events to main task
-	ipcMain.on('loaded-racks', (event, payload) => mainWindow.webContents.send('loaded-racks', payload))
-	ipcMain.on('loaded-folders', (event, payload) => mainWindow.webContents.send('loaded-folders', payload))
-	ipcMain.on('loaded-notes', (event, payload) => mainWindow.webContents.send('loaded-notes', payload))
-	ipcMain.on('loaded-all-notes', (event, payload) => {
-		mainWindow.webContents.send('loaded-all-notes', payload)
-		//start watching file changes
-		//backgroundWindow.webContents.send('loaded-all-notes', payload);
-	})
-
-	ipcMain.on('database-cleaned', (event, payload) => mainWindow.webContents.send('database-cleaned', payload))
-
 	ipcMain.on('load-page-fail', (event, payload) => mainWindow.webContents.send('load-page-fail', payload))
 	ipcMain.on('load-page-success', (event, payload) => mainWindow.webContents.send('load-page-success', payload))
 	ipcMain.on('load-page-favicon', (event, payload) => mainWindow.webContents.send('load-page-favicon', payload))
 	ipcMain.on('load-page-finish', (event, payload) => mainWindow.webContents.send('load-page-finish', payload))
-
-	ipcMain.on('download-files-failed', (event, payload) => mainWindow.webContents.send('download-files-failed', payload))
 
 	ipcMain.on('bucket-rename', (event, payload) => mainWindow.webContents.send('bucket-rename', payload))
 })

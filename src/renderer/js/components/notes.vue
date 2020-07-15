@@ -290,15 +290,17 @@ export default {
 			menu.append(new MenuItem({
 				label: 'Show this note\'s image folder',
 				click: () => {
-					shell.openPath(note.imagePath).then(err => {
-						if (err) {
-							window.bus.$emit('flash-message', {
-								time : 5000,
-								level: 'error',
-								text : 'Image folder doesn\'t exist.'
-							})
-						}
-					})
+					if (fs.existsSync(note.imagePath)) {
+						shell.openPath(note.imagePath).then(err => {
+							if (err) console.error(err.message)
+						})
+					} else {
+						window.bus.$emit('flash-message', {
+							time : 5000,
+							level: 'error',
+							text : 'Image folder doesn\'t exist.'
+						})
+					}
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))

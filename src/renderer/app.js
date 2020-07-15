@@ -3,6 +3,8 @@ import fs from 'fs'
 
 import _ from 'lodash'
 
+import PromiseWorker from 'promise-worker'
+
 import settings from './js/utils/settings'
 import traymenu from './js/utils/trayMenu'
 import titleMenu from './js/utils/titleMenu'
@@ -46,6 +48,12 @@ import componentThemeEditor from './js/components/themeEditor.vue'
 import componentThemeMenu from './js/components/themeMenu.vue'
 
 import templateHtml from './html/app.html'
+
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from 'worker-loader!./worker'
+
+const worker = new Worker()
+const promiseWorker = new PromiseWorker(worker)
 
 window.bus = new Vue()
 
@@ -258,7 +266,7 @@ var appVue = new Vue({
 
 		if (models.doesLibraryExists()) {
 			// library folder exists, let's read what's inside
-			ipcRenderer.send('load-racks', { library: models.getBaseLibraryPath() })
+			this.initRacks(models.getBaseLibraryPath())
 
 		} else {
 			elosenv.console.error("Couldn't open library directory. Path: " + models.getBaseLibraryPath())
@@ -297,130 +305,6 @@ var appVue = new Vue({
 			this.init_sidebar_width()
 		})
 
-		ipcRenderer.on('loaded-racks', (event, data) => {
-			if (!data || !data.racks) return
-
-			this.$store.dispatch('loadedRacks', data.racks)
-
-			this.quickNotesBucket = this.$store.getters.quickNotesBucket
-			this.loadedRack = true
-		})
-
-		ipcRenderer.on('loaded-folders', (event, data) => {
-			if (!data) return
-
-			data.forEach((r) => {
-				var rack = this.$store.getters.findBucketByPath(r.rack)
-				var folders = []
-				r.folders.forEach((f) => {
-					f.rack = rack
-					folders.push(new models.Folder(f))
-				})
-
-				rack.folders = arr.sortBy(folders.slice(), 'ordering', true)
-			})
-		})
-
-		const loadByParent = (obj, rack, parent) => {
-			var folder
-			if (parent) {
-				folder = parent.folders.find((f) => {
-					return f.path === obj.folder
-				})
-			} else if (rack) {
-				folder = rack.folders.find((f) => {
-					return f.path === obj.folder
-				})
-			}
-
-			if (folder) {
-				var notes = []
-				obj.notes.forEach((n) => {
-					n.rack = rack
-					n.folder = folder
-					switch (n.type) {
-						case 'encrypted':
-							notes.push(new models.EncryptedNote(n))
-							break
-						case 'outline':
-							notes.push(new models.Outline(n))
-							break
-						default:
-							notes.push(new models.Note(n))
-							break
-					}
-				})
-
-				var images = []
-				obj.images.forEach((img) => {
-					img.rack = rack
-					img.folder = folder
-					images.push(new models.Image(img))
-				})
-
-				folder.notes = notes
-				folder.images = images
-				this.$store.dispatch('addNotes', notes)
-				this.$store.dispatch('addImages', images)
-
-				if (obj.subnotes && obj.subnotes.length > 0) {
-					obj.subnotes.forEach((r) => {
-						loadByParent(r, rack, folder)
-					})
-				}
-			}
-		}
-
-		ipcRenderer.on('loaded-notes', (event, data) => {
-			if (!data) return
-
-			var rack
-			data.forEach((r) => {
-				if (!rack || rack.path !== r.rack) {
-					rack = this.$store.getters.findBucketByPath(r.rack)
-				}
-				loadByParent(r, rack)
-			})
-		})
-
-		ipcRenderer.on('loaded-all-notes', (event, data) => {
-			if (!data) return
-
-			traymenu.init()
-			titleMenu.init()
-
-			if (this.notes.length === 1) {
-				this.changeNote({ note: this.notes[0] })
-
-			} else if (remote.getGlobal('argv')) {
-				const argv = remote.getGlobal('argv')
-				if (argv.length > 1 && path.extname(argv[1]) === '.md' && fs.existsSync(argv[1])) {
-					const openedNote = this.$store.getters.findNoteByPath(argv[1])
-					if (openedNote) {
-						this.changeNote({ note: openedNote })
-					} else {
-						elosenv.console.error('Path not valid')
-					}
-				}
-			}
-		})
-
-		ipcRenderer.on('database-cleaned', (event, data) => {
-			if (data && data.num) {
-				this.sendFlashMessage({
-					time : 1500,
-					level: 'info',
-					text : 'Database cleaned - ' + data.num + (data.num > 1 ? ' notes' : ' note')
-				})
-			} else {
-				this.sendFlashMessage({
-					time : 1000,
-					level: 'info',
-					text : 'Database cleaned'
-				})
-			}
-		})
-
 		ipcRenderer.on('load-page-fail', (event, data) => {
 			this.sendFlashMessage({
 				time : 5000,
@@ -457,22 +341,6 @@ var appVue = new Vue({
 				default:
 					break
 			}
-		})
-
-		ipcRenderer.on('download-files-failed', (event, data) => {
-			if (!data.replaced || data.replaced.length === 0) return
-			var noteObj = this.$store.getters.findNoteByPath(data.note)
-			if (noteObj) {
-				for (let i=0; i<data.replaced.length; i++) {
-					var subStr = data.replaced[i]
-					noteObj.body = noteObj.body.replace(subStr.new, subStr.original)
-				}
-			}
-			this.sendFlashMessage({
-				time : 5000,
-				level: 'error',
-				text : data.error
-			})
 		})
 
 		ipcRenderer.on('bucket-rename', (event, data) => {
@@ -517,8 +385,134 @@ var appVue = new Vue({
 		window.bus.$on('add-encrypted-note', eventData => this.addEncryptedNote(eventData))
 		window.bus.$on('add-outline', eventData => this.addOutline(eventData))
 		window.bus.$on('save-note', eventData => this.saveNote(eventData))
+		window.bus.$on('download-files', eventData => this.downloadFiles(eventData))
+		window.bus.$on('download-file', eventData => this.downloadFile(eventData))
 	},
 	methods: {
+		async initRacks(library) {
+			//ipcRenderer.send('load-racks', { library })
+			try {
+				const racks = await promiseWorker.postMessage({
+					type: 'load-racks',
+					data: {
+						library
+					}
+				})
+
+				this.$store.dispatch('loadedRacks', racks)
+				this.quickNotesBucket = this.$store.getters.quickNotesBucket
+				this.loadedRack = true
+
+				const folders = await promiseWorker.postMessage({
+					type: 'load-folders',
+					data: {
+						racks
+					}
+				})
+
+				folders.forEach((r) => {
+					var rack = this.$store.getters.findBucketByPath(r.rack)
+					var folders = []
+					r.folders.forEach((f) => {
+						f.rack = rack
+						folders.push(new models.Folder(f))
+					})
+
+					rack.folders = arr.sortBy(folders.slice(), 'ordering', true)
+				})
+
+				for (const folder of folders) {
+					const notes = await promiseWorker.postMessage({
+						type: 'load-notes',
+						data: {
+							library,
+							folder
+						}
+					})
+
+					let rack
+					notes.forEach((r) => {
+						if (!rack || rack.path !== r.rack) {
+							rack = this.$store.getters.findBucketByPath(r.rack)
+						}
+						this.initByParent(r, rack)
+					})
+				}
+
+				this.initCompleted()
+
+			} catch (err) {
+				console.error(err)
+			}
+		},
+		initByParent(obj, rack, parent) {
+			var folder
+			if (parent) {
+				folder = parent.folders.find((f) => {
+					return f.path === obj.folder
+				})
+			} else if (rack) {
+				folder = rack.folders.find((f) => {
+					return f.path === obj.folder
+				})
+			}
+
+			if (folder) {
+				var notes = []
+				obj.notes.forEach((n) => {
+					n.rack = rack
+					n.folder = folder
+					switch (n.type) {
+						case 'encrypted':
+							notes.push(new models.EncryptedNote(n))
+							break
+						case 'outline':
+							notes.push(new models.Outline(n))
+							break
+						default:
+							notes.push(new models.Note(n))
+							break
+					}
+				})
+
+				var images = []
+				obj.images.forEach((img) => {
+					img.rack = rack
+					img.folder = folder
+					images.push(new models.Image(img))
+				})
+
+				folder.notes = notes
+				folder.images = images
+				this.$store.dispatch('addNotes', notes)
+				this.$store.dispatch('addImages', images)
+
+				if (obj.subnotes && obj.subnotes.length > 0) {
+					obj.subnotes.forEach((r) => {
+						this.initByParent(r, rack, folder)
+					})
+				}
+			}
+		},
+		initCompleted() {
+			traymenu.init()
+			titleMenu.init()
+
+			if (this.notes.length === 1) {
+				this.changeNote({ note: this.notes[0] })
+
+			} else if (remote.getGlobal('argv')) {
+				const argv = remote.getGlobal('argv')
+				if (argv.length > 1 && path.extname(argv[1]) === '.md' && fs.existsSync(argv[1])) {
+					const openedNote = this.$store.getters.findNoteByPath(argv[1])
+					if (openedNote) {
+						this.changeNote({ note: openedNote })
+					} else {
+						elosenv.console.error('Path not valid')
+					}
+				}
+			}
+		},
 		findFolderByPath(rack, folderPath) {
 			try {
 				var folder = rack.folders.find((f) => {
@@ -655,9 +649,12 @@ var appVue = new Vue({
 				}
 
 				if (noteObjects.length > 0) {
-					ipcRenderer.send('cache-notes', {
-						library: models.getBaseLibraryPath(),
-						notes  : noteObjects
+					await promiseWorker.postMessage({
+						type: 'cache-notes',
+						data: {
+							library: models.getBaseLibraryPath(),
+							notes  : noteObjects
+						}
 					})
 				}
 			}
@@ -751,7 +748,13 @@ var appVue = new Vue({
 			} else {
 				if (!note.loaded) {
 					if (note.loadBody()) {
-						ipcRenderer.send('cache-note', note.getObjectDB(models.getBaseLibraryPath()))
+						promiseWorker.postMessage({
+							type: 'cache-note',
+							data: {
+								library: models.getBaseLibraryPath(),
+								note   : note.getObjectDB(models.getBaseLibraryPath())
+							}
+						})
 					}
 				}
 				if (note.isEncrypted) {
@@ -892,9 +895,12 @@ var appVue = new Vue({
 			}
 
 			if (note.remove()) {
-				ipcRenderer.send('delete-note', {
-					library: models.getBaseLibraryPath(),
-					path   : note.path
+				promiseWorker.postMessage({
+					type: 'delete-note',
+					data: {
+						library: models.getBaseLibraryPath(),
+						path   : note.path
+					}
 				})
 			}
 		},
@@ -1105,16 +1111,22 @@ var appVue = new Vue({
 					text : result.error
 				})
 			} else if (result && result.saved) {
-				ipcRenderer.send('saved-note', this.selectedNote.getObjectDB(models.getBaseLibraryPath()))
-
-				this.sendFlashMessage({
-					time : 1000,
-					level: 'info',
-					text : 'Note saved'
+				promiseWorker.postMessage({
+					type: 'saved-note',
+					data: {
+						library: models.getBaseLibraryPath(),
+						note   : this.selectedNote.getObjectDB(models.getBaseLibraryPath())
+					}
+				}).then(() => {
+					this.sendFlashMessage({
+						time : 1000,
+						level: 'info',
+						text : 'Note saved'
+					})
+					if (this.selectedNote && this.notesDisplayOrder === 'updatedAt' && !this.showHistory) {
+						this.scrollUpScrollbarNotes()
+					}
 				})
-				if (this.selectedNote && this.notesDisplayOrder === 'updatedAt' && !this.showHistory) {
-					this.scrollUpScrollbarNotes()
-				}
 			}
 		}, 1000),
 		addNoteFromUrl() {
@@ -1357,8 +1369,76 @@ var appVue = new Vue({
 			})
 		},
 		cleanDatabase() {
-			ipcRenderer.send('clean-database', {
-				library: models.getBaseLibraryPath()
+			promiseWorker.postMessage({
+				type: 'clean-database',
+				data: {
+					library: models.getBaseLibraryPath()
+				}
+			}).then(data => {
+				if (data && data.num) {
+					this.sendFlashMessage({
+						time : 1500,
+						level: 'info',
+						text : 'Database cleaned - ' + data.num + (data.num > 1 ? ' notes' : ' note')
+					})
+				} else {
+					this.sendFlashMessage({
+						time : 1000,
+						level: 'info',
+						text : 'Database cleaned'
+					})
+				}
+			})
+		},
+		downloadFiles(data) {
+			promiseWorker.postMessage({
+				type: 'download-files',
+				data: {
+					...data
+				}
+			}).then(() => {
+				this.sendFlashMessage({
+					time : 1000,
+					level: 'info',
+					text : 'Files downloaded'
+				})
+			}).catch((err) => {
+				console.error(err.message)
+
+				if (!data.replaced || data.replaced.length === 0) return
+				var noteObj = this.$store.getters.findNoteByPath(data.note)
+				if (noteObj) {
+					for (let i=0; i<data.replaced.length; i++) {
+						var subStr = data.replaced[i]
+						noteObj.body = noteObj.body.replace(subStr.new, subStr.original)
+					}
+				}
+				this.sendFlashMessage({
+					time : 5000,
+					level: 'error',
+					text : 'Files download fail'
+				})
+			})
+		},
+		downloadFile(data) {
+			promiseWorker.postMessage({
+				type: 'download-file',
+				data: {
+					...data
+				}
+			}).then(() => {
+				this.sendFlashMessage({
+					time : 1000,
+					level: 'info',
+					text : 'File downloaded'
+				})
+			}).catch((err) => {
+				console.error(err.message)
+				this.sendFlashMessage({
+					time : 5000,
+					level: 'error',
+					text : 'File download fail'
+				})
 			})
 		},
 		/**

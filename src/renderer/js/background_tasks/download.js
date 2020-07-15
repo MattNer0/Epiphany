@@ -16,7 +16,7 @@ export default {
 		const pathUrl = (new url.URL(fileUrl)).pathname
 		return {
 			basename : path.basename(pathUrl),
-			cleanname: this.cleanFileName(path.basename(pathUrl)),
+			cleanname: this.cleanFileName(path.basename(pathUrl, path.extname(pathUrl))) + path.extname(pathUrl),
 			extname  : path.extname(pathUrl)
 		}
 	},

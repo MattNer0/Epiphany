@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import { ipcRenderer } from 'electron'
 import encrypt from 'encryptjs'
 import moment from 'moment'
 import _ from 'lodash'
@@ -230,7 +229,9 @@ class Note extends Model {
 			return this._summary
 		}
 		str = str.replace(/^\[source\]\(.+\)\n$/img, '')
+		str = str.replace(/\[!\[\]\([^)]+\)\]\([^)]+\)/ig, '')
 		str = str.replace(/!?\[([^\]]+)\]\([^)]+\)/ig, '$1')
+		str = str.replace(/^!\[\]\([^)]+\)$/igm, '')
 		str = str.replace(/\n+/g, '\n')
 		return str.slice(0, 500)
 	}
@@ -288,7 +289,9 @@ class Note extends Model {
 			}
 
 			Object.keys(this._metadata).forEach((key) => {
-				if (this._metadata[key]) str += key + ' = "' + this._metadata[key] + '"\n'
+				if (Array.isArray(this._metadata[key]) && this._metadata[key].length > 0) {
+					str += key + ' = "' + this._metadata[key].join(', ') + '"\n'
+				} else if (this._metadata[key]) str += key + ' = "' + this._metadata[key] + '"\n'
 			})
 			return str + '+++\n\n' + this._body.replace(/[\t ]?(\r\n|\r|\n)/g, '\n')
 		}
@@ -425,12 +428,15 @@ class Note extends Model {
 		)
 
 		if (urlDownloads.length > 0) {
-			ipcRenderer.send('download-files', {
-				files   : urlDownloads,
-				replaced: replacedStrings,
-				note    : this.path,
-				folder  : this.imagePath
-			})
+			this.setMetadata('urls', urlDownloads)
+			if (window && window.bus) {
+				window.bus.$emit('download-files', {
+					files   : urlDownloads,
+					replaced: replacedStrings,
+					note    : this.path,
+					folder  : this.imagePath
+				})
+			}
 		}
 	}
 
@@ -474,6 +480,8 @@ class Note extends Model {
 						m[2] = m[2].replace(/\s+/g, ' ')
 						if (m[1] === 'updatedAt' || m[1] === 'createdAt') {
 							metadata[m[1]] = moment(m[2]).format('YYYY-MM-DD HH:mm:ss')
+						} else if (m[1] === 'urls') {
+							metadata[m[1]] = m[2].split(', ')
 						} else {
 							metadata[m[1]] = m[2]
 						}

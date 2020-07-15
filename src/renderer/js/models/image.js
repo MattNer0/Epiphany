@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 
+import fileUtils from '../utils/file'
+
 var Library
 
 class Image {
@@ -111,7 +113,18 @@ class Image {
 		} catch (e) {
 			// if not exists
 		}
-		fs.writeFileSync(savePath, fs.readFileSync(frompath))
+
+		if (frompath.indexOf('http') === 0) {
+			name = fileUtils.getFileDataFromUrl(frompath).cleanname
+			if (window && window.bus) {
+				window.bus.$emit('download-file', {
+					file  : frompath,
+					folder: dirPath
+				})
+			}
+		} else {
+			fs.writeFileSync(savePath, fs.readFileSync(frompath))
+		}
 		return new this('epiphany://' + name, name)
 	}
 }

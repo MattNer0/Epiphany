@@ -1,10 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 import log from 'electron-log'
-import * as sqlite3 from 'better-sqlite3'
 
 import models from '../models'
 import utilFile from '../utils/file'
+
+import Dexie from 'dexie'
+const idbCon = new Dexie('epiphany')
 
 /**
  * @function getValidMarkdownFormats
@@ -75,27 +77,12 @@ function readFolderData(folderPath) {
 }
 
 export default {
-
 	async initDB(library) {
 		models.setBaseLibraryPath(library)
-
-		try {
-			const db = sqlite3(path.join(library, 'epiphany.db'))
-			const stmt = db.prepare('CREATE TABLE IF NOT EXISTS notes '+
-				'(id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, ' +
-				'name TEXT, photo TEXT, summary TEXT, favorite INTEGER, ' +
-				'updated_at INTEGER, created_at INTEGER, CONSTRAINT path_unique UNIQUE (path))')
-			stmt.run()
-
-			process.on('exit', () => db.close())
-			process.on('SIGHUP', () => process.exit(128 + 1))
-			process.on('SIGINT', () => process.exit(128 + 2))
-			process.on('SIGTERM', () => process.exit(128 + 15))
-			return db
-
-		} catch (err) {
-			log.error(err)
-		}
+		if (idbCon.isOpen()) return
+		idbCon.version(1).stores({
+			notes: '++id, name, summary, photo, favorite, &path, created_at, updated_at'
+		})
 	},
 
 	readRacks(library) {
@@ -165,7 +152,7 @@ export default {
 			return []
 		}
 	},
-	async readNotesByFolder(library, folder, db) {
+	async readNotesByFolder(library, folder) {
 		if (!fs.existsSync(folder)) return []
 
 		var validNotes = []
@@ -174,7 +161,7 @@ export default {
 
 		for (note of notes) {
 			var notePath = path.join(folder, note)
-			var noteCache = await this.findNoteInDB(db, library, notePath)
+			var noteCache = await this.findNoteInDB(library, notePath)
 			if (noteCache) {
 				validNotes.push(noteCache)
 
@@ -254,69 +241,65 @@ export default {
 		}
 		return null
 	},
-	async insertNotesInDB(db, requestData) {
+	async insertNotesInDB(requestData) {
 		for (let i=0; i<requestData.notes.length; i++) {
-			await this.insertNoteInDB(db, requestData.notes[i])
+			await this.insertNoteInDB(requestData.notes[i])
 		}
 	},
-	async insertNoteInDB(db, finalNote) {
+	async insertNoteInDB(finalNote) {
 		let relativePath = finalNote.path
 		let photoPath = finalNote.photo
 		if (path.sep === '\\') {
 			relativePath = relativePath.split(path.sep).join('/')
 			photoPath = photoPath.split(path.sep).join('/')
 		}
-		const stmt = db.prepare('SELECT * FROM notes WHERE path = ? LIMIT 1')
-		const data = stmt.get(relativePath)
 
-		const stmtUpdate = db.prepare('UPDATE notes SET (name, summary, photo, favorite, created_at, updated_at) = (?, ?, ?, ?, ?, ?) WHERE path = ?')
-		const stmtInsert = db.prepare('INSERT INTO notes (name, summary, photo, favorite, path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+		const data = await idbCon.notes.where('path').equals(relativePath).first()
+
 		if (data) {
-			if (data.summary !== finalNote.summary || data.name !== finalNote.name || data.updated_at !== finalNote.updated_at || data.photo !== photoPath) {
-				stmtUpdate.run(
-					finalNote.name,
-					finalNote.summary,
-					photoPath,
-					finalNote.favorite ? 1 : 0,
-					finalNote.created_at,
-					finalNote.updated_at,
-					relativePath
-				)
-			}
+			await idbCon.notes
+				.where('path')
+				.equals(relativePath)
+				.modify({
+					name      : finalNote.name,
+					summary   : finalNote.summary,
+					photo     : photoPath,
+					favorite  : finalNote.favorite ? 1 : 0,
+					created_at: finalNote.created_at,
+					updated_at: finalNote.updated_at
+				})
 		} else {
-			stmtInsert.run(
-				finalNote.name,
-				finalNote.summary,
-				photoPath,
-				finalNote.favorite ? 1 : 0,
-				finalNote.path,
-				finalNote.created_at,
-				finalNote.updated_at
-			)
+			await idbCon.notes.put({
+				name      : finalNote.name,
+				summary   : finalNote.summary,
+				photo     : photoPath,
+				path      : relativePath,
+				favorite  : finalNote.favorite ? 1 : 0,
+				created_at: finalNote.created_at,
+				updated_at: finalNote.updated_at
+			})
 		}
 	},
-	async deleteNoteFromDB(db, library, notePath) {
+	async deleteNoteFromDB(library, notePath) {
 		try {
-			const stmt = db.prepare('DELETE FROM notes WHERE path = ?')
-
 			let relativePath = path.relative(library, notePath)
 			if (path.sep === '\\') {
 				relativePath = relativePath.split(path.sep).join('/')
 			}
-			stmt.run(relativePath)
+
+			await idbCon.notes.where('path').equals(relativePath).delete()
 		} catch (err) {
 			log.error(err.message)
 		}
 	},
-	async findNoteInDB(db, library, notePath) {
+	async findNoteInDB(library, notePath) {
 		try {
 			let relativePath = path.relative(library, notePath)
 			if (path.sep === '\\') {
 				relativePath = relativePath.split(path.sep).join('/')
 			}
-			const stmt = db.prepare('SELECT * FROM notes WHERE path = ? LIMIT 1')
-			const data = stmt.get(relativePath)
 
+			const data = await idbCon.notes.where('path').equals(relativePath).first()
 			if (data) {
 				var extension = path.extname(notePath)
 				var type
@@ -350,17 +333,16 @@ export default {
 
 		return null
 	},
-	async cleanDatabase(db, library) {
-		const stmt = db.prepare('SELECT * FROM notes')
-		const data = stmt.all()
-		log.log('Notes in DB: ' + data.length)
+	async cleanDatabase(library) {
+		const notes = await idbCon.notes.toArray()
 
-		const stmtDelete = db.prepare('DELETE FROM notes WHERE path = ?')
-		for (let i=0; i<data.length; i++) {
-			const note = data[i]
+		log.log('Notes in DB: ' + notes.length)
+		for (let i=0; i<notes.length; i++) {
+			const note = notes[i]
 			const notePath = path.join(library, note.path)
 			if (!fs.existsSync(notePath)) {
-				stmtDelete.run(note.path)
+				await idbCon.notes.where('path').equals(note.path).delete()
+
 				const imageFolder = path.join(path.dirname(notePath), '.' + path.basename(notePath, path.extname(notePath)))
 				if (fs.existsSync(imageFolder)) {
 					utilFile.deleteFolderRecursive(imageFolder)
@@ -368,6 +350,6 @@ export default {
 			}
 		}
 
-		return data.length
+		return notes.length
 	}
 }

@@ -19,8 +19,7 @@ var webpackPlugins = [
 		'lzma',
 		'marked',
 		'moment',
-		'datauri',
-		'better-sqlite3'
+		'datauri'
 	]),
 	new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
 ]
@@ -43,8 +42,7 @@ const configuration = {
 		]
 	},
 	externals: {
-		'aws-sdk': 'aws-sdk',
-		'sqlite' : 'commonjs better-sqlite3 sqlite'
+		'aws-sdk': 'aws-sdk'
 	},
 	plugins: webpackPlugins
 }
@@ -83,7 +81,7 @@ const addChunk = (entry, renderer, addHtmlFile) => {
 addChunk('theme', 'styles.js', false)
 addChunk('app', 'app.js', true)
 addChunk('popup', 'popup.js', true)
-addChunk('background', 'background.js', true)
+addChunk('background', 'worker.js', true)
 addChunk('bbrowser', 'bbrowser.js', true)
 
 module.exports = configuration
