@@ -1,7 +1,7 @@
 {
     "name": "epiphany-journal",
     "productName": "Epiphany",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -54,15 +54,15 @@
         "zxcvbn": "^4.4.2"
     },
     "devDependencies": {
-        "@babel/core": "^7.10.4",
+        "@babel/core": "^7.10.5",
         "@babel/plugin-syntax-dynamic-import": "^7.8.3",
         "@babel/preset-env": "^7.10.4",
-        "@babel/runtime": "^7.10.4",
+        "@babel/runtime": "^7.10.5",
         "@vue/eslint-config-standard": "^5.1.2",
         "babel-eslint": "^10.1.0",
         "babel-loader": "^8.1.0",
         "css-loader": "^3.6.0",
-        "electron": "9.0.3",
+        "electron": "9.1.0",
         "electron-builder": "^22.7.0",
         "electron-packager": "^15.0.0",
         "electron-rebuild": "^1.11.0",

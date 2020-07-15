@@ -75,6 +75,7 @@ registerPromiseWorker(({ type, data }) => {
 
 		case 'cache-notes':
 			if (!data.library) return paramError(type, 'library')
+			if (!data.notes) return paramError(type, 'notes')
 
 			return libraryHelper.initDB(data.library)
 				.then(function() {

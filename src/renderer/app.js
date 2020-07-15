@@ -387,6 +387,17 @@ var appVue = new Vue({
 		window.bus.$on('save-note', eventData => this.saveNote(eventData))
 		window.bus.$on('download-files', eventData => this.downloadFiles(eventData))
 		window.bus.$on('download-file', eventData => this.downloadFile(eventData))
+
+		if (navigator && navigator.storage && navigator.storage.persist) {
+			navigator.storage.persist()
+				.then(function(persistent) {
+					if (persistent) {
+						console.log('Storage will not be cleared except by explicit user action')
+					} else {
+						console.log('Storage may be cleared by the UA under storage pressure.')
+					}
+				})
+		}
 	},
 	methods: {
 		async initRacks(library) {
@@ -640,8 +651,10 @@ var appVue = new Vue({
 			if (this.selectedFolder === folder) {
 				const noteObjects = []
 				for (let i=0; i < this.filteredNotes.length; i++) {
+					const currentNote = this.filteredNotes[i]
+					const hasSummary = Boolean(typeof currentNote._summary === 'string' && currentNote._summary.length > 0)
 					const note = await this.loadOneNoteInFolder(this.filteredNotes[i])
-					if (note) {
+					if (note && !hasSummary) {
 						noteObjects.push(note)
 					}
 
