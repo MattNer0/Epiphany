@@ -251,7 +251,7 @@ export default {
 		let photoPath = finalNote.photo
 		if (path.sep === '\\') {
 			relativePath = relativePath.split(path.sep).join('/')
-			photoPath = photoPath.split(path.sep).join('/')
+			photoPath = photoPath ? photoPath.split(path.sep).join('/') : ''
 		}
 
 		const data = await idbCon.notes.where('path').equals(relativePath).first()
