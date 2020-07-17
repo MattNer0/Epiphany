@@ -7,6 +7,7 @@ import utilFile from '../utils/file'
 
 import Dexie from 'dexie'
 const idbCon = new Dexie('epiphany')
+import { exportDB, importInto } from 'dexie-export-import'
 
 /**
  * @function getValidMarkdownFormats
@@ -76,13 +77,48 @@ function readFolderData(folderPath) {
 	return {}
 }
 
+const importDB = async function(library) {
+	idbCon.version(1).stores({
+		notes: '++id, name, summary, photo, favorite, &path, created_at, updated_at'
+	})
+
+	try {
+		var dbDump = path.join(library, 'library.json')
+		if (fs.existsSync(dbDump)) {
+			const content = fs.readFileSync(dbDump, 'utf-8')
+			const blob = new Blob([content], { type: 'application/json' })
+			await importInto(idbCon, blob, {
+				overwriteValues: true
+			})
+			return
+		}
+	} catch (err) {
+		console.warn(err.message)
+	}
+}
+
 export default {
 	async initDB(library) {
 		models.setBaseLibraryPath(library)
 		if (idbCon.isOpen()) return
-		idbCon.version(1).stores({
-			notes: '++id, name, summary, photo, favorite, &path, created_at, updated_at'
-		})
+		return importDB(library)
+	},
+
+	async closeDB() {
+		if (idbCon.isOpen()) {
+			idbCon.notes.clear()
+			idbCon.close()
+		}
+	},
+
+	async exportDB(library) {
+		var dbDump = path.join(library, 'library.json')
+		const blob = await exportDB(idbCon)
+		const fr = new FileReader()
+		fr.onload = function() {
+			fs.writeFileSync(dbDump, this.result)
+		}
+		fr.readAsText(blob)
 	},
 
 	readRacks(library) {

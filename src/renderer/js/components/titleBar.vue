@@ -134,6 +134,12 @@ export default {
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
+				label: 'Reload Library',
+				click: () => {
+					this.$root.reloadLibrary()
+				}
+			}))
+			menu.append(new MenuItem({
 				label: 'Select Library Directory',
 				click: () => {
 					this.$root.openSync()
@@ -154,13 +160,20 @@ export default {
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
+				label: 'Save Database',
+				click: () => {
+					this.$root.saveDatabase()
+				}
+			}))
+			menu.append(new MenuItem({
 				label: 'Clean Database',
 				click: () => {
 					this.$root.cleanDatabase()
 				}
 			}))
+			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
-				label: 'Reload',
+				label: 'Reload Window',
 				click: () => {
 					remote.getCurrentWindow().reload()
 				}

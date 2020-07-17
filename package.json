@@ -1,7 +1,7 @@
 {
     "name": "epiphany-journal",
     "productName": "Epiphany",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -17,6 +17,7 @@
         "codemirror": "^5.55.0",
         "datauri": "^3.0.0",
         "dexie": "^3.0.1",
+        "dexie-export-import": "^1.0.0-rc.2",
         "electron-dl": "^3.0.1",
         "electron-log": "^4.2.2",
         "electron-window": "^0.8.1",

@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import { app, screen, protocol, ipcMain, Menu } from 'electron'
 import { makeRendererWindow, makeBackgroundRendererWindow, windowName } from '../common/window'
+import { refreshTrayMenuWithWindow } from '../common/tray'
 import trayIcon from './tray'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -164,6 +165,21 @@ function createMainWindow() {
 
 	window.on('closed', () => {
 		mainWindow = null
+	})
+
+	window.on('minimize', () => {
+		window.webContents.send('window-minimize')
+	})
+
+	window.on('restore', () => {
+		window.webContents.send('window-restore')
+	})
+
+	window.on('hide', () => {
+		refreshTrayMenuWithWindow(window, global.appIcon, {
+			app,
+			Menu
+		})
 	})
 
 	window.webContents.on('devtools-opened', () => {

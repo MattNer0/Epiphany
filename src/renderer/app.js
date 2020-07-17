@@ -78,7 +78,10 @@ var appVue = new Vue({
 	store   : Store,
 	template: templateHtml,
 	data    : {
+		initLoading      : false,
 		loadedRack       : false,
+		readyToQuit      : false,
+		minimizeTime     : null,
 		isFullScreen     : false,
 		isPreview        : false,
 		isToolbarEnabled : settings.getSmart('toolbarNote', true),
@@ -374,6 +377,23 @@ var appVue = new Vue({
 			}
 		})
 
+		ipcRenderer.on('window-minimize', () => {
+			this.minimizeTime = new Date().getTime()
+			this.saveDatabase()
+		})
+
+		ipcRenderer.on('window-restore', () => {
+			if (this.minimizeTime && !this.isNoteSelected) {
+				const currentTime = new Date().getTime()
+				if (currentTime - this.minimizeTime > 1000) {
+					this.minimizeTime = null
+					this.reloadLibrary()
+				}
+			} else {
+				this.minimizeTime = null
+			}
+		})
+
 		window.bus.$on('change-bucket', eventData => this.changeBucket(eventData))
 		window.bus.$on('change-folder', eventData => this.changeFolder(eventData))
 		window.bus.$on('change-note', eventData => this.changeNote(eventData))
@@ -388,6 +408,12 @@ var appVue = new Vue({
 		window.bus.$on('download-files', eventData => this.downloadFiles(eventData))
 		window.bus.$on('download-file', eventData => this.downloadFile(eventData))
 
+		window.onbeforeunload = (e) => {
+			if (this.readyToQuit) return
+			e.returnValue = false // equivalent to `return false` but not recommended
+			this.saveAndQuit()
+		}
+
 		if (navigator && navigator.storage && navigator.storage.persist) {
 			navigator.storage.persist()
 				.then(function(persistent) {
@@ -401,6 +427,8 @@ var appVue = new Vue({
 	},
 	methods: {
 		async initRacks(library) {
+			if (this.initLoading) return
+			this.initLoading = true
 			//ipcRenderer.send('load-racks', { library })
 			try {
 				const racks = await promiseWorker.postMessage({
@@ -422,9 +450,17 @@ var appVue = new Vue({
 				})
 
 				folders.forEach((r) => {
-					var rack = this.$store.getters.findBucketByPath(r.rack)
-					var folders = []
+					const rack = this.$store.getters.findBucketByPath(r.rack)
+					const folders = []
 					r.folders.forEach((f) => {
+						if (rack.folders && rack.folders.length > 0) {
+							const currentFolder = rack.folders.find(d => d.path === f.path)
+							if (currentFolder) {
+								folders.push(currentFolder)
+								return
+							}
+						}
+
 						f.rack = rack
 						folders.push(new models.Folder(f))
 					})
@@ -453,6 +489,7 @@ var appVue = new Vue({
 				this.initCompleted()
 
 			} catch (err) {
+				this.initLoading = false
 				console.error(err)
 			}
 		},
@@ -469,8 +506,18 @@ var appVue = new Vue({
 			}
 
 			if (folder) {
-				var notes = []
+				const notes = []
+				const images = []
+
 				obj.notes.forEach((n) => {
+					if (folder.notes && folder.notes.length > 0) {
+						const currentNote = folder.notes.find(f => f.path === n.path)
+						if (currentNote) {
+							notes.push(currentNote)
+							return
+						}
+					}
+
 					n.rack = rack
 					n.folder = folder
 					switch (n.type) {
@@ -486,7 +533,6 @@ var appVue = new Vue({
 					}
 				})
 
-				var images = []
 				obj.images.forEach((img) => {
 					img.rack = rack
 					img.folder = folder
@@ -506,6 +552,7 @@ var appVue = new Vue({
 			}
 		},
 		initCompleted() {
+			this.initLoading = false
 			traymenu.init()
 			titleMenu.init()
 
@@ -523,6 +570,14 @@ var appVue = new Vue({
 					}
 				}
 			}
+		},
+		reloadLibrary() {
+			this.sendFlashMessage({
+				time : 1000,
+				level: 'info',
+				text : 'Reloading library...'
+			})
+			this.initRacks(models.getBaseLibraryPath())
 		},
 		findFolderByPath(rack, folderPath) {
 			try {
@@ -1348,11 +1403,19 @@ var appVue = new Vue({
 		},
 		openSync() {
 			var currentPath = models.getBaseLibraryPath()
-			dialog.showOpenDialog({
-				title      : 'Open Existing Sync Folder',
-				defaultPath: currentPath || '/',
-				properties : ['openDirectory', 'createDirectory']
+			promiseWorker.postMessage({
+				type: 'save-database',
+				data: {
+					library: currentPath
+				}
 			})
+				.then(() => {
+					return dialog.showOpenDialog({
+						title      : 'Open Existing Sync Folder',
+						defaultPath: currentPath || '/',
+						properties : ['openDirectory', 'createDirectory']
+					})
+				})
 				.then(result => {
 					if (result.canceled || !result.filePaths) {
 						return
@@ -1361,10 +1424,21 @@ var appVue = new Vue({
 
 					models.setBaseLibraryPath(newPath)
 					settings.set('baseLibraryPath', newPath)
+
+					return promiseWorker.postMessage({
+						type: 'close-database',
+						data: {}
+					})
+				})
+				.then(() => {
 					remote.getCurrentWindow().reload()
 				})
-				.catch(err => {
-					console.error(err)
+				.catch((err) => {
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : 'Error: '+ err.message
+					})
 				})
 		},
 		/**
@@ -1381,27 +1455,46 @@ var appVue = new Vue({
 				height : 'medium'
 			})
 		},
+		saveDatabase() {
+			promiseWorker.postMessage({
+				type: 'save-database',
+				data: {
+					library: models.getBaseLibraryPath()
+				}
+			})
+				.then(() => {
+					this.sendFlashMessage({
+						time : 1000,
+						level: 'info',
+						text : 'Database saved'
+					})
+				})
+				.catch((err) => {
+					console.error(err.message)
+				})
+		},
 		cleanDatabase() {
 			promiseWorker.postMessage({
 				type: 'clean-database',
 				data: {
 					library: models.getBaseLibraryPath()
 				}
-			}).then(data => {
-				if (data && data.num) {
-					this.sendFlashMessage({
-						time : 1500,
-						level: 'info',
-						text : 'Database cleaned - ' + data.num + (data.num > 1 ? ' notes' : ' note')
-					})
-				} else {
-					this.sendFlashMessage({
-						time : 1000,
-						level: 'info',
-						text : 'Database cleaned'
-					})
-				}
 			})
+				.then(data => {
+					if (data && data.num) {
+						this.sendFlashMessage({
+							time : 1500,
+							level: 'info',
+							text : 'Database cleaned - ' + data.num + (data.num > 1 ? ' notes' : ' note')
+						})
+					} else {
+						this.sendFlashMessage({
+							time : 1000,
+							level: 'info',
+							text : 'Database cleaned'
+						})
+					}
+				})
 		},
 		downloadFiles(data) {
 			promiseWorker.postMessage({
@@ -1504,14 +1597,51 @@ var appVue = new Vue({
 				this.preview = ''
 			}
 		},
-		closingWindow(quit) {
-			settings.saveWindowSize()
-			if (quit) {
-				remote.app.quit()
-			} else {
-				var win = remote.getCurrentWindow()
-				win.hide()
+		saveAndQuit() {
+			this.readyToQuit = true
+
+			if (this.selectedNote) {
+				this.selectedNote.saveModel()
 			}
+
+			promiseWorker.postMessage({
+				type: 'save-database',
+				data: {
+					library: models.getBaseLibraryPath()
+				}
+			})
+				.then(() => {
+					this.closingWindow(true)
+				})
+				.catch((err) => {
+					this.closingWindow(true)
+					console.error(err.message)
+				})
+		},
+		closingWindow(quit) {
+			promiseWorker.postMessage({
+				type: 'save-database',
+				data: {
+					library: models.getBaseLibraryPath()
+				}
+			})
+				.then(() => {
+					settings.saveWindowSize()
+					if (quit) {
+						remote.app.quit()
+					} else {
+						var win = remote.getCurrentWindow()
+						win.hide()
+					}
+				})
+				.catch((err) => {
+					console.error(err.message)
+					this.sendFlashMessage({
+						time : 5000,
+						level: 'error',
+						text : 'Failed to save database'
+					})
+				})
 		},
 		/**
 		 * calculates the sidebar width and

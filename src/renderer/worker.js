@@ -99,6 +99,13 @@ registerPromiseWorker(({ type, data }) => {
 					return libraryHelper.cleanDatabase(data.library)
 				})
 
+		case 'close-database':
+			return libraryHelper.closeDB()
+
+		case 'save-database':
+			if (!data.library) return paramError(type, 'library')
+			return libraryHelper.exportDB(data.library)
+
 		case 'download-files':
 			if (!data.files) return paramError(type, 'files')
 			if (!data.folder) return paramError(type, 'folder')

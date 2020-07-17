@@ -2,13 +2,13 @@ module.exports = {
 	root: true,
 
 	parserOptions: {
-		parser: 'babel-eslint',
+		parser    : 'babel-eslint',
 		sourceType: 'module'
 	},
 
 	env: {
 		browser: true,
-		node: true
+		node   : true
 	},
 
 	extends: [
@@ -24,6 +24,7 @@ module.exports = {
 	globals: {
 		'__static'         : true,
 		'WorkerGlobalScope': true,
+		'FileReaderSync'   : true,
 		'appVue'           : true
 	},
 

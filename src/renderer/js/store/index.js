@@ -95,10 +95,16 @@ export default new Vuex.Store({
 		}
 	},
 	actions: {
-		loadedRacks ({ commit }, racks) {
+		loadedRacks ({ state, commit }, racks) {
 			var racksArray = []
 			racks.forEach((r) => {
-				racksArray.push(new models.Rack(r))
+				const currentBucket = state.buckets.find(b => b.path === r.path)
+				if (currentBucket) {
+					currentBucket.ordering = r.ordering
+					racksArray.push(currentBucket)
+				} else {
+					racksArray.push(new models.Rack(r))
+				}
 			})
 
 			commit('saveBuckets', arr.sortBy(racksArray.slice(), 'ordering', true))
