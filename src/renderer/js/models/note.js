@@ -52,6 +52,12 @@ class Note extends Model {
 			this._summary = ''
 		}
 
+		if (data.size) {
+			this._size = data.size
+		} else {
+			this._size = 0
+		}
+
 		if (!data.body || data.body === '') {
 			this._loadedBody = false
 			this._body = ''
@@ -62,7 +68,7 @@ class Note extends Model {
 
 	get updatedAt() {
 		if (!this._metadata.updatedAt) {
-			this._metadata.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
+			this.setUpdatedAt()
 		}
 		return moment(this._metadata.updatedAt)
 	}
@@ -100,6 +106,24 @@ class Note extends Model {
 			rack            : this.rack,
 			folder          : this.folder
 		})
+	}
+
+	get fileSize() {
+		if (this._size) {
+			if (this._size > 1024) {
+				return {
+					size: (this._size / 1024).toFixed(2),
+					unit: 'KB'
+				}
+			}
+
+			return {
+				size: this._size,
+				unit: 'Bytes'
+			}
+		}
+
+		return null
 	}
 
 	get extension() {
@@ -207,7 +231,7 @@ class Note extends Model {
 	set body(newValue) {
 		if (newValue !== this._body) {
 			if (!this._metadata.createdAt) this._metadata.createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
-			this._metadata.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
+			this.setUpdatedAt()
 			this._body = newValue
 		}
 	}
@@ -600,6 +624,10 @@ class Note extends Model {
 		text = text.replace(/\* \[ \]/g, '* ')
 		text = text.replace(/\* \[x\]/g, '* ')
 		return text
+	}
+
+	setUpdatedAt() {
+		this._metadata.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
 	}
 
 	saveModel() {

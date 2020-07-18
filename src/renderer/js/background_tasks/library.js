@@ -191,19 +191,22 @@ export default {
 	async readNotesByFolder(library, folder) {
 		if (!fs.existsSync(folder)) return []
 
-		var validNotes = []
-		var notes = fs.readdirSync(folder)
-		var note
+		const validNotes = []
+		const notes = fs.readdirSync(folder)
+		let note
 
 		for (note of notes) {
-			var notePath = path.join(folder, note)
-			var noteCache = await this.findNoteInDB(library, notePath)
-			if (noteCache) {
-				validNotes.push(noteCache)
+			const notePath = path.join(folder, note)
+			const noteData = isValidNotePath(notePath)
+			if (noteData) {
+				var noteCache = await this.findNoteInDB(library, notePath, noteData)
+				if (noteCache) {
+					validNotes.push(noteCache)
 
-			} else if (fs.existsSync(notePath) && note.charAt(0) !== '.') {
-				var newNote = this.readNewNote(notePath)
-				if (newNote) validNotes.push(newNote)
+				} else if (fs.existsSync(notePath) && note.charAt(0) !== '.') {
+					var newNote = this.readNote(notePath, noteData, false)
+					if (newNote) validNotes.push(newNote)
+				}
 			}
 		}
 		return validNotes
@@ -242,6 +245,7 @@ export default {
 					path      : notePath,
 					created_at: createdAt,
 					updated_at: updatedAt,
+					size      : noteData.stat.size,
 					extension : noteData.ext
 				}
 			case '.opml':
@@ -252,6 +256,7 @@ export default {
 					path      : notePath,
 					created_at: createdAt,
 					updated_at: updatedAt,
+					size      : noteData.stat.size,
 					extension : noteData.ext
 				}
 			default:
@@ -262,6 +267,7 @@ export default {
 					path      : notePath,
 					created_at: createdAt,
 					updated_at: updatedAt,
+					size      : noteData.stat.size,
 					extension : noteData.ext
 				}
 		}
@@ -269,13 +275,6 @@ export default {
 	isNoteFile(filePath) {
 		if (!filePath) return false
 		return isValidNotePath(filePath)
-	},
-	readNewNote(notePath) {
-		var noteData = isValidNotePath(notePath)
-		if (noteData) {
-			return this.readNote(notePath, noteData, false)
-		}
-		return null
 	},
 	async insertNotesInDB(requestData) {
 		for (let i=0; i<requestData.notes.length; i++) {
@@ -328,7 +327,7 @@ export default {
 			log.error(err.message)
 		}
 	},
-	async findNoteInDB(library, notePath) {
+	async findNoteInDB(library, notePath, noteData) {
 		try {
 			let relativePath = path.relative(library, notePath)
 			if (path.sep === '\\') {
@@ -337,10 +336,8 @@ export default {
 
 			const data = await idbCon.notes.where('path').equals(relativePath).first()
 			if (data) {
-				var extension = path.extname(notePath)
-				var type
-
-				switch (extension) {
+				let type
+				switch (noteData.ext) {
 					case '.mdencrypted':
 						type = 'encrypted'
 						break
@@ -360,7 +357,8 @@ export default {
 					photo     : data.photo ? path.join(library, data.photo) : null,
 					created_at: data.created_at,
 					updated_at: data.updated_at,
-					extension : extension
+					size      : noteData.stat.size,
+					extension : noteData.ext
 				}
 			}
 		} catch (err) {

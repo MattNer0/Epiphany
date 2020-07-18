@@ -117,6 +117,9 @@
 									tr
 										td: strong Filename:&nbsp;
 										td.right: span {{ note.documentFilename + note.extension }}
+									tr(v-if="note.fileSize")
+										td: strong Filesize:&nbsp;
+										td.right: span {{ note.fileSize.size }} {{ note.fileSize.unit }}
 								hr
 								table
 									tr

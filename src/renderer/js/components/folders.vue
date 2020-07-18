@@ -178,13 +178,13 @@ export default {
 				event.stopPropagation()
 				// Dropping note to folder
 				folder.dragHover = false
-				var note = this.draggingNote
+				const note = this.draggingNote
 				arr.remove(note.folder.notes, (n) => { return n === note })
 				note.folder = folder
 				note.rack = folder.rack
 				folder.notes.unshift(note)
+				note.setUpdatedAt()
 				note.saveModel()
-				this.$root.setDraggingNote(null)
 				if (this.draggingNote === this.selectedNote) {
 					window.bus.$emit('change-folder', { folder: folder })
 				}
@@ -300,6 +300,15 @@ export default {
 				}
 			}))
 			menu.popup()
+		}
+	},
+	watch: {
+		draggingNote() {
+			if (!this.draggingNote) {
+				this.parentFolder.folders.forEach(f => {
+					if (f.dragHover) f.dragHover = false
+				})
+			}
 		}
 	}
 }

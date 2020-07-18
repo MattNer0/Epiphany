@@ -231,6 +231,19 @@ export default {
 				this.$store.commit('dragging')
 				rack.sortUpper = false
 				rack.sortLower = false
+			} else if (this.draggingNote && rack.quick_notes && rack.folders && rack.folders.length) {
+				console.log('Dropping Note to Quick Notes')
+				event.stopPropagation()
+				const note = this.draggingNote
+				arr.remove(note.folder.notes, (n) => { return n === note })
+				note.folder = rack.folders[0]
+				note.rack = rack
+				rack.folders[0].notes.unshift(note)
+				note.setUpdatedAt()
+				note.saveModel()
+				if (this.draggingNote === this.selectedNote) {
+					window.bus.$emit('change-bucket', { bucket: rack })
+				}
 			} else {
 				event.preventDefault()
 				event.stopPropagation()
@@ -290,6 +303,15 @@ export default {
 				}
 			}))
 			menu.popup()
+		}
+	},
+	watch: {
+		draggingNote() {
+			if (!this.draggingNote) {
+				this.bucketsWithFolders.forEach(b => {
+					if (b.dragHover) b.dragHover = false
+				})
+			}
 		}
 	}
 }
