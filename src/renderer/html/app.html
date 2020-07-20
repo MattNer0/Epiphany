@@ -48,6 +48,7 @@
 					:sidebar-drag="sidebarDrag"
 					:sidebar-drag-end="sidebarDragEnd"
 					ref="refHandleNote" />
+				<sidebar-toggle :fullscreen="isFullScreen" />
 			</div>
 			<div class="cell-container main-cell-container" :class="mainCellClass">
 				<tabs-bar :tabs-array="noteTabs" />
@@ -88,6 +89,8 @@
 					<idle-splash
 						:path="libraryPath"
 						:sync="librarySync"
+						:loading="initLoading"
+						:note="lastNote"
 						:dbsize="databaseSize" />
 				</div>
 				<note-footer

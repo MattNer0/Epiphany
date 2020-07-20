@@ -250,14 +250,14 @@ class Note extends Model {
 	get bodyPreview() {
 		let str = this.bodyWithoutTitle
 		if (str === '' && this._summary) {
-			return this._summary
+			return this._summary.slice(0, 300)
 		}
 		str = str.replace(/^\[source\]\(.+\)\n$/img, '')
 		str = str.replace(/\[!\[\]\([^)]+\)\]\([^)]+\)/ig, '')
 		str = str.replace(/!?\[([^\]]+)\]\([^)]+\)/ig, '$1')
 		str = str.replace(/^!\[\]\([^)]+\)$/igm, '')
 		str = str.replace(/\n+/g, '\n')
-		return str.slice(0, 500)
+		return str.slice(0, 300)
 	}
 
 	get title() {

@@ -105,4 +105,30 @@
 			cursor: pointer;
 		}
 	}
+
+	.sidebar-toggle-label {
+		position: absolute;
+		top: 0;
+		right: -1.8em;
+		width: 1.8em;
+		padding-top: .8em;
+		padding-bottom: .5em;
+		border-radius: 0 0 .5em 0;
+		border-right-width: 2px;
+		border-bottom-width: 2px;
+		border-right-style: solid;
+		border-bottom-style: solid;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		user-select: none;
+		cursor: pointer;
+		opacity: 0.5;
+		transition: opacity .25s ease;
+		z-index: 100;
+	}
+
+	.sidebar-toggle-label:hover {
+		opacity: 1.0;
+	}
 }

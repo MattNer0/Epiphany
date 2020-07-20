@@ -61,8 +61,8 @@
 
 	.cell-container.main-cell-container {
 		margin-left: 0;
-		padding-left: 1em;
-		padding-right: 1em;
+		padding-left: 2.4em;
+		padding-right: 1.8em;
 		transition: margin 400ms;
 		border-radius: 0.6em 0.6em 0 0;
 	}
@@ -72,7 +72,7 @@
 		padding-right: 0;
 	}
 
-	.main-note-container, .idle-library-container {
+	.main-note-container {
 		position: relative;
 		height: calc( 100vh - #{ $outside-note-height } );
 	}
@@ -137,8 +137,10 @@
 	.idle-library-container {
 		display: flex;
 		justify-content: flex-end;
-		align-items: flex-start;
-		padding: 2rem .8rem
+		align-items: stretch;
+		padding: 2.4rem 0;
+		height: auto;
+		max-height: 80vh;
 	}
 
 	.idle-library-container > div {
@@ -153,6 +155,14 @@
 
 	.idle-library-container a {
 		color: inherit;
+	}
+
+	.idle-library-container table {
+		max-width: 40vw;
+	}
+
+	.idle-library-container table td {
+		word-break: break-word;
 	}
 
 	.idle-library-container strong {

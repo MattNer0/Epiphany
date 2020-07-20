@@ -271,6 +271,17 @@ export default {
 		bucketMenu(bucket) {
 			var menu = new Menu()
 
+			if (this.selectedBucket === bucket) {
+				menu.append(new MenuItem({
+					label: 'Deselect',
+					click: () => {
+						window.bus.$emit('change-note', { note: null })
+						this.$root.closeOthers()
+					}
+				}))
+				menu.append(new MenuItem({ type: 'separator' }))
+			}
+
 			if (!bucket.quick_notes) {
 				menu.append(new MenuItem({
 					label: 'Rename bucket',
@@ -286,22 +297,29 @@ export default {
 				}))
 				menu.append(new MenuItem({ type: 'separator' }))
 				menu.append(new MenuItem({
-					label: 'Open file explorer',
+					label: 'Open in file explorer',
 					click: () => {
 						shell.openPath(bucket.path)
 					}
 				}))
 				menu.append(new MenuItem({ type: 'separator' }))
+				menu.append(new MenuItem({
+					label: 'Delete bucket',
+					click: () => {
+						if (confirm('Delete bucket "' + bucket.name + '" and its content?')) {
+							this.$root.removeRack(bucket)
+						}
+					}
+				}))
+			} else {
+				menu.append(new MenuItem({
+					label: 'Open in file explorer',
+					click: () => {
+						shell.openPath(bucket.path)
+					}
+				}))
 			}
 
-			menu.append(new MenuItem({
-				label: 'Delete bucket',
-				click: () => {
-					if (confirm('Delete bucket "' + bucket.name + '" and its content?')) {
-						this.$root.removeRack(bucket)
-					}
-				}
-			}))
 			menu.popup()
 		}
 	},

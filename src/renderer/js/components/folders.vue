@@ -238,8 +238,9 @@ export default {
 
 			if (this.selectedFolder === folder) {
 				menu.append(new MenuItem({
-					label: 'Deselect folder',
+					label: 'Deselect',
 					click: () => {
+						window.bus.$emit('change-note', { note: null })
 						window.bus.$emit('change-folder', { folder: null })
 					}
 				}))

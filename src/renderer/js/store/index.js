@@ -37,6 +37,11 @@ export default new Vuex.Store({
 			return arr.sortBy(state.notes.filter((n) => {
 				return !n.isEncrypted && (n._loadedBody || n.bodyPreview)
 			}), 'updatedAt').slice(0, 10)
+		},
+		lastNote: state => {
+			return arr.sortBy(state.notes.filter((n) => {
+				return !n.isEncrypted && (n._loadedBody || n.bodyPreview)
+			}), 'updatedAt')[0]
 		}
 	},
 	mutations: {

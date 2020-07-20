@@ -367,6 +367,11 @@ function styleObject(obj) {
 						backgroundColor: obj['sidebar-background-hover']+' !important',
 						color          : obj['note-list-text-color-hover']
 					}
+				},
+				'& .sidebar-toggle-label': {
+					borderColor    : obj['resize-panel-handler'],
+					backgroundColor: obj['resize-panel-handler'],
+					color          : obj['sidebar-color']
 				}
 			},
 			'.tabs-bar': {

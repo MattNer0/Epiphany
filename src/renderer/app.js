@@ -46,6 +46,7 @@ import componentTitleBar from './js/components/titleBar.vue'
 import componentTabsBar from './js/components/tabsBar.vue'
 import componentThemeEditor from './js/components/themeEditor.vue'
 import componentThemeMenu from './js/components/themeMenu.vue'
+import componentSidebarToggle from './js/components/sidebarToggle.vue'
 import componentIdleSplash from './js/components/idleSplash.vue'
 
 import templateHtml from './html/app.html'
@@ -131,7 +132,8 @@ var appVue = new Vue({
 		'tabsBar'       : componentTabsBar,
 		'themeEditor'   : componentThemeEditor,
 		'themeMenu'     : componentThemeMenu,
-		'idleSplash'    : componentIdleSplash
+		'idleSplash'    : componentIdleSplash,
+		'sidebarToggle' : componentSidebarToggle
 	},
 	computed: {
 		racks() {
@@ -169,6 +171,9 @@ var appVue = new Vue({
 		},
 		notesHistory() {
 			return this.$store.getters.notesHistory
+		},
+		lastNote() {
+			return this.$store.getters.lastNote
 		},
 		draggingBucket() {
 			return this.$store.state.draggingBucket
@@ -701,6 +706,7 @@ var appVue = new Vue({
 
 			if (this.selectedRack === null && bucket) shouldUpdateSize = true
 			else if (this.selectedFolder !== null && bucket) shouldUpdateSize = true
+			else if (this.selectedRack !== null && bucket === null) shouldUpdateSize = true
 
 			if (bucket !== null && this.quickNotesBucket === bucket) {
 				const newNoteFolder = this.quickNotesBucket.folders.find((obj) => {

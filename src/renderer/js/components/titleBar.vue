@@ -14,12 +14,6 @@
 						li(@click="quick_note")
 							i.coon-plus
 							span New Quick Note
-						li(@click="open_sidebar", v-if="isFullScreen")
-							i.coon-sidebar
-							span Open Sidebar
-						li(@click="close_sidebar", v-else)
-							i.coon-sidebar
-							span Close Sidebar
 						li(v-bind:class="{ 'open-search' : focusSearch || query, 'close-search': !focusSearch && !query }")
 							label
 								i.coon-search
@@ -91,12 +85,6 @@ export default {
 		},
 		quick_note() {
 			this.$root.newQuickNote()
-		},
-		open_sidebar() {
-			this.$root.setFullScreen(false)
-		},
-		close_sidebar() {
-			this.$root.setFullScreen(true)
 		},
 		onSearchFocus() {
 			this.focusSearch = true

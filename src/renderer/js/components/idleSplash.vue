@@ -1,5 +1,5 @@
 <template lang="pug">
-	div
+	div(v-if="!loading")
 		table
 			tr
 				td
@@ -18,6 +18,13 @@
 					strong Cache Size:
 				td
 					i {{ dbsize }} notes
+			tr(v-if="note")
+				td
+					strong Last Note:
+				td
+					a(href="#", @click.prevent.stop="openNote")
+						| {{ note.title }}&nbsp;
+						i.coon-external-link
 </template>
 
 <script>
@@ -27,9 +34,11 @@ import path from 'path'
 export default {
 	name : 'idleSplash',
 	props: {
-		'path'  : String,
-		'sync'  : String,
-		'dbsize': Number
+		'path'   : String,
+		'sync'   : String,
+		'loading': Boolean,
+		'note'   : Object,
+		'dbsize' : Number
 	},
 	computed: {
 		libraryPath() {
@@ -53,6 +62,9 @@ export default {
 	methods: {
 		openLibrary() {
 			shell.openPath(this.path)
+		},
+		openNote() {
+			window.bus.$emit('change-note', { note: this.note })
 		}
 	}
 }
