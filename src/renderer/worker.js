@@ -30,6 +30,25 @@ function paramError(type, param) {
 
 registerPromiseWorker(({ type, data }) => {
 	switch (type) {
+		case 'load-library-settings':
+			if (!data.library) return paramError(type, 'library')
+			if (!data.key) return paramError(type, 'key')
+
+			return libraryHelper.initDB(data.library)
+				.then(function() {
+					return libraryHelper.loadSettingsDB(data.key)
+				})
+
+		case 'save-library-settings':
+			if (!data.library) return paramError(type, 'library')
+			if (!data.key) return paramError(type, 'key')
+			if (data.value === undefined) return paramError(type, 'value')
+
+			return libraryHelper.initDB(data.library)
+				.then(function() {
+					return libraryHelper.saveSettingsDB(data.key, data.value)
+				})
+
 		case 'load-racks':
 			if (!data.library) return paramError(type, 'library')
 

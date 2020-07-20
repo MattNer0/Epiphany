@@ -7,6 +7,7 @@
 					ul
 						li.icon
 						li(@click="file_menu") File
+						li(@click="library_menu") Library
 						li(@click="edit_menu") Edit
 						li(@click="view_menu") View
 						li(@click="tools_menu") Tools
@@ -127,28 +128,9 @@ export default {
 			var menu = new Menu()
 
 			menu.append(new MenuItem({
-				label: 'New Bucket',
+				label: 'Save Database',
 				click: () => {
-					this.newBucket()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Reload Library',
-				click: () => {
-					this.$root.reloadLibrary()
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Select Library Directory',
-				click: () => {
-					this.$root.openSync()
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Move Library Directory',
-				click: () => {
-					this.$root.moveSync()
+					this.$root.saveDatabase()
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
@@ -156,26 +138,6 @@ export default {
 				label: 'About',
 				click: () => {
 					this.$root.openAbout()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Save Database',
-				click: () => {
-					this.$root.saveDatabase()
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Clean Database',
-				click: () => {
-					this.$root.cleanDatabase()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Reload Window',
-				click: () => {
-					remote.getCurrentWindow().reload()
 				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
@@ -248,6 +210,37 @@ export default {
 				}
 			}))
 			return sortSubmenu
+		},
+		library_menu(event) {
+			var menu = new Menu()
+
+			menu.append(new MenuItem({
+				label: 'New Bucket',
+				click: () => {
+					this.newBucket()
+				}
+			}))
+			menu.append(new MenuItem({ type: 'separator' }))
+			menu.append(new MenuItem({
+				label: 'Reload Library',
+				click: () => {
+					this.$root.reloadLibrary()
+				}
+			}))
+			menu.append(new MenuItem({
+				label: 'Select Library Directory',
+				click: () => {
+					this.$root.openSync()
+				}
+			}))
+			menu.append(new MenuItem({
+				label: 'Move Library Directory',
+				click: () => {
+					this.$root.moveSync()
+				}
+			}))
+
+			menu.popup(this.popup_position(event))
 		},
 		notes_submenu() {
 			var notesSubmenu = new Menu()
@@ -355,6 +348,20 @@ export default {
 		},
 		tools_menu(event) {
 			var menu = new Menu()
+
+			menu.append(new MenuItem({
+				label: 'Clean Database',
+				click: () => {
+					this.$root.cleanDatabase()
+				}
+			}))
+			menu.append(new MenuItem({
+				label: 'Reload Window',
+				click: () => {
+					remote.getCurrentWindow().reload()
+				}
+			}))
+			menu.append(new MenuItem({ type: 'separator' }))
 
 			menu.append(new MenuItem({
 				type   : 'checkbox',

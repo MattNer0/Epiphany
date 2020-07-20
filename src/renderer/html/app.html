@@ -84,6 +84,12 @@
 						</template>
 					</div>
 				</div>
+				<div v-else class="idle-library-container">
+					<idle-splash
+						:path="libraryPath"
+						:sync="librarySync"
+						:dbsize="databaseSize" />
+				</div>
 				<note-footer
 					v-if="isNoteSelected && !isOutlineSelected"
 					v-show="!isPreview && isToolbarEnabled" />

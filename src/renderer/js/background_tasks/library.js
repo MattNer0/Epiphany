@@ -81,6 +81,10 @@ const importDB = async function(library) {
 	idbCon.version(1).stores({
 		notes: '++id, name, summary, photo, favorite, &path, created_at, updated_at'
 	})
+	idbCon.version(2).stores({
+		notes   : '++id, name, summary, photo, favorite, &path, created_at, updated_at',
+		settings: '++id, &key, value'
+	})
 
 	try {
 		var dbDump = path.join(library, 'library.json')
@@ -88,7 +92,8 @@ const importDB = async function(library) {
 			const content = fs.readFileSync(dbDump, 'utf-8')
 			const blob = new Blob([content], { type: 'application/json' })
 			await importInto(idbCon, blob, {
-				overwriteValues: true
+				acceptVersionDiff: true,
+				overwriteValues  : true
 			})
 			return
 		}
@@ -119,6 +124,40 @@ export default {
 			fs.writeFileSync(dbDump, this.result)
 		}
 		fr.readAsText(blob)
+	},
+
+	async loadSettingsDB(key) {
+		try {
+			const data = await idbCon.settings.where('key').equals(key).first()
+			return data ? data.value : null
+		} catch (err) {
+			console.warn(err.message)
+		}
+		return null
+	},
+
+	async saveSettingsDB(key, value) {
+		try {
+			const data = await idbCon.settings.where('key').equals(key).first()
+
+			if (data) {
+				await idbCon.settings
+					.where('key')
+					.equals(key)
+					.modify({
+						'value': value
+					})
+			} else {
+				await idbCon.settings.put({
+					'key'  : key,
+					'value': value
+				})
+			}
+			return true
+		} catch (err) {
+			console.warn(err.message)
+		}
+		return false
 	},
 
 	readRacks(library) {
@@ -369,6 +408,7 @@ export default {
 	},
 	async cleanDatabase(library) {
 		const notes = await idbCon.notes.toArray()
+		let numNotes = notes.length
 
 		log.log('Notes in DB: ' + notes.length)
 		for (let i=0; i<notes.length; i++) {
@@ -376,6 +416,7 @@ export default {
 			const notePath = path.join(library, note.path)
 			if (!fs.existsSync(notePath)) {
 				await idbCon.notes.where('path').equals(note.path).delete()
+				numNotes--
 
 				const imageFolder = path.join(path.dirname(notePath), '.' + path.basename(notePath, path.extname(notePath)))
 				if (fs.existsSync(imageFolder)) {
@@ -384,6 +425,6 @@ export default {
 			}
 		}
 
-		return notes.length
+		return Promise.resolve({ num: numNotes })
 	}
 }

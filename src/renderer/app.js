@@ -46,6 +46,7 @@ import componentTitleBar from './js/components/titleBar.vue'
 import componentTabsBar from './js/components/tabsBar.vue'
 import componentThemeEditor from './js/components/themeEditor.vue'
 import componentThemeMenu from './js/components/themeMenu.vue'
+import componentIdleSplash from './js/components/idleSplash.vue'
 
 import templateHtml from './html/app.html'
 
@@ -86,10 +87,10 @@ var appVue = new Vue({
 		isPreview        : false,
 		isToolbarEnabled : settings.getSmart('toolbarNote', true),
 		isFullWidthNote  : settings.getSmart('fullWidthNote', true),
-		keepHistory      : settings.getSmart('keepHistory', true),
 		currentTheme     : settings.getJSON('theme', 'dark'),
 		useMonospace     : settings.getSmart('useMonospace', false),
 		reduceToTray     : settings.getSmart('reduceToTray', true),
+		librarySync      : null,
 		preview          : '',
 		quickNotesBucket : null,
 		timeoutNoteChange: false,
@@ -107,6 +108,7 @@ var appVue = new Vue({
 		modalDescription : 'description',
 		modalPrompts     : [],
 		modalOkcb        : null,
+		databaseSize     : 0,
 		racksWidth       : settings.getSmart('racksWidth', 220),
 		notesWidth       : settings.getSmart('notesWidth', 220),
 		fontsize         : settings.getSmart('fontsize', 15),
@@ -128,7 +130,8 @@ var appVue = new Vue({
 		'outline'       : componentOutline,
 		'tabsBar'       : componentTabsBar,
 		'themeEditor'   : componentThemeEditor,
-		'themeMenu'     : componentThemeMenu
+		'themeMenu'     : componentThemeMenu,
+		'idleSplash'    : componentIdleSplash
 	},
 	computed: {
 		racks() {
@@ -408,10 +411,12 @@ var appVue = new Vue({
 		window.bus.$on('download-files', eventData => this.downloadFiles(eventData))
 		window.bus.$on('download-file', eventData => this.downloadFile(eventData))
 
-		window.onbeforeunload = (e) => {
-			if (this.readyToQuit) return
-			e.returnValue = false // equivalent to `return false` but not recommended
-			this.saveAndQuit()
+		if (process.env.NODE_ENV === 'production') {
+			window.onbeforeunload = (e) => {
+				if (this.readyToQuit) return
+				e.returnValue = false // equivalent to `return false` but not recommended
+				this.saveAndQuit()
+			}
 		}
 
 		if (navigator && navigator.storage && navigator.storage.persist) {
@@ -430,6 +435,34 @@ var appVue = new Vue({
 			if (this.initLoading) return
 			this.initLoading = true
 			//ipcRenderer.send('load-racks', { library })
+
+			this.librarySync = await promiseWorker.postMessage({
+				type: 'load-library-settings',
+				data: {
+					library,
+					key: 'sync'
+				}
+			})
+
+			if (this.librarySync === null) {
+				await promiseWorker.postMessage({
+					type: 'save-library-settings',
+					data: {
+						library,
+						key  : 'sync',
+						value: 'local'
+					}
+				})
+				this.librarySync = 'local'
+			}
+
+			if (this.librarySync === 'local') {
+				await this.initRacksFromFs(library)
+			} else {
+				this.initLoading = false
+			}
+		},
+		async initRacksFromFs(library) {
 			try {
 				const racks = await promiseWorker.postMessage({
 					type: 'load-racks',
@@ -468,6 +501,8 @@ var appVue = new Vue({
 					rack.folders = arr.sortBy(folders.slice(), 'ordering', true)
 				})
 
+				this.update_editor_size()
+
 				for (const folder of folders) {
 					const notes = await promiseWorker.postMessage({
 						type: 'load-notes',
@@ -484,6 +519,16 @@ var appVue = new Vue({
 						}
 						this.initByParent(r, rack)
 					})
+				}
+
+				const data = await promiseWorker.postMessage({
+					type: 'clean-database',
+					data: {
+						library
+					}
+				})
+				if (data && data.num) {
+					this.databaseSize = data.num
 				}
 
 				this.initCompleted()
@@ -1482,6 +1527,7 @@ var appVue = new Vue({
 			})
 				.then(data => {
 					if (data && data.num) {
+						this.databaseSize = data.num
 						this.sendFlashMessage({
 							time : 1500,
 							level: 'info',
@@ -1689,9 +1735,6 @@ var appVue = new Vue({
 					this.$refs.refCodeMirror.refreshCM()
 				})
 			}
-		},
-		keepHistory() {
-			settings.set('keepHistory', this.keepHistory)
 		},
 		useMonospace() {
 			settings.set('useMonospace', this.useMonospace)

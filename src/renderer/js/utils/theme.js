@@ -107,6 +107,10 @@ function styleObject(obj) {
 				backgroundColor: obj['note-background-color'],
 				color          : obj['note-text-color']
 			},
+			'.idle-library-container > div': {
+				backgroundColor: obj['note-background-color'],
+				color          : obj['note-text-color']
+			},
 			'.my-editor-preview': {
 				backgroundColor: obj['note-background-color']
 			},

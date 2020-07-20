@@ -72,7 +72,7 @@
 		padding-right: 0;
 	}
 
-	.main-note-container {
+	.main-note-container, .idle-library-container {
 		position: relative;
 		height: calc( 100vh - #{ $outside-note-height } );
 	}
@@ -132,5 +132,34 @@
 
 	.browser-open {
 		overflow: hidden;
+	}
+
+	.idle-library-container {
+		display: flex;
+		justify-content: flex-end;
+		align-items: flex-start;
+		padding: 2rem .8rem
+	}
+
+	.idle-library-container > div {
+		padding: 1rem;
+		border-radius: .5rem;
+		opacity: 0.6;
+		transition: opacity .25s ease;
+		cursor: default;
+		user-select: none;
+		line-height: 1.6;
+	}
+
+	.idle-library-container a {
+		color: inherit;
+	}
+
+	.idle-library-container strong {
+		padding: 0 .1rem;
+	}
+
+	.idle-library-container > div:hover {
+		opacity: 1.0;
 	}
 }
