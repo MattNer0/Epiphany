@@ -64,7 +64,6 @@
 		padding-left: 2.4em;
 		padding-right: 1.8em;
 		transition: margin 400ms;
-		border-radius: 0.6em 0.6em 0 0;
 	}
 
 	.cell-container.main-cell-container.browser-open {
@@ -145,7 +144,6 @@
 
 	.idle-library-container > div {
 		padding: 1rem;
-		border-radius: .5rem;
 		opacity: 0.6;
 		transition: opacity .25s ease;
 		cursor: default;

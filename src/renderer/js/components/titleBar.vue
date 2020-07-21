@@ -230,27 +230,6 @@ export default {
 
 			menu.popup(this.popup_position(event))
 		},
-		notes_submenu() {
-			var notesSubmenu = new Menu()
-			notesSubmenu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Show Note Toolbar',
-				checked: this.isToolbarEnabled,
-				click  : () => {
-					this.$root.toggleToolbar()
-				}
-			}))
-			notesSubmenu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Show Note Full Width',
-				checked: this.isFullWidthNote,
-				click  : () => {
-					this.$root.toggleFullWidth()
-				}
-			}))
-
-			return notesSubmenu
-		},
 		edit_menu(event) {
 			var menu = new Menu()
 
@@ -318,13 +297,32 @@ export default {
 			var menu = new Menu()
 
 			menu.append(new MenuItem({
+				label: 'Toggle sidebar',
+				click: () => {
+					this.$root.setFullScreen(!this.isFullScreen)
+				}
+			}))
+			menu.append(new MenuItem({ type: 'separator' }))
+			menu.append(new MenuItem({
 				label  : 'Notes Order',
 				submenu: this.sort_submenu()
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({
-				label  : 'Notes',
-				submenu: this.notes_submenu()
+				type   : 'checkbox',
+				label  : 'Show Note Toolbar',
+				checked: this.isToolbarEnabled,
+				click  : () => {
+					this.$root.toggleToolbar()
+				}
+			}))
+			menu.append(new MenuItem({
+				type   : 'checkbox',
+				label  : 'Show Note Full Width',
+				checked: this.isFullWidthNote,
+				click  : () => {
+					this.$root.toggleFullWidth()
+				}
 			}))
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({

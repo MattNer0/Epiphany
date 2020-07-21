@@ -1,8 +1,8 @@
 <template lang="pug">
 	.my-shelf-folders
 		.my-shelf-folder.my-all(
-			v-if="bucket.folders.length > 1 && bucket.allnotes.length > 0",
-			@contextmenu.prevent.stop="",
+			v-if="bucket.folders.length > 1 && bucket.allnotes.length > 0"
+			@contextmenu.prevent.stop="folderAllMenu()"
 			:class="{ 'isShelfSelected': showAll && selectedBucket }")
 			.folder-object(@click="selectAll(bucket)", :class="{ 'dragging' : draggingFolder }")
 				a.my-shelf-folder-name
@@ -16,7 +16,7 @@
 						i.coon-file
 
 		.my-shelf-folder.my-favorites(
-			@contextmenu.prevent.stop="",
+			@contextmenu.prevent.stop="folderFavoritesMenu()"
 			v-if="bucket.folders.length > 0 && bucket.starrednotes.length > 0"
 			:class="{ 'isShelfSelected': showFavorites && selectedBucket }")
 			.folder-object(@click="selectFavorites(bucket)", :class="{ 'dragging' : draggingFolder }")
@@ -32,6 +32,9 @@
 </template>
 
 <script>
+import { remote } from 'electron'
+const { Menu, MenuItem } = remote
+
 export default {
 	name : 'foldersSpecial',
 	props: {
@@ -52,6 +55,32 @@ export default {
 		},
 		selectFavorites(bucket) {
 			this.$root.showFavoritesRack(bucket)
+		},
+		folderAllMenu() {
+			if (this.showAll) {
+				var menu = new Menu()
+				menu.append(new MenuItem({
+					label: 'Deselect',
+					click: () => {
+						window.bus.$emit('change-note', { note: null })
+						window.bus.$emit('change-bucket', { bucket: null, sidebar: true })
+					}
+				}))
+				menu.popup()
+			}
+		},
+		folderFavoritesMenu() {
+			if (this.showFavorites) {
+				var menu = new Menu()
+				menu.append(new MenuItem({
+					label: 'Deselect',
+					click: () => {
+						window.bus.$emit('change-note', { note: null })
+						window.bus.$emit('change-bucket', { bucket: null, sidebar: true })
+					}
+				}))
+				menu.popup()
+			}
 		}
 	}
 }

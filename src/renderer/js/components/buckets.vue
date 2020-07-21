@@ -276,7 +276,7 @@ export default {
 					label: 'Deselect',
 					click: () => {
 						window.bus.$emit('change-note', { note: null })
-						this.$root.closeOthers()
+						window.bus.$emit('change-bucket', { bucket: null, sidebar: true })
 					}
 				}))
 				menu.append(new MenuItem({ type: 'separator' }))

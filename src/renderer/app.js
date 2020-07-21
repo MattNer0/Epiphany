@@ -1634,9 +1634,9 @@ var appVue = new Vue({
 			this.notesWidth = parseInt(this.$refs.sidebarNotes.style.width.replace('px', '')) || 180
 			settings.set('notesWidth', this.notesWidth)
 		},
-		sidebarDrag() {
+		sidebarDrag: _.debounce(function () {
 			this.update_editor_size()
-		},
+		}, 100),
 		sidebarDragEnd() {
 			this.update_editor_size()
 			this.save_editor_size()

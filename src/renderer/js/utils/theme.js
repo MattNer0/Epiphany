@@ -10,7 +10,7 @@ function styleObject(obj) {
 				border: '1px solid '+obj['app-border']
 			},
 			'body': {
-				background: obj['fixed-sidebar-background']
+				background: obj['main-background-color']
 			},
 			'::-webkit-scrollbar-thumb': {
 				backgroundColor: obj['scrollbar-thumb'],
