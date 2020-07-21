@@ -1,37 +1,12 @@
 <template lang="pug">
-	.title-bar-container
-		.title-bar
-			.menu-bar
-				span.address-bar(v-if="windowTitle") {{ windowTitle }}
-				nav(v-else-if="showMenuBar")
-					ul
-						li.icon
-						li(@click="file_menu") File
-						li(@click="library_menu") Library
-						li(@click="edit_menu") Edit
-						li(@click="view_menu") View
-						li(@click="tools_menu") Tools
-						li(@click="quick_note")
-							i.coon-plus
-							span New Quick Note
-						li(v-bind:class="{ 'open-search' : focusSearch || query, 'close-search': !focusSearch && !query }")
-							label
-								i.coon-search
-								input(type="text", placeholder="Search", v-model="query" @focus="onSearchFocus", @blur="onSearchBlur")
-								i.coon-x-circle(v-show="query", @click="clearSearch")
-
-				.system-icons(:class="{ 'darwin': isDarwin, 'popup' : windowTitle }")
-					.system-icon.minimize(@click="win_min", v-if="!windowTitle")
-						i.coon-underscore
-					.system-icon(@click="win_max", v-if="!windowTitle")
-						i.coon-square
-					.system-icon.close-icon(@click="win_close")
-						i.coon-x
+	.title-bar
 </template>
 
 <script>
+import _ from 'lodash'
+
 import { remote } from 'electron'
-const { Menu, MenuItem } = remote
+const { Menu } = remote
 
 import elosenv from '../utils/elosenv'
 import { Rack } from '../models'
@@ -59,21 +34,293 @@ export default {
 			'query'      : ''
 		}
 	},
+	computed: {
+		fileMenu() {
+			return [
+				{
+					label: 'Save Database',
+					click: () => {
+						this.$root.saveDatabase()
+					}
+				},
+				{ type: 'separator' },
+				{
+					label: 'About',
+					click: () => {
+						this.$root.openAbout()
+					}
+				},
+				{ type: 'separator' },
+				{
+					label: 'Quit',
+					click: () => {
+						this.$root.closingWindow(true)
+					}
+				}
+			]
+		},
+		libraryMenu() {
+			return [
+				{
+					label: 'New Bucket',
+					click: () => {
+						this.newBucket()
+					}
+				},
+				{ type: 'separator' },
+				{
+					label: 'Reload Library',
+					click: () => {
+						this.$root.reloadLibrary()
+					}
+				},
+				{
+					label: 'Select Library Directory',
+					click: () => {
+						this.$root.openSync()
+					}
+				},
+				{
+					label: 'Move Library Directory',
+					click: () => {
+						this.$root.moveSync()
+					}
+				}
+			]
+		},
+		editMenu() {
+			return [
+				{
+					label      : 'Undo',
+					accelerator: 'CmdOrCtrl+Z',
+					enabled    : this.isNoteSelected && !this.isPreview,
+					click      : () => {
+						window.bus.$emit('codemirror-undo')
+					}
+				},
+				{
+					label      : 'Redo',
+					accelerator: 'CmdOrCtrl+Y',
+					enabled    : this.isNoteSelected && !this.isPreview,
+					click      : () => {
+						window.bus.$emit('codemirror-redo')
+					}
+				},
+				{ type: 'separator' },
+				{
+					label      : 'Cut',
+					accelerator: 'CmdOrCtrl+X',
+					enabled    : this.isNoteSelected && !this.isPreview,
+					click      : () => {
+						window.bus.$emit('codemirror-cut')
+					}
+				},
+				{
+					label      : 'Copy',
+					accelerator: 'CmdOrCtrl+C',
+					enabled    : this.isNoteSelected && !this.isPreview,
+					click      : () => {
+						window.bus.$emit('codemirror-copy')
+					}
+				},
+				{
+					label      : 'Paste',
+					accelerator: 'CmdOrCtrl+V',
+					enabled    : this.isNoteSelected && !this.isPreview,
+					click      : () => {
+						window.bus.$emit('codemirror-paste')
+					}
+				},
+				{ type: 'separator' },
+				{
+					label      : 'Select All',
+					accelerator: 'CmdOrCtrl+A',
+					selector   : 'selectAll:'
+				},
+				{ type: 'separator' },
+				{
+					label      : 'Find in Note',
+					accelerator: 'CmdOrCtrl+F',
+					enabled    : this.isNoteSelected && !this.isPreview,
+					click      : () => {
+						window.bus.$emit('codemirror-find')
+					}
+				}
+			]
+		},
+		viewMenu() {
+			return [
+				{
+					label: 'Toggle sidebar',
+					click: () => {
+						this.$root.setFullScreen(!this.isFullScreen)
+					}
+				},
+				{ type: 'separator' },
+				{
+					label  : 'Notes Order',
+					submenu: this.sortSubmenu
+				},
+				{ type: 'separator' },
+				{
+					type   : 'checkbox',
+					label  : 'Show Note Toolbar',
+					checked: this.isToolbarEnabled,
+					click  : () => {
+						this.$root.toggleToolbar()
+					}
+				},
+				{
+					type   : 'checkbox',
+					label  : 'Show Note Full Width',
+					checked: this.isFullWidthNote,
+					click  : () => {
+						this.$root.toggleFullWidth()
+					}
+				},
+				{ type: 'separator' },
+				{
+					label  : 'Theme',
+					submenu: this.themesSubmenu
+				}
+			]
+		},
+		toolsMenu() {
+			return [
+				{
+					label: 'Clean Database',
+					click: () => {
+						this.$root.cleanDatabase()
+					}
+				},
+				{
+					label: 'Reload Window',
+					click: () => {
+						Menu.setApplicationMenu(null)
+						remote.getCurrentWindow().reload()
+					}
+				},
+				{ type: 'separator' },
+				{
+					type   : 'checkbox',
+					label  : 'Reduce to Tray',
+					checked: this.reduceToTray,
+					click  : () => {
+						this.$root.reduceToTray = !this.reduceToTray
+					}
+				},
+				{
+					label: 'Reset Sidebar Width',
+					click: () => {
+						this.resetSidebar()
+					}
+				}
+			]
+		},
+		sortSubmenu() {
+			return [
+				{
+					type   : 'radio',
+					label  : 'Sort by Update Date',
+					checked: this.notesDisplayOrder === 'updatedAt',
+					click  : () => {
+						this.$root.changeDisplayOrder('updatedAt')
+					}
+				},
+				{
+					type   : 'radio',
+					label  : 'Sort by Creation Date',
+					checked: this.notesDisplayOrder === 'createdAt',
+					click  : () => {
+						this.$root.changeDisplayOrder('createdAt')
+					}
+				},
+				{
+					type   : 'radio',
+					label  : 'Sort by Title',
+					checked: this.notesDisplayOrder === 'title',
+					click  : () => {
+						this.$root.changeDisplayOrder('title')
+					}
+				}
+			]
+		},
+		themesSubmenu() {
+			return [
+				{
+					type   : 'checkbox',
+					label  : 'Dark',
+					checked: this.currentTheme === 'dark',
+					click  : () => {
+						this.$root.setCustomTheme('dark')
+					}
+				},
+				{
+					type   : 'checkbox',
+					label  : 'Arc Dark',
+					checked: this.currentTheme === 'arc-dark',
+					click  : () => {
+						this.$root.setCustomTheme('arc-dark')
+					}
+				},
+				{ type: 'separator' },
+				{
+					label: 'Edit Theme',
+					click: () => {
+						this.$root.editThemeView()
+					}
+				},
+				{
+					label: 'Load Custom Theme',
+					click: () => {
+						this.$root.loadThemeFromFile()
+					}
+				}
+			]
+		}
+	},
+	mounted() {
+		this.initApplicationMenu()
+	},
+	updated() {
+		this.initApplicationMenu()
+	},
 	methods: {
+		initApplicationMenu: _.debounce(function () {
+			if (this.windowTitle) {
+				remote.getCurrentWindow().setTitle(this.windowTitle)
+			}
+
+			if (this.showMenuBar) {
+				const menuItems = [
+					{
+						label  : 'File',
+						submenu: this.fileMenu
+					},
+					{
+						label  : 'Library',
+						submenu: this.libraryMenu
+					},
+					{
+						label  : 'Edit',
+						submenu: this.editMenu
+					},
+					{
+						label  : 'View',
+						submenu: this.viewMenu
+					},
+					{
+						label  : 'Tools',
+						submenu: this.toolsMenu
+					}
+				]
+
+				const menu = Menu.buildFromTemplate(menuItems)
+				Menu.setApplicationMenu(menu)
+			}
+		}, 200),
 		win_close() {
 			this.$root.closingWindow(!this.reduceToTray)
-		},
-		win_max() {
-			var win = remote.getCurrentWindow()
-			if (win.isMaximized()) {
-				win.unmaximize()
-			} else {
-				win.maximize()
-			}
-		},
-		win_min() {
-			var win = remote.getCurrentWindow()
-			win.minimize()
 		},
 		resetSidebar() {
 			this.$root.racksWidth = 220
@@ -103,271 +350,30 @@ export default {
 			})
 			this.$store.dispatch('addNewBucket', bucket)
 			this.$root.setEditingRack(bucket)
-		},
-		popup_position(event) {
-			var rect = event.target.getBoundingClientRect()
-			return {
-				window: remote.getCurrentWindow(),
-				x     : Math.floor(rect.x),
-				y     : Math.floor(rect.y)+event.target.offsetHeight
-			}
-		},
-		file_menu(event) {
-			var menu = new Menu()
-
-			menu.append(new MenuItem({
-				label: 'Save Database',
-				click: () => {
-					this.$root.saveDatabase()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'About',
-				click: () => {
-					this.$root.openAbout()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Quit',
-				click: () => {
-					this.$root.closingWindow(true)
-				}
-			}))
-
-			menu.popup(this.popup_position(event))
-		},
-		themes_submenu() {
-			var themesSubmenu = new Menu()
-			themesSubmenu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Dark',
-				checked: this.currentTheme === 'dark',
-				click  : () => {
-					this.$root.setCustomTheme('dark')
-				}
-			}))
-			themesSubmenu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Arc Dark',
-				checked: this.currentTheme === 'arc-dark',
-				click  : () => {
-					this.$root.setCustomTheme('arc-dark')
-				}
-			}))
-			themesSubmenu.append(new MenuItem({ type: 'separator' }))
-			themesSubmenu.append(new MenuItem({
-				label: 'Edit Theme',
-				click: () => {
-					this.$root.editThemeView()
-				}
-			}))
-			themesSubmenu.append(new MenuItem({
-				label: 'Load Custom Theme',
-				click: () => {
-					this.$root.loadThemeFromFile()
-				}
-			}))
-			return themesSubmenu
-		},
-		sort_submenu() {
-			var sortSubmenu = new Menu()
-			sortSubmenu.append(new MenuItem({
-				type   : 'radio',
-				label  : 'Sort by Update Date',
-				checked: this.notesDisplayOrder === 'updatedAt',
-				click  : () => {
-					this.$root.changeDisplayOrder('updatedAt')
-				}
-			}))
-			sortSubmenu.append(new MenuItem({
-				type   : 'radio',
-				label  : 'Sort by Creation Date',
-				checked: this.notesDisplayOrder === 'createdAt',
-				click  : () => {
-					this.$root.changeDisplayOrder('createdAt')
-				}
-			}))
-			sortSubmenu.append(new MenuItem({
-				type   : 'radio',
-				label  : 'Sort by Title',
-				checked: this.notesDisplayOrder === 'title',
-				click  : () => {
-					this.$root.changeDisplayOrder('title')
-				}
-			}))
-			return sortSubmenu
-		},
-		library_menu(event) {
-			var menu = new Menu()
-
-			menu.append(new MenuItem({
-				label: 'New Bucket',
-				click: () => {
-					this.newBucket()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Reload Library',
-				click: () => {
-					this.$root.reloadLibrary()
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Select Library Directory',
-				click: () => {
-					this.$root.openSync()
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Move Library Directory',
-				click: () => {
-					this.$root.moveSync()
-				}
-			}))
-
-			menu.popup(this.popup_position(event))
-		},
-		edit_menu(event) {
-			var menu = new Menu()
-
-			menu.append(new MenuItem({
-				label      : 'Undo',
-				accelerator: 'CmdOrCtrl+Z',
-				enabled    : this.isNoteSelected && !this.isPreview,
-				click      : () => {
-					window.bus.$emit('codemirror-undo')
-				}
-			}))
-
-			menu.append(new MenuItem({
-				label      : 'Redo',
-				accelerator: 'CmdOrCtrl+Y',
-				enabled    : this.isNoteSelected && !this.isPreview,
-				click      : () => {
-					window.bus.$emit('codemirror-redo')
-				}
-			}))
-
-			menu.append(new MenuItem({ type: 'separator' }))
-
-			menu.append(new MenuItem({
-				label      : 'Cut',
-				accelerator: 'CmdOrCtrl+X',
-				enabled    : this.isNoteSelected && !this.isPreview,
-				click      : () => {
-					window.bus.$emit('codemirror-cut')
-				}
-			}))
-
-			menu.append(new MenuItem({
-				label      : 'Copy',
-				accelerator: 'CmdOrCtrl+C',
-				enabled    : this.isNoteSelected && !this.isPreview,
-				click      : () => {
-					window.bus.$emit('codemirror-copy')
-				}
-			}))
-
-			menu.append(new MenuItem({
-				label      : 'Paste',
-				accelerator: 'CmdOrCtrl+V',
-				enabled    : this.isNoteSelected && !this.isPreview,
-				click      : () => {
-					window.bus.$emit('codemirror-paste')
-				}
-			}))
-
-			menu.append(new MenuItem({ type: 'separator' }))
-
-			menu.append(new MenuItem({
-				label      : 'Find in Note',
-				accelerator: 'CmdOrCtrl+F',
-				enabled    : this.isNoteSelected && !this.isPreview,
-				click      : () => {
-					window.bus.$emit('codemirror-find')
-				}
-			}))
-
-			menu.popup(this.popup_position(event))
-		},
-		view_menu(event) {
-			var menu = new Menu()
-
-			menu.append(new MenuItem({
-				label: 'Toggle sidebar',
-				click: () => {
-					this.$root.setFullScreen(!this.isFullScreen)
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label  : 'Notes Order',
-				submenu: this.sort_submenu()
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Show Note Toolbar',
-				checked: this.isToolbarEnabled,
-				click  : () => {
-					this.$root.toggleToolbar()
-				}
-			}))
-			menu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Show Note Full Width',
-				checked: this.isFullWidthNote,
-				click  : () => {
-					this.$root.toggleFullWidth()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label  : 'Theme',
-				submenu: this.themes_submenu()
-			}))
-
-			menu.popup(this.popup_position(event))
-		},
-		tools_menu(event) {
-			var menu = new Menu()
-
-			menu.append(new MenuItem({
-				label: 'Clean Database',
-				click: () => {
-					this.$root.cleanDatabase()
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Reload Window',
-				click: () => {
-					remote.getCurrentWindow().reload()
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-
-			menu.append(new MenuItem({
-				type   : 'checkbox',
-				label  : 'Reduce to Tray',
-				checked: this.reduceToTray,
-				click  : () => {
-					this.$root.reduceToTray = !this.reduceToTray
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Reset Sidebar Width',
-				click: () => {
-					this.resetSidebar()
-				}
-			}))
-
-			menu.popup(this.popup_position(event))
 		}
 	},
 	watch: {
+		currentTheme() {
+			this.initApplicationMenu()
+		},
+		notesDisplayOrder() {
+			this.initApplicationMenu()
+		},
+		reduceToTray() {
+			this.initApplicationMenu()
+		},
+		isFullWidthNote() {
+			this.initApplicationMenu()
+		},
+		isToolbarEnabled() {
+			this.initApplicationMenu()
+		},
+		isNoteSelected() {
+			this.initApplicationMenu()
+		},
+		isPreview() {
+			this.initApplicationMenu()
+		},
 		query() {
 			this.$root.search = this.query.length > 2 ? this.query : ''
 		}

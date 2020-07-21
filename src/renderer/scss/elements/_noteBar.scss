@@ -252,13 +252,13 @@
 			display: inline-block !important;
 		}
 		.main-note-container {
-			height: calc( 100vh - #{ $title-bar-height + $note-bar-height-md + $note-bar-height } - 0.4em );
+			height: calc( 100vh - #{ $note-bar-height-md + $note-bar-height } - 0.4em );
 		}
 	}
 
 	.outer_wrapper .main-cell-container.tabs-open:not(.notebar-disabled) {
 		.main-note-container {
-			height: calc( 100vh - #{ $title-bar-height * 2 + $note-bar-height-md + $note-bar-height } - 0.4em );
+			height: calc( 100vh - #{ $title-bar-height + $note-bar-height-md + $note-bar-height } - 0.4em );
 		}
 	}
 }

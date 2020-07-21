@@ -86,6 +86,8 @@
 					</div>
 				</div>
 				<div v-else class="idle-library-container">
+					<new-note-button
+						:loading="initLoading" />
 					<idle-splash
 						:path="libraryPath"
 						:sync="librarySync"

@@ -57,42 +57,6 @@ if (process.platform === 'linux') {
 	app.disableHardwareAcceleration()
 }
 
-function setApplicationMenu() {
-	var template = [
-		{
-			label  : 'Application',
-			submenu: [
-				{
-					label   : 'About Application',
-					selector: 'orderFrontStandardAboutPanel:'
-				},
-				{ type: 'separator' },
-				{
-					label      : 'Quit',
-					accelerator: 'Command+Q',
-					click      : function() {
-						app.quit()
-					}
-				}
-			]
-		},
-		{
-			label  : 'Edit',
-			submenu: [
-				{ label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
-				{ label: 'Redo', accelerator: 'CmdOrCtrl+Y', selector: 'redo:' },
-				{ type: 'separator' },
-				{ label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
-				{ label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
-				{ label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-				{ label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
-			]
-		}
-	]
-
-	Menu.setApplicationMenu(Menu.buildFromTemplate(template))
-}
-
 // Create main BrowserWindow when electron is ready
 function createMainWindow() {
 	const settingsPath = path.join(app.getPath('userData'), 'epiphanyConfig.json')
@@ -133,7 +97,7 @@ function createMainWindow() {
 		show             : false,
 		darkTheme        : true,
 		tabbingIdentifier: 'epiphany',
-		frame            : false,
+		frame            : true,
 		webPreferences   : {
 			nodeIntegration        : true,
 			nodeIntegrationInWorker: true,
@@ -189,10 +153,6 @@ function createMainWindow() {
 		})
 	})
 
-	if (process.platform === 'linux' || process.platform === 'darwin') {
-		setApplicationMenu()
-	}
-
 	return window
 }
 
@@ -229,15 +189,17 @@ function createPopupWindow(width, height, callback) {
 	const wBounds = mainWindow.getBounds()
 
 	const conf = {
-		width         : Math.ceil(wSize[0]*0.6),
-		height        : Math.ceil(wSize[1]*0.6),
-		modal         : true,
-		parent        : mainWindow,
-		alwaysOnTop   : true,
-		skipTaskbar   : true,
-		darkTheme     : true,
-		frame         : false,
-		webPreferences: {
+		width          : Math.ceil(wSize[0]*0.6),
+		height         : Math.ceil(wSize[1]*0.6),
+		modal          : true,
+		parent         : mainWindow,
+		alwaysOnTop    : true,
+		skipTaskbar    : true,
+		darkTheme      : true,
+		frame          : true,
+		menuBarVisible : false,
+		autoHideMenuBar: true,
+		webPreferences : {
 			devTools          : isDevelopment,
 			nodeIntegration   : true,
 			enableRemoteModule: true,
@@ -295,6 +257,12 @@ app.on('activate', () => {
 	// on macOS it is common to re-create a window even after all windows have been closed
 	if (mainWindow === null) {
 		mainWindow = createMainWindow()
+	}
+})
+
+app.on('activate-with-no-open-windows', function() {
+	if (mainWindow !== null) {
+		mainWindow.show()
 	}
 })
 

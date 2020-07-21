@@ -19,7 +19,7 @@
 
 .my-main {
 	width: 100%;
-	height: calc( 100vh - 2px - #{ $title-bar-height } );
+	height: calc( 100vh - 2px );
 	display: flex;
 	flex-flow: row nowrap;
 }
@@ -46,18 +46,13 @@
 	}
 
 	.cell-container {
-		height: calc( 100vh - #{ $title-bar-height } );
+		height: calc( 100vh );
 		vertical-align: top;
 	}
 
 	.cell-container > .my-shelf-folders > .my-shelf {
-		height: calc( 100vh - #{ $title-bar-height } - 3.7em );
+		height: calc( 100vh - 3.7em );
 	}
-
-	/*.my-scrollbar {
-		max-height: calc( 100vh - #{ $title-bar-height } );
-		background-color: transparent;
-	}*/
 
 	.cell-container.main-cell-container {
 		margin-left: 0;
@@ -81,11 +76,11 @@
 	}
 
 	.tabs-open .main-note-container {
-		height: calc( 100vh - #{ $title-bar-height * 2 + $note-bar-height * 2 } - 0.4em );
+		height: calc( 100vh - #{ $title-bar-height + $note-bar-height * 2 } - 0.4em );
 	}
 
 	.full-note.tabs-open .main-note-container {
-		height: calc( 100vh - #{ $title-bar-height * 2 + $note-bar-height * 2 } );
+		height: calc( 100vh - #{ $title-bar-height + $note-bar-height * 2 } );
 	}
 
 	.my-shelf-folders-outer {
@@ -117,7 +112,7 @@
 
 	.resize-handler {
 		float: left;
-		height: calc( 100vh - #{ $title-bar-height } );
+		height: 100vh;
 		width: 4px;
 		cursor: col-resize;
 	}
@@ -151,6 +146,10 @@
 		line-height: 1.6;
 	}
 
+	.idle-library-container > div + div {
+		margin-left: 2rem;
+	}
+
 	.idle-library-container a {
 		color: inherit;
 	}
@@ -169,5 +168,22 @@
 
 	.idle-library-container > div:hover {
 		opacity: 1.0;
+	}
+
+	.idle-library-container button {
+		display: block;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+		border: none;
+		outline: none;
+		background-color: transparent;
+	}
+
+	.idle-library-container button i {
+		display: block;
+		font-size: 42pt;
+		line-height: 1;
+		margin-bottom: 1rem;
 	}
 }

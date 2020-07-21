@@ -7,7 +7,6 @@ import PromiseWorker from 'promise-worker'
 
 import settings from './js/utils/settings'
 import traymenu from './js/utils/trayMenu'
-import titleMenu from './js/utils/titleMenu'
 
 import Vue from 'vue'
 import VTooltip from 'v-tooltip'
@@ -48,6 +47,7 @@ import componentThemeEditor from './js/components/themeEditor.vue'
 import componentThemeMenu from './js/components/themeMenu.vue'
 import componentSidebarToggle from './js/components/sidebarToggle.vue'
 import componentIdleSplash from './js/components/idleSplash.vue'
+import componentNewNoteButton from './js/components/newNoteButton.vue'
 
 import templateHtml from './html/app.html'
 
@@ -133,7 +133,8 @@ var appVue = new Vue({
 		'themeEditor'   : componentThemeEditor,
 		'themeMenu'     : componentThemeMenu,
 		'idleSplash'    : componentIdleSplash,
-		'sidebarToggle' : componentSidebarToggle
+		'sidebarToggle' : componentSidebarToggle,
+		'newNoteButton' : componentNewNoteButton
 	},
 	computed: {
 		racks() {
@@ -604,7 +605,6 @@ var appVue = new Vue({
 		initCompleted() {
 			this.initLoading = false
 			traymenu.init()
-			titleMenu.init()
 
 			if (this.notes.length === 1) {
 				this.changeNote({ note: this.notes[0] })
@@ -1679,6 +1679,8 @@ var appVue = new Vue({
 			})
 				.then(() => {
 					settings.saveWindowSize()
+					this.readyToQuit = true
+
 					if (quit) {
 						remote.app.quit()
 					} else {

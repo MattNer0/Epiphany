@@ -18,8 +18,8 @@ $splash-border-radius: 0.2em;
 
 $note-list-border-radius: 0.2em;
 
-$outside-note-height: #{ $title-bar-height + $note-bar-height*2 };
-$outside-note-height-md: #{ $title-bar-height + $note-bar-height + $note-bar-height-md };
+$outside-note-height: #{ $note-bar-height*2 };
+$outside-note-height-md: #{ $note-bar-height + $note-bar-height-md };
 
 /* roboto */
 
@@ -84,7 +84,7 @@ html, body, h1, h2, h3, h4, h5, p, span, input, textarea {
 @import 'elements/body';
 @import 'elements/tabsBar';
 @import 'elements/scrollbar';
-@import 'elements/titleBar';
+//@import 'elements/titleBar';
 @import 'elements/actionBar';
 @import 'elements/noteBar';
 @import 'elements/openNote';

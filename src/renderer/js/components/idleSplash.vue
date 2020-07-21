@@ -1,6 +1,13 @@
 <template lang="pug">
 	div(v-if="!loading")
 		table
+			tr(v-if="note")
+				td
+					strong Last Note:
+				td
+					a(href="#", @click.prevent.stop="openNote")
+						| {{ note.title }}&nbsp;
+						i.coon-external-link
 			tr
 				td
 					strong Current path:
@@ -18,13 +25,6 @@
 					strong Cache Size:
 				td
 					i {{ dbsize }} notes
-			tr(v-if="note")
-				td
-					strong Last Note:
-				td
-					a(href="#", @click.prevent.stop="openNote")
-						| {{ note.title }}&nbsp;
-						i.coon-external-link
 </template>
 
 <script>
