@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 import { remote, shell } from 'electron'
 import arr from '../utils/arr'
 import dragging from '../utils/dragging'
@@ -122,7 +124,7 @@ export default {
 			this.$store.commit('library/dragging')
 			this.draggingFolderParent = null
 		},
-		folderDragOver(event, folder) {
+		folderDragOver: _.debounce(function (event, folder) {
 			if (this.draggingNote) {
 				if (this.draggingNote.folder.uid !== folder.uid) {
 					event.stopPropagation()
@@ -156,7 +158,7 @@ export default {
 			} else {
 				event.preventDefault()
 			}
-		},
+		}, 100),
 		folderDragLeave(folder) {
 			if (this.draggingNote) {
 				folder.dragHover = false

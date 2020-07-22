@@ -82,6 +82,9 @@ export default {
 				state.noteTabs.splice(ci, 1, note)
 			}
 		},
+		removeTabByIndex (state, index) {
+			state.noteTabs.splice(index, 1)
+		},
 		setDatabaseSize (state, num) {
 			state.databaseSize = num
 		}
@@ -103,7 +106,11 @@ export default {
 		},
 		addNewBucket ({ state, commit }, rack) {
 			var racksArray = arr.sortBy(state.buckets.slice(), 'ordering', true)
-			racksArray.push(rack)
+			if (rack.quick_notes) {
+				racksArray.unshift(rack)
+			} else {
+				racksArray.push(rack)
+			}
 			racksArray.forEach((r, i) => {
 				r.ordering = i
 				r.saveModel()

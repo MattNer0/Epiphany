@@ -12,13 +12,15 @@
 
 <script>
 export default {
-	name : 'tabsBar',
-	props: {
-		'tabsArray': Array
-	},
+	name    : 'tabsBar',
 	computed: {
 		currentNote() {
 			return this.$store.state.library.selectedNote
+		},
+		tabsArray: {
+			get() {
+				return this.$store.state.library.noteTabs
+			}
 		}
 	},
 	methods: {
@@ -35,7 +37,7 @@ export default {
 					window.bus.$emit('change-note', { note: null })
 				}
 			}
-			this.$root.noteTabs.splice(index, 1)
+			this.$store.commit('library/removeTabByIndex', index)
 		}
 	}
 }

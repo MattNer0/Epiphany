@@ -4,7 +4,6 @@
 
 <script>
 import path from 'path'
-
 import _ from 'lodash'
 
 import { Image } from '../models'

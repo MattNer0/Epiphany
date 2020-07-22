@@ -1,6 +1,6 @@
 <template lang="pug">
 	.cell-container.main-cell-container(:class="mainCellClass" :style="containerStyle")
-		tabs-bar(:tabs-array="noteTabs")
+		tabs-bar
 		note-menu(
 			v-if="isNoteSelected || isOutlineSelected"
 			:is-note-selected="isNoteSelected"
