@@ -763,9 +763,12 @@ var appVue = new Vue({
 				for (let i=0; i < this.filteredNotes.length; i++) {
 					const currentNote = this.filteredNotes[i]
 					const hasSummary = Boolean(typeof currentNote._summary === 'string' && currentNote._summary.length > 0)
+					const updatedAt = currentNote.updatedAt.valueOf()
 					const note = await this.loadOneNoteInFolder(this.filteredNotes[i])
-					if (note && !hasSummary) {
-						noteObjects.push(note)
+					if (note) {
+						if (!hasSummary || note.updated_at !== updatedAt) {
+							noteObjects.push(note)
+						}
 					}
 
 					await new Promise(resolve => setTimeout(resolve, 200))
