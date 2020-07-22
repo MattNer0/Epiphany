@@ -1100,6 +1100,15 @@ var appVue = new Vue({
 		},
 		setReloading() {
 			this.reloadingWindow = true
+			promiseWorker.postMessage({
+				type: 'save-database',
+				data: {
+					library: models.getBaseLibraryPath()
+				}
+			})
+				.then(() => {
+					remote.getCurrentWindow().reload()
+				})
 		},
 		/**
 		 * event called after folder was dragged into a rack.

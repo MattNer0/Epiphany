@@ -2,7 +2,7 @@
 	div(v-if="!loading")
 		table
 			tr(v-if="note")
-				td
+				td(style="width: 96px;")
 					strong Last Note:
 				td
 					a(href="#", @click.prevent.stop="openNote")

@@ -236,7 +236,6 @@ export default {
 					click: () => {
 						Menu.setApplicationMenu(null)
 						this.$root.setReloading()
-						remote.getCurrentWindow().reload()
 					}
 				},
 				{ type: 'separator' },

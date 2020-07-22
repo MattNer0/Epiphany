@@ -2,7 +2,7 @@
 	div(v-if="!loading")
 		button(@click="createNewQuickNote")
 			i.coon-plus
-			| New Quick Note
+			strong New Quick Note
 </template>
 
 <script>
