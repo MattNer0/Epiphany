@@ -75,9 +75,16 @@ export default {
 			state.noteTabs.push(note)
 		},
 		replaceTab (state, note) {
-			var ci = state.noteTabs.indexOf(state.selectedNote)
-			if (ci === -1) {
+			if (state.noteTabs.length === 0) {
 				state.noteTabs.push(note)
+				return
+			}
+
+			const ci = state.noteTabs.indexOf(state.selectedNote)
+			if (ci === -1) {
+				if (state.noteTabs.length === 1) {
+					state.noteTabs.splice(0, 1, note)
+				}
 			} else {
 				state.noteTabs.splice(ci, 1, note)
 			}

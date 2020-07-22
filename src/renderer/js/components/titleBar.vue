@@ -235,6 +235,7 @@ export default {
 					label: 'Reload Window',
 					click: () => {
 						Menu.setApplicationMenu(null)
+						this.$root.setReloading()
 						remote.getCurrentWindow().reload()
 					}
 				},

@@ -23,8 +23,8 @@
 				h5.my-notes-note-title(v-else)
 					i.coon-file-text
 					| No Title
-				.my-notes-note-image(v-if="note.img")
-					img(:src="note.img")
+				.my-notes-note-image(v-if="note.img && !error_images.includes(note.img)")
+					img(:src="note.img" @error="errorImg(note)")
 				.my-notes-note-body(v-else)
 					| {{ note.bodyPreview | truncate(80) }}
 
@@ -57,6 +57,7 @@ export default {
 	},
 	data() {
 		return {
+			'error_images'   : [],
 			'addnote_visible': false,
 			'position'       : ['left', 'top', 'left', 'top']
 		}
@@ -219,6 +220,10 @@ export default {
 					console.error(err)
 				})
 		},
+		errorImg(note) {
+			note._photo = null
+			this.error_images.push(note.img)
+		},
 		noteMenu(note) {
 			var menu = new Menu()
 
@@ -301,6 +306,11 @@ export default {
 			menu.append(new MenuItem({ type: 'separator' }))
 			menu.append(new MenuItem({ label: 'Delete note', click: () => { this.removeNote(note) } }))
 			menu.popup()
+		}
+	},
+	watch: {
+		selectedFolder() {
+			this.error_images = []
 		}
 	}
 }

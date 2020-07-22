@@ -74,6 +74,7 @@ var appVue = new Vue({
 	template: templateHtml,
 	data    : {
 		initLoading      : false,
+		reloadingWindow  : false,
 		loadedRack       : false,
 		readyToQuit      : false,
 		minimizeTime     : null,
@@ -427,6 +428,10 @@ var appVue = new Vue({
 
 		if (process.env.NODE_ENV === 'production') {
 			window.onbeforeunload = (e) => {
+				if (this.reloadingWindow) {
+					this.reloadingWindow = false
+					return
+				}
 				if (this.readyToQuit) return
 				e.returnValue = false // equivalent to `return false` but not recommended
 				this.closingWindow()
@@ -1089,6 +1094,9 @@ var appVue = new Vue({
 					this.toggleFullScreen()
 				}
 			})
+		},
+		setReloading() {
+			this.reloadingWindow = true
 		},
 		/**
 		 * event called after folder was dragged into a rack.
