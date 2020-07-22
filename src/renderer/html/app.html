@@ -1,13 +1,7 @@
 <main id="main-editor">
 	<title-bar
-		:reduce-to-tray="reduceToTray"
-		:is-full-screen="isFullScreen"
 		:show-menu-bar="true"
-		:notes-display-order="notesDisplayOrder"
-		:is-toolbar-enabled="isToolbarEnabled"
-		:is-full-width-note="isFullWidthNote"
 		:is-note-selected="isNoteSelected"
-		:is-preview="isPreview"
 		:current-theme="currentThemeAsString"
 		:library-path="libraryPath" />
 	<div class="my-main">
@@ -21,7 +15,6 @@
 							:show-all="showAll"
 							:show-favorites="showFavorites"
 							:editing-folder="editingFolder"
-							:is-full-screen="isFullScreen"
 							:search="search"
 							ref="refBuckets" />
 					</div>
@@ -39,8 +32,7 @@
 						<notes
 							v-show="selectedRack || showHistory"
 							:notes="filteredNotes"
-							:show-history="showHistory"
-							:notes-display-order="notesDisplayOrder" />
+							:show-history="showHistory" />
 					</div>
 				</div>
 				<handler-notes
@@ -48,58 +40,23 @@
 					:sidebar-drag="sidebarDrag"
 					:sidebar-drag-end="sidebarDragEnd"
 					ref="refHandleNote" />
-				<sidebar-toggle :fullscreen="isFullScreen" />
+				<sidebar-toggle />
 			</div>
-			<div class="cell-container main-cell-container" :class="mainCellClass">
-				<tabs-bar :tabs-array="noteTabs" />
-				<note-menu
-					v-if="isNoteSelected || isOutlineSelected"
-					:is-full-screen="isFullScreen"
-					:is-toolbar-enabled="isToolbarEnabled"
-					:is-note-selected="isNoteSelected"
-					:is-outline-selected="isOutlineSelected"
-					:is-preview="isPreview"
-					:use-monospace="useMonospace"
-					:fontsize="fontsize" />
-				<theme-menu
-					v-else-if="isThemeSelected"
-					:theme="editTheme"
-					:is-toolbar-enabled="isToolbarEnabled" />
-				<div v-if="showNoteContainer" class="main-note-container">
-					<div class="my-editor" ref="myEditor">
-						<outline v-if="isOutlineSelected" />
-						<theme-editor
-							v-else-if="isThemeSelected"
-							:theme="editTheme" />
-						<template v-else>
-							<codemirror
-								v-show="!isPreview && isNoteSelected"
-								:is-full-screen="isFullScreen"
-								:is-preview="isPreview"
-								:search="search"
-								:use-monospace="useMonospace"
-								ref="refCodeMirror" />
-							<div v-show="isPreview && isNoteSelected" class="my-editor-preview" @contextmenu.prevent.stop="previewMenu()">
-								<div v-html="preview" />
-							</div>
-						</template>
-					</div>
-				</div>
-				<div v-else class="idle-library-container">
+			<note-container
+				v-if="isNoteSelected || isOutlineSelected || isThemeSelected"
+				:note-tabs="noteTabs"
+				:is-theme-selected="isThemeSelected" />
+			<div class="cell-container main-cell-container" v-else>
+				<div class="idle-library-container">
 					<new-note-button
 						:loading="initLoading" />
 					<idle-splash
 						:path="libraryPath"
 						:sync="librarySync"
-						:loading="initLoading"
-						:note="lastNote"
-						:dbsize="databaseSize" />
+						:loading="initLoading" />
 				</div>
-				<note-footer
-					v-if="isNoteSelected && !isOutlineSelected"
-					v-show="!isPreview && isToolbarEnabled" />
-				<flashmessage :messages="messages" />
 			</div>
+			<flashmessage :messages="messages" />
 		</div>
 	</div>
 	<modal ref="dialog" />

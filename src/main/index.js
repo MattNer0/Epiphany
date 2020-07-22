@@ -13,6 +13,8 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let mainWindow
 let popupWindow
 let backgroundBrowserWindow
+let isQuiting = false
+let minimizeToTray = false
 
 app.allowRendererProcessReuse = false
 
@@ -126,6 +128,14 @@ function createMainWindow() {
 			window.webContents.openDevTools()
 		})
 	}
+
+	window.on('close', event => {
+		if (!isQuiting && minimizeToTray) {
+			event.preventDefault()
+			window.hide()
+			event.returnValue = false
+		}
+	})
 
 	window.on('closed', () => {
 		mainWindow = null
@@ -260,6 +270,10 @@ app.on('activate', () => {
 	}
 })
 
+app.on('before-quit', function () {
+	isQuiting = true
+})
+
 app.on('activate-with-no-open-windows', function() {
 	if (mainWindow !== null) {
 		mainWindow.show()
@@ -292,6 +306,10 @@ app.on('ready', () => {
 				backgroundBrowserWindow.webContents.send('load-page', payload)
 			})
 		}
+	})
+
+	ipcMain.on('trayicon-minimize', (event, payload) => {
+		minimizeToTray = payload
 	})
 
 	ipcMain.on('kill-bbrowser', (event, payload) => {

@@ -46,7 +46,7 @@ export default {
 	},
 	computed: {
 		draggingFolder() {
-			return this.$store.state.draggingFolder
+			return this.$store.state.library.draggingFolder
 		}
 	},
 	methods: {

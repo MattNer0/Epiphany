@@ -23,6 +23,7 @@
         "electron-window": "^0.8.1",
         "encryptjs": "^2.0.0",
         "es6-promise": "^4.2.8",
+        "flatted": "^3.0.4",
         "googleapis": "^55.0.0",
         "gulp": "^4.0.2",
         "highlight.js": "^10.1.1",
@@ -52,6 +53,7 @@
         "vue-resource": "^1.5.1",
         "vue-template-compiler": "^2.6.11",
         "vuex": "^3.5.1",
+        "vuex-persist": "^2.2.0",
         "xmldoc": "1.1.2",
         "zxcvbn": "^4.4.2"
     },

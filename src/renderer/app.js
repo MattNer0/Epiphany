@@ -16,7 +16,6 @@ Vue.use(VTooltip)
 import Store from './js/store'
 
 import models from './js/models'
-import preview from './js/preview'
 import searcher from './js/searcher'
 
 // electron things
@@ -29,23 +28,17 @@ import elosenv from './js/utils/elosenv'
 import ittybitty from './js/utils/itty-bitty'
 
 // vue.js plugins
-import componentOutline from './js/components/outline.vue'
-import componentCodeMirror from './js/components/codemirror.vue'
 import componentFlashmessage from './js/components/flashmessage.vue'
 import componentHandlerNotes from './js/components/handlerNotes.vue'
 import componentHandlerStack from './js/components/handlerStack.vue'
 import componentModal from './js/components/modal.vue'
-import componentNoteMenu from './js/components/noteMenu.vue'
-import componentNoteFooter from './js/components/noteFooter.vue'
 import componentBuckets from './js/components/buckets.vue'
 import componentBucketsSpecial from './js/components/bucketsSpecial.vue'
 import componentNotes from './js/components/notes.vue'
 import componentAddNote from './js/components/addNote.vue'
 import componentTitleBar from './js/components/titleBar.vue'
-import componentTabsBar from './js/components/tabsBar.vue'
-import componentThemeEditor from './js/components/themeEditor.vue'
-import componentThemeMenu from './js/components/themeMenu.vue'
 import componentSidebarToggle from './js/components/sidebarToggle.vue'
+import componentNoteContainer from './js/components/noteContainer.vue'
 import componentIdleSplash from './js/components/idleSplash.vue'
 import componentNewNoteButton from './js/components/newNoteButton.vue'
 
@@ -84,13 +77,7 @@ var appVue = new Vue({
 		loadedRack       : false,
 		readyToQuit      : false,
 		minimizeTime     : null,
-		isFullScreen     : false,
-		isPreview        : false,
-		isToolbarEnabled : settings.getSmart('toolbarNote', true),
-		isFullWidthNote  : settings.getSmart('fullWidthNote', true),
 		currentTheme     : settings.getJSON('theme', 'dark'),
-		useMonospace     : settings.getSmart('useMonospace', false),
-		reduceToTray     : settings.getSmart('reduceToTray', true),
 		librarySync      : null,
 		preview          : '',
 		quickNotesBucket : null,
@@ -99,21 +86,16 @@ var appVue = new Vue({
 		showHistory      : false,
 		showAll          : false,
 		showFavorites    : false,
-		noteTabs         : [],
 		editingBucket    : null,
 		editingFolder    : null,
-		search           : '',
 		messages         : [],
 		modalShow        : false,
 		modalTitle       : 'title',
 		modalDescription : 'description',
 		modalPrompts     : [],
 		modalOkcb        : null,
-		databaseSize     : 0,
 		racksWidth       : settings.getSmart('racksWidth', 220),
-		notesWidth       : settings.getSmart('notesWidth', 220),
-		fontsize         : settings.getSmart('fontsize', 15),
-		notesDisplayOrder: 'updatedAt'
+		notesWidth       : settings.getSmart('notesWidth', 220)
 	},
 	components: {
 		'flashmessage'  : componentFlashmessage,
@@ -123,65 +105,100 @@ var appVue = new Vue({
 		'modal'         : componentModal,
 		'addNote'       : componentAddNote,
 		'titleBar'      : componentTitleBar,
-		'noteMenu'      : componentNoteMenu,
-		'noteFooter'    : componentNoteFooter,
 		'handlerStack'  : componentHandlerStack,
 		'handlerNotes'  : componentHandlerNotes,
-		'codemirror'    : componentCodeMirror,
-		'outline'       : componentOutline,
-		'tabsBar'       : componentTabsBar,
-		'themeEditor'   : componentThemeEditor,
-		'themeMenu'     : componentThemeMenu,
+		'noteContainer' : componentNoteContainer,
 		'idleSplash'    : componentIdleSplash,
 		'sidebarToggle' : componentSidebarToggle,
 		'newNoteButton' : componentNewNoteButton
 	},
 	computed: {
 		racks() {
-			return this.$store.state.buckets
+			return this.$store.state.library.buckets
 		},
 		notes() {
-			return this.$store.state.notes
+			return this.$store.state.library.notes
 		},
 		images() {
-			return this.$store.state.images
+			return this.$store.state.library.images
 		},
 		selectedRack: {
 			get() {
-				return this.$store.state.selectedBucket
+				return this.$store.state.library.selectedBucket
 			},
 			set(bucket) {
-				this.$store.commit('selectBucket', bucket)
+				this.$store.commit('library/selectBucket', bucket)
 			}
 		},
 		selectedFolder: {
 			get() {
-				return this.$store.state.selectedFolder
+				return this.$store.state.library.selectedFolder
 			},
 			set(folder) {
-				this.$store.commit('selectFolder', folder)
+				this.$store.commit('library/selectFolder', folder)
 			}
 		},
 		selectedNote: {
 			get() {
-				return this.$store.state.selectedNote
+				return this.$store.state.library.selectedNote
 			},
 			set(note) {
-				this.$store.commit('selectNote', note)
+				this.$store.commit('library/selectNote', note)
+			}
+		},
+		notesDisplayOrder: {
+			get() {
+				return this.$store.state.options.notesDisplayOrder
+			},
+			set(val) {
+				this.$store.commit('options/setNotesDisplayOrder', val)
+			}
+		},
+		noteTabs: {
+			get() {
+				return this.$store.state.library.noteTabs
 			}
 		},
 		notesHistory() {
-			return this.$store.getters.notesHistory
-		},
-		lastNote() {
-			return this.$store.getters.lastNote
+			return this.$store.getters['library/notesHistory']
 		},
 		draggingBucket() {
-			return this.$store.state.draggingBucket
+			return this.$store.state.library.draggingBucket
 		},
 		draggingFolder() {
-			return this.$store.state.draggingFolder
+			return this.$store.state.library.draggingFolder
 		},
+		search: {
+			get() {
+				return this.$store.state.editor.search
+			},
+			set(val) {
+				this.$store.commit('editor/setSearch', val)
+			}
+		},
+		isPreview: {
+			get() {
+				return this.$store.state.options.isPreview
+			},
+			set(val) {
+				this.$store.commit('options/setPreviewFlag', val)
+			}
+		},
+		isFullScreen: {
+			get() {
+				return this.$store.state.options.isFullScreen
+			},
+			set(val) {
+				this.$store.commit('options/setFullScreenFlag', val)
+				this.update_editor_size()
+			}
+		},
+		reduceToTray: {
+			get() {
+				return this.$store.state.options.reduceToTray
+			}
+		},
+
 		/**
 		 * filters notes based on search terms
 		 * @function filteredNotes
@@ -237,19 +254,8 @@ var appVue = new Vue({
 		isThemeSelected() {
 			return this.editTheme !== null
 		},
-		showNoteContainer() {
-			return this.isNoteSelected || this.isOutlineSelected || this.isThemeSelected
-		},
 		showFolderNotesList() {
-			return !this.$store.state.draggingFolder && (this.selectedFolder || this.showAll || this.showFavorites)
-		},
-		mainCellClass() {
-			var classes = ['font' + this.fontsize]
-			if (this.noteTabs.length > 1) classes.push('tabs-open')
-			if (this.isFullWidthNote) classes.push('full-note')
-			if (this.isNoteSelected || this.isOutlineSelected || this.isThemeSelected) classes.push('note-open')
-			if (!this.isToolbarEnabled) classes.push('notebar-disabled')
-			return classes
+			return !this.$store.state.library.draggingFolder && (this.selectedFolder || this.showAll || this.showFavorites)
 		},
 		currentThemeAsString() {
 			if (typeof this.currentTheme === 'string') return this.currentTheme
@@ -298,6 +304,8 @@ var appVue = new Vue({
 	},
 	mounted() {
 		theme.load(this.currentTheme)
+
+		ipcRenderer.send('trayicon-minimize', this.reduceToTray)
 
 		this.$nextTick(() => {
 			window.addEventListener('resize', (e) => {
@@ -421,7 +429,8 @@ var appVue = new Vue({
 			window.onbeforeunload = (e) => {
 				if (this.readyToQuit) return
 				e.returnValue = false // equivalent to `return false` but not recommended
-				this.saveAndQuit()
+				this.closingWindow()
+				//this.saveAndQuit()
 			}
 		}
 
@@ -477,8 +486,8 @@ var appVue = new Vue({
 					}
 				})
 
-				this.$store.dispatch('loadedRacks', racks)
-				this.quickNotesBucket = this.$store.getters.quickNotesBucket
+				this.$store.dispatch('library/loadedRacks', racks)
+				this.quickNotesBucket = this.$store.getters['library/quickNotesBucket']
 				this.loadedRack = true
 
 				const folders = await promiseWorker.postMessage({
@@ -489,7 +498,7 @@ var appVue = new Vue({
 				})
 
 				folders.forEach((r) => {
-					const rack = this.$store.getters.findBucketByPath(r.rack)
+					const rack = this.$store.getters['library/findBucketByPath'](r.rack)
 					const folders = []
 					r.folders.forEach((f) => {
 						if (rack.folders && rack.folders.length > 0) {
@@ -521,7 +530,7 @@ var appVue = new Vue({
 					let rack
 					notes.forEach((r) => {
 						if (!rack || rack.path !== r.rack) {
-							rack = this.$store.getters.findBucketByPath(r.rack)
+							rack = this.$store.getters['library/findBucketByPath'](r.rack)
 						}
 						this.initByParent(r, rack)
 					})
@@ -534,7 +543,7 @@ var appVue = new Vue({
 					}
 				})
 				if (data && data.num) {
-					this.databaseSize = data.num
+					this.$store.commit('library/setDatabaseSize', data.num)
 				}
 
 				this.initCompleted()
@@ -592,8 +601,8 @@ var appVue = new Vue({
 
 				folder.notes = notes
 				folder.images = images
-				this.$store.dispatch('addNotes', notes)
-				this.$store.dispatch('addImages', images)
+				this.$store.dispatch('library/addNotes', notes)
+				this.$store.dispatch('library/addImages', images)
 
 				if (obj.subnotes && obj.subnotes.length > 0) {
 					obj.subnotes.forEach((r) => {
@@ -612,7 +621,7 @@ var appVue = new Vue({
 			} else if (remote.getGlobal('argv')) {
 				const argv = remote.getGlobal('argv')
 				if (argv.length > 1 && path.extname(argv[1]) === '.md' && fs.existsSync(argv[1])) {
-					const openedNote = this.$store.getters.findNoteByPath(argv[1])
+					const openedNote = this.$store.getters['library/findNoteByPath'](argv[1])
 					if (openedNote) {
 						this.changeNote({ note: openedNote })
 					} else {
@@ -682,16 +691,6 @@ var appVue = new Vue({
 		scrollUpScrollbarNotes() {
 			this.$nextTick(() => {
 				if (this.$refs.refNotes) this.$refs.refNotes.scrollTop = 0
-			})
-		},
-		/**
-		 * scrolls to the top of the selected note.
-		 * @function scrollUpScrollbarNote
-		 * @return {Void} Function doesn't return anything
-		 */
-		scrollUpScrollbarNote() {
-			this.$nextTick(() => {
-				this.$refs.myEditor.scrollTop = 0
 			})
 		},
 		openHistory() {
@@ -813,8 +812,23 @@ var appVue = new Vue({
 			this.update_editor_size()
 		},
 		changeNote({ note, newtab, sidebar }) {
-			if (this.isNoteSelected && this.selectedNote && this.selectedNote !== note) {
-				this.selectedNote.saveModel()
+			const currentNote = this.selectedNote
+			if (this.isNoteSelected && currentNote && currentNote !== note) {
+				promiseWorker.postMessage({
+					type: 'save-note',
+					data: {
+						library  : models.getBaseLibraryPath(),
+						note     : currentNote.saveData(),
+						isOutline: currentNote.isOutline
+					}
+				})
+					.then(res => {
+						if (res.path) currentNote.path = res.path
+
+						if (res.saved) {
+							this.notifyNoteSaved(currentNote, false)
+						}
+					})
 			}
 
 			if (note !== null && sidebar && this.draggingNote) {
@@ -822,7 +836,6 @@ var appVue = new Vue({
 			}
 
 			this.editTheme = null
-
 			this.timeoutNoteChange = true
 			setTimeout(() => {
 				this.timeoutNoteChange = false
@@ -850,15 +863,14 @@ var appVue = new Vue({
 			}
 
 			if (this.noteTabs.length === 0) {
-				this.noteTabs.push(note)
+				this.$store.commit('library/pushToTabs', note)
 			} else if (this.noteTabs.indexOf(note) === -1) {
 				if (newtab) {
-					this.noteTabs.push(note)
+					this.$store.commit('library/pushToTabs', note)
 				}
 
 				if (!newtab && this.selectedNote) {
-					var ci = this.noteTabs.indexOf(this.selectedNote)
-					this.noteTabs.splice(ci, 1, note)
+					this.$store.commit('library/replaceTab', note)
 				}
 			}
 
@@ -934,7 +946,7 @@ var appVue = new Vue({
 			}
 
 			rack.remove(this.notes)
-			this.$store.dispatch('removeBucket', rack)
+			this.$store.dispatch('library/removeBucket', rack)
 
 			// we need to close the current selected note if it was from the removed rack.
 			if (this.isNoteSelected && this.selectedNote.rack === rack) {
@@ -1008,7 +1020,7 @@ var appVue = new Vue({
 				note.folder.notes.splice(i1, 1)
 			}
 
-			this.$store.dispatch('removeNote', note)
+			this.$store.dispatch('library/removeNote', note)
 			if (this.selectedNote === note) {
 				this.selectedNote = null
 			}
@@ -1046,7 +1058,7 @@ var appVue = new Vue({
 					quick_notes: true,
 					ordering   : 0
 				})
-				this.$store.dispatch('addNewBucket', this.quickNotesBucket)
+				this.$store.dispatch('library/addNewBucket', this.quickNotesBucket)
 				newFolder()
 
 			} else if (this.quickNotesBucket.folders.length === 0) {
@@ -1097,16 +1109,6 @@ var appVue = new Vue({
 		},
 		setFullScreen(value) {
 			this.isFullScreen = value
-			settings.set('vue_isFullScreen', this.isFullScreen)
-			this.update_editor_size()
-		},
-		toggleToolbar() {
-			this.isToolbarEnabled = !this.isToolbarEnabled
-			settings.set('toolbarNote', this.isToolbarEnabled)
-		},
-		toggleFullWidth() {
-			this.isFullWidthNote = !this.isFullWidthNote
-			settings.set('fullWidthNote', this.isFullWidthNote)
 		},
 		/**
 		 * @description toggles markdown note preview.
@@ -1114,7 +1116,6 @@ var appVue = new Vue({
 		 */
 		togglePreview() {
 			this.isPreview = !this.isPreview
-			this.updatePreview()
 		},
 		calcSaveUid() {
 			if (this.selectedRack) {
@@ -1158,7 +1159,7 @@ var appVue = new Vue({
 			if (newNote) {
 				if (this.search.length > 0) this.search = ''
 				currFolder.notes.unshift(newNote)
-				this.$store.dispatch('addNewNote', newNote)
+				this.$store.dispatch('library/addNewNote', newNote)
 				this.isPreview = false
 				this.changeNote({ note: newNote })
 			} else {
@@ -1178,7 +1179,7 @@ var appVue = new Vue({
 			if (newOutline) {
 				if (this.search.length > 0) this.search = ''
 				currFolder.notes.unshift(newOutline)
-				this.$store.dispatch('addNewNote', newOutline)
+				this.$store.dispatch('library/addNewNote', newOutline)
 				this.isPreview = false
 				this.changeNote({ note: newOutline })
 			} else {
@@ -1202,7 +1203,7 @@ var appVue = new Vue({
 			if (newNote) {
 				if (this.search.length > 0) this.search = ''
 				currFolder.notes.unshift(newNote)
-				this.$store.dispatch('addNewNote', newNote)
+				this.$store.dispatch('library/addNewNote', newNote)
 				this.isPreview = false
 				this.changeNote({ note: newNote })
 				newNote.saveModel()
@@ -1219,35 +1220,54 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		saveNote: _.debounce(function () {
-			let result
-			if (this.selectedNote) {
-				result = this.selectedNote.saveModel()
-			}
-			if (result && result.error && result.path) {
-				this.sendFlashMessage({
-					time : 5000,
-					level: 'error',
-					text : result.error
-				})
-			} else if (result && result.saved) {
+			const currentNote = this.selectedNote
+			if (currentNote) {
 				promiseWorker.postMessage({
-					type: 'saved-note',
+					type: 'save-note',
 					data: {
-						library: models.getBaseLibraryPath(),
-						note   : this.selectedNote.getObjectDB(models.getBaseLibraryPath())
-					}
-				}).then(() => {
-					this.sendFlashMessage({
-						time : 1000,
-						level: 'info',
-						text : 'Note saved'
-					})
-					if (this.selectedNote && this.notesDisplayOrder === 'updatedAt' && !this.showHistory) {
-						this.scrollUpScrollbarNotes()
+						library  : models.getBaseLibraryPath(),
+						note     : currentNote.saveData(),
+						isOutline: currentNote.isOutline
 					}
 				})
+					.then(res => {
+						if (!currentNote) return
+						if (res.path) currentNote.path = res.path
+
+						if (res.error) {
+							this.sendFlashMessage({
+								time : 5000,
+								level: 'error',
+								text : res.error
+							})
+						}
+
+						if (res.saved) {
+							this.notifyNoteSaved(currentNote, true)
+						}
+					})
 			}
 		}, 1000),
+		async notifyNoteSaved(currentNote, showFlash) {
+			await promiseWorker.postMessage({
+				type: 'saved-note',
+				data: {
+					library: models.getBaseLibraryPath(),
+					note   : currentNote.getObjectDB(models.getBaseLibraryPath())
+				}
+			})
+
+			if (showFlash) {
+				this.sendFlashMessage({
+					time : 1000,
+					level: 'info',
+					text : 'Note saved'
+				})
+				if (currentNote && this.notesDisplayOrder === 'updatedAt' && !this.showHistory) {
+					this.scrollUpScrollbarNotes()
+				}
+			}
+		},
 		addNoteFromUrl() {
 			ipcRenderer.send('open-popup', {
 				type  : 'input-text',
@@ -1316,7 +1336,7 @@ var appVue = new Vue({
 			href = decodeURIComponent(href)
 			href = path.join(settingsBaseLibraryPath, href)
 
-			var noteObj = this.$store.getters.findNoteByPath(href)
+			var noteObj = this.$store.getters['library/findNoteByPath'](href)
 			if (noteObj) {
 				this.changeNote({ note: noteObj, newtab: newTab })
 			}
@@ -1329,39 +1349,6 @@ var appVue = new Vue({
 					shell.openExternal(url)
 				})
 			}
-		},
-		/**
-		 * displays context menu on the selected note in preview mode.
-		 * @function previewMenu
-		 * @return {Void} Function doesn't return anything
-		 */
-		previewMenu() {
-			const menu = new Menu()
-
-			menu.append(new MenuItem({
-				label      : 'Copy',
-				accelerator: 'CmdOrCtrl+C',
-				click      : () => { document.execCommand('copy') }
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Copy to clipboard (Markdown)',
-				click: () => {
-					if (this.selectedNote) clipboard.writeText(this.selectedNote.bodyWithDataURL)
-				}
-			}))
-			menu.append(new MenuItem({
-				label: 'Copy to clipboard (HTML)',
-				click: () => {
-					if (this.preview) clipboard.writeText(this.preview)
-				}
-			}))
-			menu.append(new MenuItem({ type: 'separator' }))
-			menu.append(new MenuItem({
-				label: 'Toggle Preview',
-				click: () => { this.togglePreview() }
-			}))
-			menu.popup()
 		},
 		loadThemeFromFile() {
 			dialog.showOpenDialog({
@@ -1533,7 +1520,7 @@ var appVue = new Vue({
 			})
 				.then(data => {
 					if (data && data.num) {
-						this.databaseSize = data.num
+						this.$store.commit('library/setDatabaseSize', data.num)
 						this.sendFlashMessage({
 							time : 1500,
 							level: 'info',
@@ -1564,7 +1551,7 @@ var appVue = new Vue({
 				console.error(err.message)
 
 				if (!data.replaced || data.replaced.length === 0) return
-				var noteObj = this.$store.getters.findNoteByPath(data.note)
+				var noteObj = this.$store.getters['library/findNoteByPath'](data.note)
 				if (noteObj) {
 					for (let i=0; i<data.replaced.length; i++) {
 						var subStr = data.replaced[i]
@@ -1599,18 +1586,6 @@ var appVue = new Vue({
 				})
 			})
 		},
-		/**
-		 * change how notes are sorted in the sidebar
-		 * @function changeDisplayOrder
-		 * @param  {String}  value   The sort by field
-		 * @return {Void} Function doesn't return anything
-		 */
-		changeDisplayOrder(value) {
-			var allowedOrders = ['updatedAt', 'createdAt', 'title']
-			if (allowedOrders.indexOf(value) >= 0) {
-				this.notesDisplayOrder = value
-			}
-		},
 		sendFlashMessage({ time, level, text, url }) {
 			var message = {
 				level : 'flashmessage-' + level,
@@ -1640,14 +1615,6 @@ var appVue = new Vue({
 		sidebarDragEnd() {
 			this.update_editor_size()
 			this.save_editor_size()
-		},
-		updatePreview(noScroll) {
-			if (this.isPreview && this.selectedNote) {
-				this.preview = preview.render(this.selectedNote, this)
-				if (noScroll === undefined) this.scrollUpScrollbarNote()
-			} else {
-				this.preview = ''
-			}
 		},
 		saveAndQuit() {
 			this.readyToQuit = true
@@ -1729,32 +1696,13 @@ var appVue = new Vue({
 			}
 
 			if (document.body.clientWidth > 580) {
-				document.querySelector('.main-cell-container').style.marginLeft = widthTotalLeft + 'px'
+				this.$store.commit('editor/saveContainerMargin', widthTotalLeft + 'px')
 			} else {
-				document.querySelector('.main-cell-container').style.marginLeft = ''
+				this.$store.commit('editor/saveContainerMargin', '')
 			}
 		}, 100)
 	},
 	watch: {
-		fontsize() {
-			settings.set('fontsize', this.fontsize)
-			if (this.selectedNote) {
-				this.$nextTick(() => {
-					this.$refs.refCodeMirror.refreshCM()
-				})
-			}
-		},
-		useMonospace() {
-			settings.set('useMonospace', this.useMonospace)
-		},
-		reduceToTray() {
-			settings.set('reduceToTray', this.reduceToTray)
-		},
-		selectedNote() {
-			if (this.selectedNote instanceof models.Note) {
-				this.updatePreview()
-			}
-		},
 		'selectedNote.body': function(newBody, oldBody) {
 			if (this.selectedNote instanceof models.Outline) return
 			if (oldBody && !this.timeoutNoteChange) {

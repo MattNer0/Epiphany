@@ -82,6 +82,25 @@ registerPromiseWorker(({ type, data }) => {
 					return readNotesInsideFolders(data.library, data.folder.rack, data.folder.folders)
 				})
 
+		case 'save-note':
+			if (!data.library) return paramError(type, 'library')
+			if (data.note === undefined) return paramError(type, 'note')
+
+			if (data.note === null) {
+				return Promise.resolve(null)
+			}
+
+			return libraryHelper.initDB(data.library)
+				.then(function() {
+					if (data.isOutline) {
+						return libraryHelper.saveOutline(data.note)
+					}
+					return libraryHelper.saveNote(data.note)
+				})
+				.then(function(data) {
+					return Promise.resolve(data)
+				})
+
 		case 'cache-note':
 		case 'saved-note':
 			if (!data.library) return paramError(type, 'library')

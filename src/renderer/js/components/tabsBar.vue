@@ -18,7 +18,7 @@ export default {
 	},
 	computed: {
 		currentNote() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		}
 	},
 	methods: {

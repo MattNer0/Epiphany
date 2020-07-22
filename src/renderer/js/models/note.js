@@ -630,8 +630,8 @@ class Note extends Model {
 		this._metadata.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
 	}
 
-	saveModel() {
-		if (this._removed) return
+	saveData() {
+		if (this._removed) return null
 
 		var body = this.bodyWithMetadata
 		if (this.isEncryptedNote) {
@@ -646,57 +646,82 @@ class Note extends Model {
 			outerFolder = path.dirname(this._path)
 		}
 
-		if (body.length === 0) {
-			return { saved: true }
-		}
-
 		if (this.documentFilename) {
 			var newPath = path.join(outerFolder, this.documentFilename) + this._ext
 
-			try {
-				// new path
-				if (newPath !== this._path) {
-					var num = 1
-					while (num > 0) {
-						if (fs.existsSync(newPath)) {
-							if (body && body !== fs.readFileSync(newPath).toString()) {
-								newPath = path.join(outerFolder, this.documentFilename) + num + this._ext
-							} else {
-								newPath = null
-								break
-							}
-							num++
+			if (body.length === 0) {
+				return {
+					'path'        : newPath,
+					'oldpath'     : this._path,
+					'extension'   : this._ext,
+					'filename'    : this.documentFilename,
+					'folder'      : outerFolder,
+					'photogallery': this.imagePath,
+					'body'        : ''
+				}
+			}
+
+			return {
+				'path'        : newPath,
+				'oldpath'     : this._path,
+				'extension'   : this._ext,
+				'filename'    : this.documentFilename,
+				'folder'      : outerFolder,
+				'photogallery': this.imagePath,
+				'body'        : body
+			}
+		}
+
+		return null
+	}
+
+	saveModel() {
+		const saveData = this.saveData()
+		if (saveData === null) return
+		let { body, path: newPath, folder: outerFolder, filename: documentFilename, photogallery } = saveData
+		try {
+			// new path
+			if (newPath !== this._path) {
+				var num = 1
+				while (num > 0) {
+					if (fs.existsSync(newPath)) {
+						if (body && body !== fs.readFileSync(newPath).toString()) {
+							newPath = path.join(outerFolder, documentFilename) + num + this._ext
 						} else {
+							newPath = null
 							break
 						}
+						num++
+					} else {
+						break
 					}
-
-					if (newPath) {
-						fs.writeFileSync(newPath, body)
-						utilFile.moveFolderRecursiveSync(
-							this.imagePath,
-							path.dirname(newPath),
-							'.' + path.basename(newPath, path.extname(newPath))
-						)
-						this.path = newPath
-						return { saved: true }
-					}
-					return { saved: false }
 				}
 
-				// same path
-				if (!fs.existsSync(newPath) || (body.length > 0 && body !== fs.readFileSync(newPath).toString())) {
+				if (newPath) {
 					fs.writeFileSync(newPath, body)
+					utilFile.moveFolderRecursiveSync(
+						photogallery,
+						path.dirname(newPath),
+						'.' + path.basename(newPath, path.extname(newPath))
+					)
 					this.path = newPath
 					return { saved: true }
 				}
 				return { saved: false }
-			} catch (e) {
-				elosenv.console.warn('Couldn\'t save the note. Permission Error')
-				return {
-					error: 'Permission Error',
-					path : newPath
-				}
+			}
+
+			// same path
+			if (!fs.existsSync(newPath) || (body.length > 0 && body !== fs.readFileSync(newPath).toString())) {
+				fs.writeFileSync(newPath, body)
+				this.path = newPath
+				return { saved: true }
+			}
+			return { saved: false }
+		} catch (e) {
+			elosenv.console.warn('Couldn\'t save the note. Permission Error')
+			return {
+				error: 'Permission Error',
+				path : newPath
 			}
 		}
 	}
@@ -901,18 +926,14 @@ class Outline extends Note {
 		return opml.stringify(this._name, this._metadata, this._nodes)
 	}
 
-	saveModel() {
-		if (this._removed) return
+	saveData() {
+		if (this._removed) return null
 
 		var body = this.compileOutlineBody()
 
 		var activeNodes = this._nodes.filter(function(obj) {
 			return obj.title && obj.title !== ''
 		})
-
-		if (activeNodes.length === 0) {
-			return { saved: true }
-		}
 
 		var outerFolder
 		if (this.rack && this.folder) {
@@ -924,12 +945,41 @@ class Outline extends Note {
 		if (this.documentFilename) {
 			var newPath = path.join(outerFolder, this.documentFilename) + this._ext
 
+			if (activeNodes.length === 0) {
+				return {
+					'path'     : newPath,
+					'oldpath'  : this._path,
+					'extension': this._ext,
+					'filename' : this.documentFilename,
+					'folder'   : outerFolder,
+					'body'     : ''
+				}
+			}
+
+			return {
+				'path'     : newPath,
+				'oldpath'  : this._path,
+				'extension': this._ext,
+				'filename' : this.documentFilename,
+				'folder'   : outerFolder,
+				'body'     : body
+			}
+		}
+
+		return null
+	}
+
+	saveModel() {
+		const saveData = this.saveData()
+		if (saveData === null) return
+		let { body, path: newPath, folder: outerFolder, filename: documentFilename } = saveData
+		try {
 			if (newPath !== this._path) {
 				var num = 1
 				while (num > 0) {
 					if (fs.existsSync(newPath)) {
 						if (body && body !== fs.readFileSync(newPath).toString()) {
-							newPath = path.join(outerFolder, this.documentFilename) + num + this._ext
+							newPath = path.join(outerFolder, documentFilename) + num + this._ext
 						} else {
 							newPath = null
 							break
@@ -950,21 +1000,19 @@ class Outline extends Note {
 				return { saved: false }
 			}
 
-			try {
-				if (!fs.existsSync(newPath) || (body.length > 0 && body !== fs.readFileSync(newPath).toString())) {
-					fs.writeFileSync(newPath, body)
-					this.path = newPath
-					if (this._body) this._snapshots.push(this._body)
-					this._body = body
-					return { saved: true }
-				}
-				return { saved: false }
-			} catch (e) {
-				elosenv.console.warn('Couldn\'t save the note. Permission Error')
-				return {
-					error: 'Permission Error',
-					path : newPath
-				}
+			if (!fs.existsSync(newPath) || (body.length > 0 && body !== fs.readFileSync(newPath).toString())) {
+				fs.writeFileSync(newPath, body)
+				this.path = newPath
+				if (this._body) this._snapshots.push(this._body)
+				this._body = body
+				return { saved: true }
+			}
+			return { saved: false }
+		} catch (e) {
+			elosenv.console.warn('Couldn\'t save the note. Permission Error')
+			return {
+				error: 'Permission Error',
+				path : newPath
 			}
 		}
 	}

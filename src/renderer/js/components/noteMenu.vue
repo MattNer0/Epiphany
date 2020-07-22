@@ -176,13 +176,8 @@ import componentDropdown from './dropdown.vue'
 export default {
 	name : 'noteMenu',
 	props: {
-		'isFullScreen'     : Boolean,
-		'isPreview'        : Boolean,
-		'isToolbarEnabled' : Boolean,
 		'isNoteSelected'   : Boolean,
-		'isOutlineSelected': Boolean,
-		'useMonospace'     : Boolean,
-		'fontsize'         : Number
+		'isOutlineSelected': Boolean
 	},
 	data() {
 		return {
@@ -200,8 +195,40 @@ export default {
 		}
 	},
 	computed: {
+		isToolbarEnabled: {
+			get() {
+				return this.$store.state.options.isToolbarEnabled
+			}
+		},
+		isPreview: {
+			get() {
+				return this.$store.state.options.isPreview
+			}
+		},
+		isFullScreen: {
+			get() {
+				return this.$store.state.options.isFullScreen
+			}
+		},
+		useMonospace: {
+			get() {
+				return this.$store.state.options.useMonospace
+			},
+			set(val) {
+				this.$store.commit('options/setMonospace', val)
+			}
+		},
+		fontsize: {
+			get() {
+				return this.$store.state.options.fontsize
+			},
+			set(val) {
+				this.$store.commit('options/setFontsize', val)
+			}
+		},
+
 		note() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		},
 		noteHeadings() {
 
@@ -309,16 +336,16 @@ export default {
 			this.$root.open_share_url()
 		},
 		menu_fontsize(size) {
-			this.$parent.fontsize = size
+			this.fontsize = size
 			this.fontsize_visible = false
 		},
 		menu_fontstyle(style) {
 			switch (style) {
 				case 'normal':
-					this.$parent.useMonospace = false
+					this.useMonospace = false
 					break
 				case 'monospace':
-					this.$parent.useMonospace = true
+					this.useMonospace = true
 					break
 			}
 			this.fontstyle_visible = false

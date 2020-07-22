@@ -426,5 +426,90 @@ export default {
 		}
 
 		return Promise.resolve({ num: numNotes })
+	},
+	async saveNote(note) {
+		const res = { saved: false }
+		try {
+			if (note.path !== note.oldpath) {
+				let num = 1
+				while (num > 0) {
+					if (fs.existsSync(note.path)) {
+						if (note.body && note.body !== fs.readFileSync(note.path).toString()) {
+							note.path = path.join(note.folder, note.filename) + num + note.extension
+						} else {
+							note.path = null
+							break
+						}
+						num++
+					} else {
+						break
+					}
+				}
+
+				if (note.path && note.photogallery) {
+					fs.writeFileSync(note.path, note.body)
+					utilFile.moveFolderRecursiveSync(
+						note.photogallery,
+						path.dirname(note.path),
+						'.' + path.basename(note.path, path.extname(note.path))
+					)
+
+					res.path = note.path
+					res.saved = true
+				}
+				return res
+			}
+
+			// same path
+			if (!fs.existsSync(note.path) || (note.body.length > 0 && note.body !== fs.readFileSync(note.path).toString())) {
+				fs.writeFileSync(note.path, note.body)
+
+				res.path = note.path
+				res.saved = true
+			}
+			return res
+
+		} catch (e) {
+			res.error = e.message
+			return res
+		}
+	},
+	async saveOutline(note) {
+		const res = { saved: false }
+		try {
+			if (note.path !== note.oldpath) {
+				let num = 1
+				while (num > 0) {
+					if (fs.existsSync(note.path)) {
+						if (note.body && note.body !== fs.readFileSync(note.path).toString()) {
+							note.path = path.join(note.folder, note.filename) + num + note.extension
+						} else {
+							note.path = null
+							break
+						}
+						num++
+					} else {
+						break
+					}
+				}
+
+				if (note.path) {
+					fs.writeFileSync(note.path, note.body)
+					res.path = note.path
+					res.saved = true
+				}
+				return res
+			}
+
+			if (!fs.existsSync(note.path) || (note.body.length > 0 && note.body !== fs.readFileSync(note.path).toString())) {
+				fs.writeFileSync(note.path, note.body)
+				res.path = note.path
+				res.saved = true
+			}
+			return res
+		} catch (e) {
+			res.error = e.message
+			return res
+		}
 	}
 }

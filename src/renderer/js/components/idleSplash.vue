@@ -36,11 +36,18 @@ export default {
 	props: {
 		'path'   : String,
 		'sync'   : String,
-		'loading': Boolean,
-		'note'   : Object,
-		'dbsize' : Number
+		'loading': Boolean
 	},
 	computed: {
+		note() {
+			return this.$store.getters['library/lastNote']
+		},
+		dbsize: {
+			get() {
+				return this.$store.state.library.databaseSize
+			}
+		},
+
 		libraryPath() {
 			if (this.path.length > 32) {
 				const split = this.path.split(path.sep)

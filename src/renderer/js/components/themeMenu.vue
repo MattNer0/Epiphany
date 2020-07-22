@@ -11,8 +11,14 @@
 export default {
 	name : 'themeMenu',
 	props: {
-		'theme'           : Object,
-		'isToolbarEnabled': Boolean
+		'theme': Object
+	},
+	computed: {
+		isToolbarEnabled: {
+			get() {
+				return this.$store.state.options.isToolbarEnabled
+			}
+		}
 	},
 	methods: {
 		menu_save() {

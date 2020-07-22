@@ -5,7 +5,7 @@
 <script>
 import _ from 'lodash'
 
-import { remote } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 const { Menu } = remote
 
 import elosenv from '../utils/elosenv'
@@ -14,17 +14,11 @@ import { Rack } from '../models'
 export default {
 	name : 'titleBar',
 	props: {
-		'reduceToTray'     : Boolean,
-		'isFullScreen'     : Boolean,
-		'showMenuBar'      : Boolean,
-		'libraryPath'      : String,
-		'notesDisplayOrder': String,
-		'isToolbarEnabled' : Boolean,
-		'isFullWidthNote'  : Boolean,
-		'isNoteSelected'   : Boolean,
-		'isPreview'        : Boolean,
-		'currentTheme'     : String,
-		'windowTitle'      : String
+		'showMenuBar'   : Boolean,
+		'libraryPath'   : String,
+		'isNoteSelected': Boolean,
+		'currentTheme'  : String,
+		'windowTitle'   : String
 	},
 	data: function() {
 		return {
@@ -35,6 +29,50 @@ export default {
 		}
 	},
 	computed: {
+		isFullWidthNote: {
+			get() {
+				return this.$store.state.options.isFullWidthNote
+			},
+			set(val) {
+				this.$store.commit('options/setFullWidthNote', val)
+			}
+		},
+		isToolbarEnabled: {
+			get() {
+				return this.$store.state.options.isToolbarEnabled
+			},
+			set(val) {
+				this.$store.commit('options/setToolbarEnabled', val)
+			}
+		},
+		reduceToTray: {
+			get() {
+				return this.$store.state.options.reduceToTray
+			},
+			set(val) {
+				this.$store.commit('options/setReduceToTrayFlag', val)
+				ipcRenderer.send('trayicon-minimize', this.reduceToTray)
+			}
+		},
+		notesDisplayOrder: {
+			get() {
+				return this.$store.state.options.notesDisplayOrder
+			},
+			set(val) {
+				this.$store.commit('options/setNotesDisplayOrder', val)
+			}
+		},
+		isPreview: {
+			get() {
+				return this.$store.state.options.isPreview
+			}
+		},
+		isFullScreen: {
+			get() {
+				return this.$store.state.options.isFullScreen
+			}
+		},
+
 		fileMenu() {
 			return [
 				{
@@ -167,7 +205,7 @@ export default {
 					label  : 'Show Note Toolbar',
 					checked: this.isToolbarEnabled,
 					click  : () => {
-						this.$root.toggleToolbar()
+						this.isToolbarEnabled = !this.isToolbarEnabled
 					}
 				},
 				{
@@ -175,7 +213,7 @@ export default {
 					label  : 'Show Note Full Width',
 					checked: this.isFullWidthNote,
 					click  : () => {
-						this.$root.toggleFullWidth()
+						this.isFullWidthNote = !this.isFullWidthNote
 					}
 				},
 				{ type: 'separator' },
@@ -206,7 +244,7 @@ export default {
 					label  : 'Reduce to Tray',
 					checked: this.reduceToTray,
 					click  : () => {
-						this.$root.reduceToTray = !this.reduceToTray
+						this.reduceToTray = !this.reduceToTray
 					}
 				},
 				{
@@ -224,7 +262,7 @@ export default {
 					label  : 'Sort by Update Date',
 					checked: this.notesDisplayOrder === 'updatedAt',
 					click  : () => {
-						this.$root.changeDisplayOrder('updatedAt')
+						this.notesDisplayOrder = 'updatedAt'
 					}
 				},
 				{
@@ -232,7 +270,7 @@ export default {
 					label  : 'Sort by Creation Date',
 					checked: this.notesDisplayOrder === 'createdAt',
 					click  : () => {
-						this.$root.changeDisplayOrder('createdAt')
+						this.notesDisplayOrder = 'createdAt'
 					}
 				},
 				{
@@ -240,7 +278,7 @@ export default {
 					label  : 'Sort by Title',
 					checked: this.notesDisplayOrder === 'title',
 					click  : () => {
-						this.$root.changeDisplayOrder('title')
+						this.notesDisplayOrder = 'title'
 					}
 				}
 			]
@@ -348,7 +386,7 @@ export default {
 				name    : '',
 				ordering: 0
 			})
-			this.$store.dispatch('addNewBucket', bucket)
+			this.$store.dispatch('library/addNewBucket', bucket)
 			this.$root.setEditingRack(bucket)
 		}
 	},
@@ -373,10 +411,10 @@ export default {
 		},
 		isPreview() {
 			this.initApplicationMenu()
-		},
-		query() {
-			this.$root.search = this.query.length > 2 ? this.query : ''
 		}
+		/*query() {
+			this.$root.search = this.query.length > 2 ? this.query : ''
+		}*/
 	}
 }
 </script>

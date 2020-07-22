@@ -61,16 +61,16 @@ export default {
 	},
 	computed: {
 		selectedFolder() {
-			return this.$store.state.selectedFolder
+			return this.$store.state.library.selectedFolder
 		},
 		selectedNote() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		},
 		draggingFolder() {
-			return this.$store.state.draggingFolder
+			return this.$store.state.library.draggingFolder
 		},
 		draggingNote() {
-			return this.$store.state.draggingNote
+			return this.$store.state.library.draggingNote
 		},
 		isDraggingNote() {
 			return !!this.draggingNote

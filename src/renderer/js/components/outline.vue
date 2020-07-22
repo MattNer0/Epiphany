@@ -48,7 +48,7 @@ export default {
 	},
 	computed: {
 		outlineNote() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		}
 	},
 	components: {

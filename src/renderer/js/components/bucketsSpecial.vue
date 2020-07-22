@@ -19,7 +19,7 @@ export default {
 	},
 	computed: {
 		buckets() {
-			return this.$store.state.buckets
+			return this.$store.state.library.buckets
 		}
 	},
 	methods: {

@@ -5,6 +5,7 @@
 			.my-notes-note(v-for="note in separated.notes",
 				track-by="uid",
 				@click="selectNote(note)",
+				v-on:dblclick="selectNoteAndWide(note)"
 				v-on:auxclick.stop.prevent="selectNote(note, true)"
 				@contextmenu.prevent.stop="noteMenu(note)",
 				@dragstart.stop="noteDragStart($event, note)",
@@ -51,31 +52,33 @@ Vue.use(dateSplitted)
 export default {
 	name : 'notes',
 	props: {
-		'notesDisplayOrder': String,
-		'notes'            : Array,
-		'showHistory'      : Boolean
+		'notes'      : Array,
+		'showHistory': Boolean
 	},
 	data() {
 		return {
 			'addnote_visible': false,
-			'clicks'         : 0,
-			'clickDelay'     : 500,
-			'clickTimer'     : null,
 			'position'       : ['left', 'top', 'left', 'top']
 		}
 	},
 	computed: {
+		notesDisplayOrder: {
+			get() {
+				return this.$store.state.options.notesDisplayOrder
+			}
+		},
+
 		selectedRack() {
-			return this.$store.state.selectedBucket
+			return this.$store.state.library.selectedBucket
 		},
 		selectedFolder() {
-			return this.$store.state.selectedFolder
+			return this.$store.state.library.selectedFolder
 		},
 		selectedNote() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		},
 		draggingNote() {
-			return this.$store.state.draggingNote
+			return this.$store.state.library.draggingNote
 		},
 		notesFiltered() {
 			var dateSeparated = Vue.filter('dateSeparated')
@@ -84,17 +87,7 @@ export default {
 	},
 	methods: {
 		selectNote(note, newtab) {
-			this.clicks++
-			if (this.clicks === 1) {
-				this.clickTimer = setTimeout(() => {
-					window.bus.$emit('change-note', { note: note, newtab: newtab, sidebar: true })
-					this.clicks = 0
-				}, this.clickDelay)
-			} else {
-				clearTimeout(this.clickTimer)
-				this.selectNoteAndWide(note)
-				this.clicks = 0
-			}
+			window.bus.$emit('change-note', { note: note, newtab: newtab, sidebar: true })
 		},
 		selectNoteAndWide(note) {
 			if (this.selectedNote !== note) {
@@ -135,10 +128,10 @@ export default {
 		// Dragging
 		noteDragStart(event, note) {
 			event.dataTransfer.setDragImage(event.target, 0, 0)
-			this.$store.commit('dragging', note)
+			this.$store.commit('library/dragging', note)
 		},
 		noteDragEnd() {
-			this.$store.commit('dragging')
+			this.$store.commit('library/dragging')
 		},
 		copyNoteBody(note) {
 			clipboard.writeText(note.bodyWithDataURL)

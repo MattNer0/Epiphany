@@ -68,13 +68,7 @@ function countLineBreaks(text) {
 }
 
 export default {
-	name : 'codemirror',
-	props: {
-		'isFullScreen': Boolean,
-		'isPreview'   : Boolean,
-		'useMonospace': Boolean,
-		'search'      : String
-	},
+	name: 'codemirror',
 	data() {
 		return {
 			cm        : null,
@@ -107,12 +101,32 @@ export default {
 	},
 	computed: {
 		note() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
+		},
+		search: {
+			get() {
+				return this.$store.state.editor.search
+			}
+		},
+		isPreview: {
+			get() {
+				return this.$store.state.options.isPreview
+			}
+		},
+		isFullScreen: {
+			get() {
+				return this.$store.state.options.isFullScreen
+			}
+		},
+		useMonospace: {
+			get() {
+				return this.$store.state.options.useMonospace
+			}
 		}
 	},
 	methods: {
 		newCodemirrorInstance() {
-			this.$store.commit('resetEditor')
+			this.$store.commit('editor/resetEditor')
 
 			let extraKeys
 			if (elosenv.isDarwin()) {
@@ -251,19 +265,19 @@ export default {
 			cm.on('cursorActivity', (cm, event) => {
 				var sel = cm.getSelection()
 				var c = cm.getCursor()
-				this.$store.commit('cursorPositon', { row: c.line, column: c.ch })
-				this.$store.commit('cursorSelection', sel)
+				this.$store.commit('editor/cursorPositon', { row: c.line, column: c.ch })
+				this.$store.commit('editor/cursorSelection', sel)
 				if (sel.length === 0) {
-					this.$store.commit('editorWordsCount', countWords(cm.getValue()))
-					this.$store.commit('editorLineBreaks', 0)
+					this.$store.commit('editor/editorWordsCount', countWords(cm.getValue()))
+					this.$store.commit('editor/editorLineBreaks', 0)
 				} else {
-					this.$store.commit('editorWordsCount', countWords(sel))
-					this.$store.commit('editorLineBreaks', countLineBreaks(sel))
+					this.$store.commit('editor/editorWordsCount', countWords(sel))
+					this.$store.commit('editor/editorLineBreaks', countLineBreaks(sel))
 				}
 			})
 
 			cm.on('swapDoc', (cm, oldDoc) => {
-				this.$store.commit('editorWordsCount', countWords(cm.getValue()))
+				this.$store.commit('editor/editorWordsCount', countWords(cm.getValue()))
 			})
 
 			cm.on('renderLine', (cm, line, elem) => {
@@ -400,8 +414,8 @@ export default {
 			this.cm.focus()
 		},
 		initFooter() {
-			this.$store.commit('resetEditor')
-			this.$store.commit('editorWordsCount', countWords(this.cm.getValue()))
+			this.$store.commit('editor/resetEditor')
+			this.$store.commit('editor/editorWordsCount', countWords(this.cm.getValue()))
 		},
 		inlinePreviewCleanUrl(match) {
 			return 'epiphany://' + path.join(this.note.imagePath, match[2].replace(/^epiphany:\/\//i, ''))
@@ -499,7 +513,9 @@ export default {
 			})
 		},
 		updateNoteBody: _.debounce(function () {
-			this.note.body = this.cm.getValue()
+			if (this.note) {
+				this.note.body = this.cm.getValue()
+			}
 		}, 1000, {
 			leading : true,
 			trailing: true,

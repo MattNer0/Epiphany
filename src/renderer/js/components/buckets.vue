@@ -63,7 +63,6 @@ export default {
 	props: {
 		'showAll'      : Boolean,
 		'showFavorites': Boolean,
-		'isFullScreen' : Boolean,
 		'editingFolder': String,
 		'search'       : String
 	},
@@ -76,26 +75,32 @@ export default {
 		}
 	},
 	computed: {
+		isFullScreen: {
+			get() {
+				return this.$store.state.options.isFullScreen
+			}
+		},
+
 		buckets() {
-			return this.$store.state.buckets
+			return this.$store.state.library.buckets
 		},
 		selectedBucket() {
-			return this.$store.state.selectedBucket
+			return this.$store.state.library.selectedBucket
 		},
 		selectedFolder() {
-			return this.$store.state.selectedFolder
+			return this.$store.state.library.selectedFolder
 		},
 		selectedNote() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		},
 		draggingBucket() {
-			return this.$store.state.draggingBucket
+			return this.$store.state.library.draggingBucket
 		},
 		draggingFolder() {
-			return this.$store.state.draggingFolder
+			return this.$store.state.library.draggingFolder
 		},
 		draggingNote() {
-			return this.$store.state.draggingNote
+			return this.$store.state.library.draggingNote
 		},
 		bucketsWithFolders() {
 			// eslint-disable-next-line vue/no-side-effects-in-computed-properties
@@ -128,12 +133,12 @@ export default {
 		// Dragging
 		rackDragStart(event, bucket) {
 			bucket.openFolder = false
-			this.$store.commit('selectFolder', null)
+			this.$store.commit('library/selectFolder', null)
 			event.dataTransfer.setDragImage(event.target, 0, 0)
-			this.$store.commit('dragging', bucket)
+			this.$store.commit('library/dragging', bucket)
 		},
 		rackDragEnd() {
-			this.$store.commit('dragging')
+			this.$store.commit('library/dragging')
 			window.bus.$emit('change-bucket', {
 				bucket: null
 			})
@@ -211,7 +216,7 @@ export default {
 				})
 				rack.folders = folders
 				rack.dragHover = false
-				this.$store.commit('dragging')
+				this.$store.commit('library/dragging')
 			} else if (this.draggingBucket && this.draggingBucket !== rack) {
 				console.log('Dropping Rack')
 				var newBuckets = arr.sortBy(this.buckets.slice(), 'ordering', true)
@@ -228,7 +233,7 @@ export default {
 						r.saveOrdering()
 					}
 				})
-				this.$store.commit('dragging')
+				this.$store.commit('library/dragging')
 				rack.sortUpper = false
 				rack.sortLower = false
 			} else if (this.draggingNote && rack.quick_notes && rack.folders && rack.folders.length) {
@@ -265,7 +270,7 @@ export default {
 				name    : '',
 				ordering: this.buckets.length
 			})
-			this.$store.dispatch('addNewBucket', bucket)
+			this.$store.dispatch('library/addNewBucket', bucket)
 			this.$root.setEditingRack(bucket)
 		},
 		bucketMenu(bucket) {

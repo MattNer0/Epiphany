@@ -8,9 +8,13 @@
 
 <script>
 export default {
-	name : 'sidebarToggle',
-	props: {
-		'fullscreen': Boolean
+	name    : 'sidebarToggle',
+	computed: {
+		fullscreen: {
+			get() {
+				return this.$store.state.options.isFullScreen
+			}
+		}
 	},
 	methods: {
 		toggleSidebar() {

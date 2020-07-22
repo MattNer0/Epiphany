@@ -50,16 +50,16 @@ export default {
 	},
 	computed: {
 		selectedFolder() {
-			return this.$store.state.selectedFolder
+			return this.$store.state.library.selectedFolder
 		},
 		selectedNote() {
-			return this.$store.state.selectedNote
+			return this.$store.state.library.selectedNote
 		},
 		draggingFolder() {
-			return this.$store.state.draggingFolder
+			return this.$store.state.library.draggingFolder
 		},
 		draggingNote() {
-			return this.$store.state.draggingNote
+			return this.$store.state.library.draggingNote
 		},
 		isDraggingNote() {
 			return !!this.draggingNote
@@ -112,14 +112,14 @@ export default {
 		},
 		folderDragStart(event, parent, folder) {
 			folder.openFolder = false
-			this.$store.commit('selectFolder', null)
+			this.$store.commit('library/selectFolder', null)
 			event.dataTransfer.setDragImage(event.target, 8, 0)
-			this.$store.commit('dragging', folder)
+			this.$store.commit('library/dragging', folder)
 			this.draggingFolderParent = parent
 		},
 		folderDragEnd() {
 			this.$root.folderDragEnded(this.draggingFolderParent, this.draggingFolder)
-			this.$store.commit('dragging')
+			this.$store.commit('library/dragging')
 			this.draggingFolderParent = null
 		},
 		folderDragOver(event, folder) {
@@ -229,7 +229,7 @@ export default {
 
 				folder.sortUpper = false
 				folder.sortLower = false
-				this.$store.commit('dragging')
+				this.$store.commit('library/dragging')
 			}
 		},
 		folderMenu(bucket, folder) {

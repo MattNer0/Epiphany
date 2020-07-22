@@ -20,19 +20,19 @@ export default {
 	name    : 'noteMenu',
 	computed: {
 		row() {
-			return this.$store.state.editorRow
+			return this.$store.state.editor.editorRow
 		},
 		column() {
-			return this.$store.state.editorColumn
+			return this.$store.state.editor.editorColumn
 		},
 		selection() {
-			return this.$store.state.editorSelection
+			return this.$store.state.editor.editorSelection
 		},
 		wordscount() {
-			return this.$store.state.editorWordscount
+			return this.$store.state.editor.editorWordscount
 		},
 		linebreaks() {
-			return this.$store.state.editorLinebreaks
+			return this.$store.state.editor.editorLinebreaks
 		}
 	}
 }
