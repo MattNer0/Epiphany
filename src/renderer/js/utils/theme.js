@@ -92,7 +92,12 @@ function styleObject(obj) {
 				color          : obj['folder-selected-color']
 			},
 			'.CodeMirror': {
-				backgroundColor: obj['note-background-color']
+				backgroundColor: obj['note-background-color'],
+				caretColor     : obj['note-text-color'],
+				color          : obj['note-text-color']
+			},
+			'.CodeMirror-cursor': {
+				borderColor: obj['note-text-color']
 			},
 			'.CodeMirror-dialog.CodeMirror-dialog-bottom': {
 				background: obj['fixed-sidebar-background']
@@ -111,6 +116,9 @@ function styleObject(obj) {
 				backgroundColor: obj['note-background-color'],
 				color          : obj['note-text-color']
 			},
+			'.idle-library-container button': {
+				color: obj['note-text-color']
+			},
 			'.my-editor-preview': {
 				backgroundColor: obj['note-background-color']
 			},
@@ -119,8 +127,20 @@ function styleObject(obj) {
 					color: obj['note-checkbox-selected']
 				}
 			},
+			'.my-editor-preview ul li.checkbox div.check:after': {
+				color: obj['note-text-color']
+			},
 			'.CodeMirror span.cm-epy-header-1, .my-editor-preview h1, .my-editor-outline input.h1': {
 				color: obj['note-header1-color']
+			},
+			'.CodeMirror .cm-epy-link, .CodeMirror .cm-epy-link-href:not(.cm-epy-formatting)': {
+				color: obj['note-anchor-color']
+			},
+			'.CodeMirror .cm-epy-quote': {
+				color: obj['note-quote-color']
+			},
+			'.cm-s-default .cm-link, .my-editor-preview a.external-link, .my-editor-preview a[href]': {
+				color: obj['note-anchor-color']
 			},
 			'.CodeMirror span.cm-epy-strong, .my-editor-preview strong': {
 				color: obj['note-bold-color']
@@ -128,6 +148,45 @@ function styleObject(obj) {
 			'.CodeMirror span.cm-m-markdown.cm-epy-hr': {
 				backgroundColor: obj['note-hr-background'],
 				color          : obj['note-hr-color']
+			},
+			'.CodeMirror span.cm-string, .my-editor-preview .hljs-string, .my-editor-preview .hljs-doctag': {
+				color: obj['note-code-string']
+			},
+			'.CodeMirror span.cm-variable-2': {
+				color: obj['note-code-variable']
+			},
+			'.CodeMirror span.cm-keyword, .my-editor-preview .hljs-keyword': {
+				color: obj['note-code-keyword']
+			},
+			'.CodeMirror .cm-attribute, .my-editor-preview .hljs-tag .hljs-attr': {
+				color: obj['note-code-attribute']
+			},
+			'.CodeMirror .cm-tag, .my-editor-preview .hljs-name, .my-editor-preview .hljs-tag': {
+				color: obj['note-code-tag']
+			},
+			'.CodeMirror span.cm-def': {
+				color: obj['note-code-def']
+			},
+			'.CodeMirror span.cm-epy-code, .CodeMirror code': {
+				color: obj['note-code-color']
+			},
+			'.CodeMirror .cm-atom, .my-editor-preview .hljs-class .hljs-title, .my-editor-preview .hljs-symbol, .my-editor-preview .hljs-literal': {
+				color: obj['note-code-atom']
+			},
+			'.my-editor-preview .hljs': {
+				backgroundColor: obj['note-hljs-background'],
+				color          : obj['note-hljs-color']
+			},
+			'.my-editor-preview thead, .my-editor-preview tbody tr:nth-child(even)': {
+				backgroundColor: obj['note-table-row-even']
+			},
+			'.my-editor-preview blockquote': {
+				backgroundColor: obj['note-blockquote-background'],
+				borderColor    : obj['note-blockquote-border'],
+				color          : obj['note-blockquote-color']
+			},
+			'.my-editor-preview h2': {
+				borderColor: obj['note-text-color']
 			},
 			'.flashmessage-message': {
 				borderBottom: '2px solid '+obj['ui-text-color'],
@@ -287,7 +346,7 @@ function styleObject(obj) {
 						color: obj['note-bar-color']
 					},
 					'& li.entry-separator': {
-						backgroundColor: obj['note-bar-color']
+						backgroundColor: obj['note-bar-separator-color']
 					},
 					'& li hr': {
 						border: '1px solid '+obj['note-bar-color']

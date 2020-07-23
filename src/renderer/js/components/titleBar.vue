@@ -17,7 +17,6 @@ export default {
 		'showMenuBar'   : Boolean,
 		'libraryPath'   : String,
 		'isNoteSelected': Boolean,
-		'currentTheme'  : String,
 		'windowTitle'   : String
 	},
 	data: function() {
@@ -73,6 +72,12 @@ export default {
 			}
 		},
 
+		currentTheme: {
+			get() {
+				if (typeof this.$store.state.options.currentTheme === 'string') return this.$store.state.options.currentTheme
+				return 'custom'
+			}
+		},
 		fileMenu() {
 			return [
 				{
@@ -295,10 +300,10 @@ export default {
 				},
 				{
 					type   : 'checkbox',
-					label  : 'Arc Dark',
-					checked: this.currentTheme === 'arc-dark',
+					label  : 'Light',
+					checked: this.currentTheme === 'light',
 					click  : () => {
-						this.$root.setCustomTheme('arc-dark')
+						this.$root.setCustomTheme('light')
 					}
 				},
 				{ type: 'separator' },

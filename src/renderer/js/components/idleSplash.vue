@@ -12,7 +12,7 @@
 				td
 					strong Current path:
 				td
-					a(href="#", @click.prevent.stop="openLibrary" :alt="path")
+					a(href="#", @click.prevent.stop="openLibrary" :title="path")
 						| {{ libraryPath }}&nbsp;
 						i.coon-external-link
 			tr

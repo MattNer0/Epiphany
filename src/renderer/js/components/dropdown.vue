@@ -181,7 +181,7 @@ export default {
 		setPosition() {
 			var $link = this.$el.children[0]
 			var $dd = this.$el.children[1]
-			this.ddStyle = setPosition($link, $dd, this.position, [0, 0])
+			this.ddStyle = setPosition($link, $dd, this.position, [0, 20])
 			this.$emit('positioned', this.ddStyle)
 		}
 	},

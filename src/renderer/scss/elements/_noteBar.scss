@@ -1,6 +1,8 @@
 .noteBar {
 	height: $note-bar-height;
 	position: relative;
+	padding-top: 1rem;
+	padding-bottom: 0;
 	z-index: 9;
 
 	i.faded {
@@ -54,6 +56,13 @@
 		}
 	}
 
+	.properties-dialog .filename-overflow {
+		white-space: nowrap;
+		max-width: 120px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	.properties-dialog, .table-dialog {
 		table {
 			width: 100%;
@@ -99,7 +108,7 @@
 		justify-content: center;
 
 		margin: 0 auto;
-		height: $note-bar-height;
+		height: 100%;
 		width: 100%;
 		min-width: 16em;
 		max-width: 75em;
@@ -163,20 +172,8 @@
 				opacity: 0.8;
 			}
 
-			li.right-align {
-				margin-left: auto;
-			}
-
-			li.right-align + li.right-align {
-				margin-left: 0;
-			}
-
 			li.entry-hidden {
 				display: none;
-			}
-
-			li.entry-hidden + li.right-align:not(.entry-hidden) {
-				margin-left: auto;
 			}
 		}
 
@@ -204,6 +201,9 @@
 }
 
 .noteBar.footer {
+	padding-top: .2rem;
+	padding-bottom: .8rem;
+
 	nav {
 		height: 100%;
 		ul {

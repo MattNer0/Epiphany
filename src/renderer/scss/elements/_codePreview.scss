@@ -152,14 +152,6 @@
 			min-height: 1.6em;
 			padding: 0.5em;
 		}
-
-		thead{
-			background-color: #f5f5f5;
-		}
-
-		tbody tr:nth-child(even){
-			background-color: #fafafa;
-		}
 	}
 
 	p > a {
@@ -169,9 +161,7 @@
 	blockquote {
 		margin: 0;
 		padding: 8px 14px;
-		background-color: #F5F3F3;
 		border-left: solid 4px #ccc;
-		color: #777;
 
 		p {
 			margin: 0;

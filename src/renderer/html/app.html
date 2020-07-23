@@ -2,7 +2,6 @@
 	<title-bar
 		:show-menu-bar="true"
 		:is-note-selected="isNoteSelected"
-		:current-theme="currentThemeAsString"
 		:library-path="libraryPath" />
 	<div class="my-main">
 		<div class="outer_wrapper">
@@ -44,6 +43,7 @@
 			</div>
 			<note-container
 				v-if="isNoteSelected || isOutlineSelected || isThemeSelected"
+				:edit-theme="editTheme"
 				:is-theme-selected="isThemeSelected" />
 			<div class="cell-container main-cell-container" v-else>
 				<div class="idle-library-container">

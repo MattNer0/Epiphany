@@ -57,7 +57,7 @@
 	.cell-container.main-cell-container {
 		margin-left: 0;
 		padding-left: 2.4em;
-		padding-right: 1.8em;
+		padding-right: 2.4em;
 		transition: margin 400ms;
 	}
 
@@ -69,6 +69,7 @@
 	.main-note-container {
 		position: relative;
 		height: calc( 100vh - #{ $outside-note-height } );
+		box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
 	}
 
 	.full-note .main-note-container {

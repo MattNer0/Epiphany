@@ -78,7 +78,6 @@ var appVue = new Vue({
 		loadedRack       : false,
 		readyToQuit      : false,
 		minimizeTime     : null,
-		currentTheme     : settings.getJSON('theme', 'dark'),
 		librarySync      : null,
 		preview          : '',
 		quickNotesBucket : null,
@@ -94,9 +93,7 @@ var appVue = new Vue({
 		modalTitle       : 'title',
 		modalDescription : 'description',
 		modalPrompts     : [],
-		modalOkcb        : null,
-		racksWidth       : settings.getSmart('racksWidth', 220),
-		notesWidth       : settings.getSmart('notesWidth', 220)
+		modalOkcb        : null
 	},
 	components: {
 		'flashmessage'  : componentFlashmessage,
@@ -155,6 +152,22 @@ var appVue = new Vue({
 				this.$store.commit('options/setNotesDisplayOrder', val)
 			}
 		},
+		racksWidth: {
+			get() {
+				return this.$store.state.options.racksWidth
+			},
+			set(val) {
+				this.$store.commit('options/setRacksWidth', val)
+			}
+		},
+		notesWidth: {
+			get() {
+				return this.$store.state.options.notesWidth
+			},
+			set(val) {
+				this.$store.commit('options/setNotesWidth', val)
+			}
+		},
 		noteTabs: {
 			get() {
 				return this.$store.state.library.noteTabs
@@ -192,6 +205,15 @@ var appVue = new Vue({
 			set(val) {
 				this.$store.commit('options/setFullScreenFlag', val)
 				this.update_editor_size()
+			}
+		},
+		currentTheme: {
+			get() {
+				return this.$store.state.options.currentTheme
+			},
+			set(val) {
+				this.$store.commit('options/setCurrentTheme', val)
+				theme.load(val)
 			}
 		},
 		reduceToTray: {
@@ -257,10 +279,6 @@ var appVue = new Vue({
 		},
 		showFolderNotesList() {
 			return !this.$store.state.library.draggingFolder && (this.selectedFolder || this.showAll || this.showFavorites)
-		},
-		currentThemeAsString() {
-			if (typeof this.currentTheme === 'string') return this.currentTheme
-			return 'custom'
 		},
 		libraryPath() {
 			return models.getBaseLibraryPath()
@@ -669,9 +687,6 @@ var appVue = new Vue({
 		 * @return {Void} Function doesn't return anything
 		 */
 		init_sidebar_width() {
-			this.racksWidth = Math.min(this.racksWidth, this.notesWidth)
-			this.notesWidth = this.racksWidth
-
 			const handlerStack = document.getElementById('handlerStack')
 			if (handlerStack) {
 				handlerStack.previousElementSibling.style.width = this.racksWidth + 'px'
@@ -1400,16 +1415,12 @@ var appVue = new Vue({
 			if (typeof themeJson === 'string') {
 				if (this.currentTheme === themeJson) return
 				this.currentTheme = themeJson
-				theme.load(this.currentTheme)
-				settings.set('theme', this.currentTheme)
 
 			} else {
 				var themeKeys = theme.keys()
 				var intersectionKeys = _.intersection(themeKeys, Object.keys(themeJson))
 				if (intersectionKeys.length === themeKeys.length) {
 					this.currentTheme = themeJson
-					theme.load(this.currentTheme)
-					settings.set('theme', this.currentTheme)
 
 				} else {
 					console.error('wrong keys')
@@ -1625,9 +1636,7 @@ var appVue = new Vue({
 		 */
 		save_editor_size() {
 			this.racksWidth = parseInt(this.$refs.sidebarFolders.style.width.replace('px', '')) || 180
-			settings.set('racksWidth', this.racksWidth)
 			this.notesWidth = parseInt(this.$refs.sidebarNotes.style.width.replace('px', '')) || 180
-			settings.set('notesWidth', this.notesWidth)
 		},
 		sidebarDrag: _.debounce(function () {
 			this.update_editor_size()

@@ -8,53 +8,13 @@
 	text-rendering: optimizeSpeed;
 	height: 100% !important;
 
-	.CodeMirror-sizer {
-		background-image: url('../images/notelines.png');
-		background-size: 24px;
-		background-position: 1em 1.9em;
-	}
-
-	span.cm-epy-header,
-	span.cm-epy-code,
-	span.cm-epy-quote,
-	span.cm-epy-list1,
-	span.cm-epy-list2,
-	span.cm-epy-list3,
-	span.cm-epy-hr,
-	span.cm-epy-image,
-	span.cm-epy-formatting,
-	span.cm-epy-link-inline,
-	span.cm-epy-link-email,
-	span.cm-epy-link-text,
-	span.cm-epy-link-href,
-	span.cm-epy-em,
-	span.cm-piledstrong,
-	span.cm-epy-strikethrough {
-	}
-
-	span.cm-comment,
-	span.cm-atom,
-	span.cm-number,
-	span.cm-property,
-	span.cm-attribute,
-	span.cm-keyword,
-	span.cm-string,
-	span.cm-variable,
-	span.cm-variable-2,
-	span.cm-def,
-	span.cm-bracket,
-	span.cm-tag,
-	span.cm-link,
-	span.cm-error {
-	}
-
 	span.cm-m-markdown.cm-epy-hr {
 		display: block;
 		line-height: 0.8em !important;
 	}
 
 	.cm-epy-em {font-style: italic;}
-	
+
 	.cm-epy-strikethrough {
 		text-decoration: line-through;
 	}
@@ -66,7 +26,7 @@
 	span.cm-epy-list1,
 	span.cm-epy-list2,
 	span.cm-epy-list3 {
-		color: #333;
+		color: inherit;
 	}
 
 	span.cm-epy-formatting-list-ul,
@@ -84,26 +44,12 @@
 		font-style: normal;
 	}
 
-	span.cm-string {
-		color: #DD1144;
-	}
-
-	span.cm-variable-2 {
-		color: #121289;
-	}
-
 	span.cm-keyword {
-		color: #708;
 		font-weight: bold;
 	}
 
 	span.cm-def {
-		color: #458;
 		font-weight: bold;
-	}
-
-	span.cm-epy-code, code {
-		color: #0A3ABF;
 	}
 
 	pre > code{
@@ -117,13 +63,8 @@
 		font-family: monospace;
 	}
 
-	.cm-epy-quote {
-		color: #777;
-	}
-
 	.cm-epy-link,
 	.cm-epy-link-href:not(.cm-epy-formatting) {
-		color: #0000ee;
 		text-decoration: underline;
 	}
 

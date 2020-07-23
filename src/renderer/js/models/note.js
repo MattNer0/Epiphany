@@ -216,10 +216,6 @@ class Note extends Model {
 		return this.path.replace(Library.baseLibraryPath + '/', '')
 	}
 
-	get relativePathNoFileName() {
-		return this.relativePath.replace('/' + path.basename(this._path), ' ').replace(/\//g, '/\n')
-	}
-
 	get documentFilename() {
 		return this.title ? utilFile.cleanFileName(this.title) : ''
 	}

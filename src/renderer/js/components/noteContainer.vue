@@ -61,6 +61,7 @@ export default {
 		}
 	},
 	props: {
+		editTheme      : null,
 		isThemeSelected: {
 			type   : Boolean,
 			default: false
@@ -125,6 +126,11 @@ export default {
 			return false
 		}
 	},
+	mounted() {
+		if (this.isPreview) {
+			this.updatePreview()
+		}
+	},
 	methods: {
 		/**
 		 * displays context menu on the selected note in preview mode.
@@ -185,6 +191,7 @@ export default {
 		},
 		selectedNote() {
 			if (this.isPreview) {
+				this.updatePreview()
 				this.$nextTick(() => {
 					this.$refs.refCodeMirror.refreshCM()
 				})

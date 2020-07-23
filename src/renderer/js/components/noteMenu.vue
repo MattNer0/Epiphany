@@ -92,7 +92,8 @@
 							i.coon-circle.faded(v-else)
 							|  24
 
-			li.right-align(v-if="isNoteSelected && !isOutlineSelected" :class="{ 'entry-hidden': !isPreview || !noteHeadings || noteHeadings.length < 2 }"): div
+			li(style="flex: 1;")
+			li(v-if="isNoteSelected && !isOutlineSelected" :class="{ 'entry-hidden': !isPreview || !noteHeadings || noteHeadings.length < 2 }"): div
 				dropdown(:visible="headings_visible", :position="position_left", v-on:clickout="headings_visible = false")
 					span.link(@click="headings_visible = !headings_visible" v-tooltip.bottom="'Headers'")
 						i.coon-list
@@ -104,7 +105,7 @@
 								:class="'hlvl'+head.level"
 								v-html="head.text")
 
-			li.right-align(v-if="isNoteSelected && !isOutlineSelected"): div
+			li(v-if="isNoteSelected && !isOutlineSelected"): div
 				dropdown(:visible="properties_visible", :position="position_right", v-on:clickout="properties_visible = false")
 						span.link(@click="properties_visible = !properties_visible" v-tooltip.bottom="'Properties'")
 							i.coon-info
@@ -112,11 +113,10 @@
 							.properties-dialog(@click="close_properties")
 								table.file-properties
 									tr
-										td: strong Path:&nbsp;
-										td.right: span {{ note.relativePathNoFileName }}
-									tr
 										td: strong Filename:&nbsp;
-										td.right: span {{ note.documentFilename + note.extension }}
+										td.right
+											span.filename-overflow(:title="note.documentFilename + note.extension")
+												| {{ note.documentFilename + note.extension }}
 									tr(v-if="note.fileSize")
 										td: strong Filesize:&nbsp;
 										td.right: span {{ note.fileSize.size }} {{ note.fileSize.unit }}
@@ -163,8 +163,7 @@
 													option Web
 											td.right: span
 												input(type="text", name="metavalue", ref="valueinput")
-
-			li.right-align(v-if="isPreview && isNoteSelected && !isOutlineSelected")
+			li(v-if="isPreview && isNoteSelected && !isOutlineSelected")
 				a(@click="openShare" href="#" title="Share" v-tooltip.bottom="'Share link'")
 					i.coon-share-2
 </template>

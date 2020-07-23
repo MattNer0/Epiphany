@@ -79,7 +79,8 @@ form.new-metadata-form {
 		max-width: 8em;
 		min-width: 5em;
 		height: 1.4em;
-		background-color: #FFF;
+		background-color: transparent;
+		color: inherit;
 		display: inline-block;
 		vertical-align: middle;
 		border: 1px solid #cacaca;

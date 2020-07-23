@@ -8,7 +8,10 @@ export default {
 		isFullScreen     : false,
 		useMonospace     : false,
 		reduceToTray     : true,
-		isToolbarEnabled : true
+		currentTheme     : 'light',
+		isToolbarEnabled : true,
+		racksWidth       : 220,
+		notesWidth       : 220
 	},
 	getters: {
 	},
@@ -37,6 +40,15 @@ export default {
 		},
 		setMonospace (state, val) {
 			state.useMonospace = val
+		},
+		setCurrentTheme (state, val) {
+			state.currentTheme = val
+		},
+		setRacksWidth (state, val) {
+			state.racksWidth = val
+		},
+		setNotesWidth (state, val) {
+			state.notesWidth = val
 		},
 		setFontsize (state, val) {
 			if (isNaN(val)) {
