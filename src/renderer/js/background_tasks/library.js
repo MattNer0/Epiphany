@@ -446,13 +446,15 @@ export default {
 					}
 				}
 
-				if (note.path && note.photogallery) {
+				if (note.path) {
 					fs.writeFileSync(note.path, note.body)
-					utilFile.moveFolderRecursiveSync(
-						note.photogallery,
-						path.dirname(note.path),
-						'.' + path.basename(note.path, path.extname(note.path))
-					)
+					if (note.photogallery) {
+						utilFile.moveFolderRecursiveSync(
+							note.photogallery,
+							path.dirname(note.path),
+							'.' + path.basename(note.path, path.extname(note.path))
+						)
+					}
 
 					res.path = note.path
 					res.saved = true
