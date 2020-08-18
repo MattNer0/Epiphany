@@ -35,6 +35,9 @@ export default {
 		setSearch (state, query) {
 			state.search = query
 		},
+		resetSearch (state) {
+			state.search = ''
+		},
 		saveContainerMargin (state, margin) {
 			state.containerMargin = margin
 		}

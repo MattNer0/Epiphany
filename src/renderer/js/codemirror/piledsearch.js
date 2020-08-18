@@ -14,6 +14,8 @@
 
 (function(CodeMirror) {
 
+	let searchDialogCloseFunction = null
+
 	/**
 	 * @function searchOverlay
 	 * @param  {String} query           {description}
@@ -110,7 +112,7 @@
 	 * @return {type} {description}
 	 */
 	function persistentDialog(cm, text, deflt, f) {
-		cm.openDialog(text, f, {
+		searchDialogCloseFunction = cm.openDialog(text, f, {
 			value            : deflt,
 			selectValueOnOpen: true,
 			closeOnEnter     : false,
@@ -448,6 +450,10 @@
 	CodeMirror.commands.findPersistent = function(cm) {
 		clearSearch(cm)
 		doSearch(cm, false, true)
+	}
+	CodeMirror.commands.closePersistent = function(cm) {
+		clearSearch(cm)
+		if (typeof searchDialogCloseFunction === 'function') searchDialogCloseFunction()
 	}
 	CodeMirror.commands.findNext = doSearch
 	CodeMirror.commands.setSearch = setSearch

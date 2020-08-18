@@ -126,6 +126,7 @@ export default {
 	methods: {
 		newCodemirrorInstance() {
 			this.$store.commit('editor/resetEditor')
+			this.$store.commit('editor/resetSearch')
 
 			let extraKeys
 			if (elosenv.isDarwin()) {
@@ -414,7 +415,10 @@ export default {
 		},
 		initFooter() {
 			this.$store.commit('editor/resetEditor')
+			this.$store.commit('editor/resetSearch')
 			this.$store.commit('editor/editorWordsCount', countWords(this.cm.getValue()))
+
+			this.cm.execCommand('closePersistent')
 		},
 		inlinePreviewCleanUrl(match) {
 			return 'epiphany://' + path.join(this.note.imagePath, match[2].replace(/^epiphany:\/\//i, ''))

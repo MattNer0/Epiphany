@@ -75,6 +75,8 @@
 
 	.cm-searching {
 		border: 1px solid rgba(195, 195, 92, 0.5);
+		background-color: rgba(255, 255, 0, .5);
+		color: #333;
 	}
 
 	.cm-epy-formatting-list.cm-epy-formatting-list-ul.cm-epy-list1,
@@ -117,6 +119,10 @@
 .CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #add5ff; }
 
 /* Search dialog */
+
+.CodeMirror.dialog-opened {
+	padding-bottom: 3em;
+}
 
 .CodeMirror-dialog.CodeMirror-dialog-bottom {
 	position: absolute;
