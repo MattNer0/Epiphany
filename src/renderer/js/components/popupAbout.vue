@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		p
-			| Epiphany is an open-source note application built with Electron and Vue.
+			| Epiphany is a Digital Journal to write down and organize your ideas.
 		p
 			i.coon-github
 			| &nbsp;

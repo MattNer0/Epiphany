@@ -205,6 +205,7 @@ function createPopupWindow(width, height, callback) {
 		parent         : mainWindow,
 		alwaysOnTop    : true,
 		skipTaskbar    : true,
+		backgroundColor: '#000',
 		darkTheme      : true,
 		frame          : true,
 		menuBarVisible : false,
