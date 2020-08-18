@@ -4,7 +4,7 @@
 		.modal-wrapper
 			.modal-container.modal-image(v-if="image_url")
 				div(ref="imagemodal", @click="clickout_close")
-					img(:src="image_url")
+					img(:src="image_url" @load="onImgLoad")
 			.modal-container(v-else)
 				h3 {{ title }}
 				p(v-html="descriptionHtml")
@@ -90,12 +90,34 @@ export default {
 
 			document.addEventListener('keydown', this.escKeydown)
 		},
+		onImgLoad(ev) {
+			if (ev.path && ev.path.length && ev.path[0].tagName === 'IMG') {
+				const imgElement = ev.path[0]
+				this.image_width = imgElement.naturalWidth
+				this.image_height = imgElement.naturalHeight
+				this.resizeImg()
+			}
+		},
 		escKeydown(event) {
 			switch (event.key) {
 				case 'Escape':
 					this.clickout_close()
 					break
 			}
+		},
+		resizeImg() {
+			this.$nextTick(() => {
+				if (this.image_width === 0 && this.image_height === 0) return
+				if (this.$refs.imagemodal) {
+					const win = remote.getCurrentWindow().getBounds()
+					if (win.width > this.image_width) {
+						this.$refs.imagemodal.style.width = this.image_width + 'px'
+					}
+					if (win.height > this.image_height) {
+						this.$refs.imagemodal.style.height = this.image_height + 'px'
+					}
+				}
+			})
 		},
 		reset_data() {
 			this.title = ''
@@ -163,17 +185,7 @@ export default {
 	},
 	watch: {
 		image_url() {
-			this.$nextTick(() => {
-				if (this.$refs.imagemodal) {
-					const win = remote.getCurrentWindow().getBounds()
-					if (win.width > this.image_width) {
-						this.$refs.imagemodal.style.width = this.image_width + 'px'
-					}
-					if (win.height > this.image_height) {
-						this.$refs.imagemodal.style.height = this.image_height + 'px'
-					}
-				}
-			})
+			this.resizeImg()
 		}
 	}
 }

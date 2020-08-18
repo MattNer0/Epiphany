@@ -110,7 +110,7 @@
 						span.link(@click="properties_visible = !properties_visible" v-tooltip.bottom="'Properties'")
 							i.coon-info
 						.dialog(slot="dropdown")
-							.properties-dialog(@click="close_properties")
+							.properties-dialog
 								table.file-properties
 									tr
 										td: strong Filename:&nbsp;

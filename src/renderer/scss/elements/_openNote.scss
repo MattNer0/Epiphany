@@ -74,15 +74,26 @@
 }
 
 form.new-metadata-form {
+	padding-top: .2em;
+	padding-bottom: .1em;
+
 	input, select {
 		width: 100%;
+		font-size: 14px;
 		max-width: 8em;
 		min-width: 5em;
-		height: 1.4em;
+		height: 2em;
+		padding: .3em;
+		border-radius: 4px;
 		background-color: transparent;
 		color: inherit;
 		display: inline-block;
 		vertical-align: middle;
+		border: 1px solid #cacaca80;
+		outline: none;
+	}
+
+	input:focus, select:focus {
 		border: 1px solid #cacaca;
 	}
 }
